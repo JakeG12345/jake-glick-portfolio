@@ -9,14 +9,12 @@ import {
   BriefcaseBusiness,
   Building2,
   Code2,
-  Dumbbell,
   Globe2,
   Landmark,
   Mail,
   MapPin,
   Search,
   Smartphone,
-  Trophy,
   Video,
   Waves,
 } from "lucide-react";
@@ -77,6 +75,34 @@ const contactLinks = [
   {
     label: "LinkedIn",
     href: "https://au.linkedin.com/in/jake-glick-312a02284",
+    Icon: BriefcaseBusiness,
+  },
+];
+
+const landmarkButtons = [
+  {
+    id: "sydney-harbour",
+    label: "Opera House",
+    Icon: Landmark,
+  },
+  {
+    id: "bondi-beach",
+    label: "Bondi",
+    Icon: Waves,
+  },
+  {
+    id: "dover-heights-home",
+    label: "Dover Heights",
+    Icon: MapPin,
+  },
+  {
+    id: "quantium-work-experience",
+    label: "Quantium",
+    Icon: BriefcaseBusiness,
+  },
+  {
+    id: "whatsapp-wrapped",
+    label: "Blackbird",
     Icon: BriefcaseBusiness,
   },
 ];
@@ -1059,6 +1085,182 @@ const projects: Project[] = [
   },
 ];
 
+const projectById = new Map(projects.map((project) => [project.id, project]));
+
+function featuredProject(id: string, overrides: Partial<Project>): Project {
+  const project = projectById.get(id);
+  if (!project) throw new Error(`Missing featured project: ${id}`);
+  return { ...project, ...overrides };
+}
+
+const cityItems: Project[] = [
+  featuredProject("whatsapp-wrapped", {
+    title: "Blackbird / WhatsAppWrapped",
+    shortTitle: "Blackbird",
+    zone: "Blackbird startup block",
+    status: "Blackbird camp build",
+    detail:
+      "WhatsAppWrapped sits in the Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
+    proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
+    color: "#22d66f",
+    x: 1.2,
+    z: -9.2,
+    height: 4.1,
+  }),
+  featuredProject("jashby", {
+    zone: "Spreadsheet campus",
+    detail:
+      "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
+    x: 5.2,
+    z: -5.4,
+    height: 4.2,
+  }),
+  {
+    id: "quantium-work-experience",
+    title: "Quantium Work Experience",
+    shortTitle: "Quantium",
+    year: "2024",
+    zone: "CBD data tower",
+    category: "Experience",
+    tier: "built",
+    status: "Work experience",
+    summary:
+      "A CBD data tower for the Quantium work-experience week around CommBank iQ analytics and market-data scraping.",
+    detail:
+      "This is mapped as a city workplace rather than a repo. It anchors the analytics side of the portfolio: client data, market signals, and a scraper built in a professional context.",
+    stack: ["Data analytics", "Web scraping", "CommBank iQ context"],
+    proof: ["Attached DOCX role notes", "Experience entry"],
+    source: "Attached DOCX",
+    color: "#2f8ec7",
+    x: -2.8,
+    z: -9.6,
+    height: 4,
+    links: [],
+  },
+  {
+    id: "dover-heights-home",
+    title: "Dover Heights Home Base",
+    shortTitle: "Dover",
+    year: "Sydney",
+    zone: "Dover Heights cliff",
+    category: "Landmark",
+    tier: "artifact",
+    status: "Home base near Bondi",
+    summary:
+      "The map's home point: Dover Heights, up on the coast near Bondi Beach.",
+    detail:
+      "This gives the portfolio city a personal origin instead of floating in generic tech-land. It sits above the beach and looks back toward the project blocks.",
+    stack: ["Sydney", "Dover Heights", "Coast", "Home base"],
+    proof: ["User-provided location context"],
+    source: "User request",
+    color: "#f0c36a",
+    x: -7.7,
+    z: 2.25,
+    height: 1.45,
+    links: [],
+  },
+  {
+    id: "bondi-beach",
+    title: "Bondi Beach",
+    shortTitle: "Bondi",
+    year: "Sydney",
+    zone: "Eastern suburbs coast",
+    category: "Landmark",
+    tier: "artifact",
+    status: "Beach landmark",
+    summary:
+      "A bright coastal strip for the beach part of the world: sand, surf, boards, and the city edge.",
+    detail:
+      "Bondi is treated as landscape, not decoration. It gives the mini city a real east-Sydney coastline and a natural place for the Dover Heights home marker.",
+    stack: ["Beach", "Surf", "Eastern suburbs"],
+    proof: ["User-requested landmark"],
+    source: "User request",
+    color: "#4cbad8",
+    x: -10.7,
+    z: 3.25,
+    height: 1.2,
+    links: [],
+  },
+  {
+    id: "sydney-harbour",
+    title: "Sydney Harbour / Opera House",
+    shortTitle: "Opera House",
+    year: "Sydney",
+    zone: "Harbour landmark",
+    category: "Landmark",
+    tier: "artifact",
+    status: "Sydney landmark cluster",
+    summary:
+      "The harbour corner with Opera House-style sails, a bridge arch, and CBD skyline massing.",
+    detail:
+      "This anchors the map in Sydney before the project buildings take over. It is deliberately literal: water, sails, bridge, skyline.",
+    stack: ["Opera House", "Harbour Bridge", "CBD"],
+    proof: ["User-requested landmark"],
+    source: "User request",
+    color: "#fff1bf",
+    x: -14.5,
+    z: -8.6,
+    height: 1.8,
+    links: [],
+  },
+  featuredProject("car-lifestory-web", {
+    title: "Dover Garage / Car Lifestory",
+    shortTitle: "Car Story",
+    zone: "Dover garage",
+    detail:
+      "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
+    x: -6.1,
+    z: 3.8,
+    height: 2.5,
+  }),
+  featuredProject("what-the-puck", {
+    zone: "Sports field",
+    detail:
+      "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
+    x: -4.8,
+    z: 9.4,
+    height: 2.9,
+  }),
+  featuredProject("moriah-jiu-jitsu", {
+    zone: "School sports block",
+    detail:
+      "The Moriah Jiu-Jitsu tool is placed near the sports side of the city because it is an operational school-sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
+    x: 0.2,
+    z: 6.4,
+    height: 2.6,
+  }),
+  featuredProject("degree6", {
+    zone: "Network interchange",
+    detail:
+      "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
+    x: 3.8,
+    z: -9.7,
+    height: 3.1,
+  }),
+  featuredProject("idea-aid", {
+    zone: "AI workshop",
+    detail:
+      "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
+    x: 8.8,
+    z: -1.2,
+    height: 2.2,
+  }),
+  featuredProject("portfolio", {
+    zone: "City hall",
+    detail:
+      "The portfolio itself is the city hall: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
+    x: 2.2,
+    z: -1,
+    height: 2.3,
+  }),
+];
+
+const cityItemIds = new Set(cityItems.map((item) => item.id));
+const selectableItems = [
+  ...cityItems,
+  ...projects.filter((project) => !cityItemIds.has(project.id)),
+];
+
 const experiences = [
   {
     role: "Co-Founder",
@@ -1099,8 +1301,8 @@ const experiences = [
 
 const cityStats = [
   ["18", "public GitHub repos"],
+  [String(cityItems.length), "map stops"],
   [String(projects.length), "archive items"],
-  ["5", "role entries"],
   ["2026", "Moriah College grad"],
 ];
 
@@ -1356,7 +1558,7 @@ function CityScene({
     addPlane(30, 3.1, 1, -3.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.025);
     addPlane(10.5, 6.2, -7.5, 8.5, new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch }), 0.035);
 
-    addInterestLandmarks(scene);
+    addSydneyLandmarks(scene, addTexture);
     addCityPaths(scene);
 
     const colliders: THREE.Object3D[] = [];
@@ -1365,7 +1567,7 @@ function CityScene({
     const billboardMeshes: THREE.Mesh[] = [];
     const loader = new THREE.TextureLoader();
 
-    projects.forEach((project) => {
+    cityItems.forEach((project) => {
       const group = new THREE.Group();
       group.position.set(project.x, 0, project.z);
       group.userData.projectId = project.id;
@@ -1600,32 +1802,137 @@ function addCityPaths(scene: THREE.Scene) {
   });
 }
 
-function addInterestLandmarks(scene: THREE.Scene) {
+function addSydneyLandmarks(
+  scene: THREE.Scene,
+  addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
+) {
+  const harbourStone = new THREE.MeshStandardMaterial({ color: "#e8d9b6", roughness: 0.68 });
+  const quay = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.16, 2.7), harbourStone);
+  quay.position.set(-14.5, 0.05, -8.6);
+  quay.castShadow = true;
+  quay.receiveShadow = true;
+  scene.add(quay);
+
   const operaGroup = new THREE.Group();
-  operaGroup.position.set(-14.6, 0.2, -8.6);
-  const shellMaterial = new THREE.MeshStandardMaterial({ color: "#fff8e6", roughness: 0.42 });
-  [-1, 0, 1].forEach((offset, index) => {
-    const shell = new THREE.Mesh(new THREE.ConeGeometry(0.85 + index * 0.1, 2.5, 4), shellMaterial);
-    shell.position.set(offset * 0.8, 1.05, Math.abs(offset) * 0.16);
-    shell.rotation.z = offset * 0.32;
+  operaGroup.position.set(-14.6, 0.22, -8.7);
+  const shellMaterial = new THREE.MeshStandardMaterial({ color: "#fff8e6", roughness: 0.38 });
+  [-1.8, -0.85, 0, 0.85, 1.8].forEach((offset, index) => {
+    const shell = new THREE.Mesh(new THREE.ConeGeometry(0.7 + index * 0.06, 2.35 + index * 0.1, 4), shellMaterial);
+    shell.position.set(offset * 0.48, 1.05, Math.abs(offset) * 0.08);
+    shell.rotation.z = offset * 0.24;
     shell.rotation.y = Math.PI / 4;
     shell.castShadow = true;
     operaGroup.add(shell);
   });
   scene.add(operaGroup);
+  addLandmarkSign(scene, addTexture, "Sydney Opera House", "harbour anchor", -13.1, -6.7, "#fff1bf");
 
-  const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#5b6770", roughness: 0.32, metalness: 0.12 });
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(2.7, 0.06, 8, 48, Math.PI), bridgeMaterial);
-  arch.position.set(-14.5, 1.5, -4.2);
+  const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#56646b", roughness: 0.32, metalness: 0.12 });
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.07, 8, 60, Math.PI), bridgeMaterial);
+  arch.position.set(-14.8, 1.55, -4);
   arch.rotation.z = Math.PI;
   arch.castShadow = true;
   scene.add(arch);
-  [-2.7, 2.7].forEach((x) => {
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.3, 0.25), bridgeMaterial);
-    tower.position.set(-14.5 + x, 0.72, -4.2);
+  [-3.05, 3.05].forEach((x) => {
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.45, 0.32), bridgeMaterial);
+    tower.position.set(-14.8 + x, 0.78, -4);
     tower.castShadow = true;
     scene.add(tower);
   });
+
+  const skylineMaterials = [
+    new THREE.MeshStandardMaterial({ color: "#2f5157", roughness: 0.55 }),
+    new THREE.MeshStandardMaterial({ color: "#415f66", roughness: 0.55 }),
+    new THREE.MeshStandardMaterial({ color: "#263d44", roughness: 0.48, metalness: 0.08 }),
+  ];
+  for (let i = 0; i < 12; i += 1) {
+    const height = 1 + (i % 5) * 0.46;
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.78, height, 0.82), skylineMaterials[i % skylineMaterials.length]);
+    tower.position.set(-5.4 + i * 0.7, height / 2, -12.4 + (i % 2) * 0.42);
+    tower.castShadow = true;
+    scene.add(tower);
+  }
+
+  const blackbirdMarker = new THREE.Mesh(
+    new THREE.BoxGeometry(1.1, 3.8, 1),
+    new THREE.MeshStandardMaterial({ color: "#101611", roughness: 0.42, metalness: 0.08 }),
+  );
+  blackbirdMarker.position.set(1.2, 1.9, -11.4);
+  blackbirdMarker.castShadow = true;
+  scene.add(blackbirdMarker);
+  const blackbirdStripe = new THREE.Mesh(
+    new THREE.BoxGeometry(1.14, 0.18, 1.04),
+    new THREE.MeshBasicMaterial({ color: "#22d66f" }),
+  );
+  blackbirdStripe.position.set(1.2, 3.55, -11.4);
+  scene.add(blackbirdStripe);
+
+  const quantiumMarker = new THREE.Mesh(
+    new THREE.BoxGeometry(1.05, 3.5, 1.05),
+    new THREE.MeshStandardMaterial({ color: "#17476c", roughness: 0.4, metalness: 0.12 }),
+  );
+  quantiumMarker.position.set(-2.8, 1.75, -11.1);
+  quantiumMarker.castShadow = true;
+  scene.add(quantiumMarker);
+  const dataDotMaterial = new THREE.MeshBasicMaterial({ color: "#93d8ff" });
+  for (let row = 0; row < 6; row += 1) {
+    for (let col = 0; col < 3; col += 1) {
+      const dot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.018), dataDotMaterial);
+      dot.position.set(-3.05 + col * 0.24, 0.8 + row * 0.38, -10.565);
+      scene.add(dot);
+    }
+  }
+
+  const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.82 });
+  for (let i = 0; i < 5; i += 1) {
+    const foam = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.035, 4.2 + i * 0.42), foamMaterial);
+    foam.position.set(-12.55 + i * 0.28, 0.12, 3.4 + i * 1.38);
+    foam.rotation.y = -0.16;
+    scene.add(foam);
+  }
+
+  const surfColors = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"];
+  for (let i = 0; i < 6; i += 1) {
+    const surfboard = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.06, 1.8),
+      new THREE.MeshStandardMaterial({ color: surfColors[i % surfColors.length], roughness: 0.54 }),
+    );
+    surfboard.position.set(-10.9 + i * 0.45, 0.14, 1.1 + i * 1.25);
+    surfboard.rotation.y = i * 0.34 - 0.22;
+    surfboard.castShadow = true;
+    scene.add(surfboard);
+  }
+  addLandmarkSign(scene, addTexture, "Bondi Beach", "surf strip", -9.45, 2.7, "#4cbad8");
+
+  const cliffMaterial = new THREE.MeshStandardMaterial({ color: "#bda474", roughness: 0.86 });
+  for (let i = 0; i < 5; i += 1) {
+    const cliff = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.8 + i * 0.12, 1.7), cliffMaterial);
+    cliff.position.set(-8.7 + i * 0.55, 0.32 + i * 0.03, 1.25 + i * 0.48);
+    cliff.rotation.y = -0.18;
+    cliff.castShadow = true;
+    cliff.receiveShadow = true;
+    scene.add(cliff);
+  }
+
+  const houseGroup = new THREE.Group();
+  houseGroup.position.set(-7.7, 0.2, 2.15);
+  const house = new THREE.Mesh(
+    new THREE.BoxGeometry(1.05, 0.68, 0.9),
+    new THREE.MeshStandardMaterial({ color: "#f6e8c6", roughness: 0.72 }),
+  );
+  house.position.y = 0.42;
+  house.castShadow = true;
+  houseGroup.add(house);
+  const roof = new THREE.Mesh(
+    new THREE.ConeGeometry(0.82, 0.48, 4),
+    new THREE.MeshStandardMaterial({ color: "#cc6543", roughness: 0.62 }),
+  );
+  roof.position.y = 0.98;
+  roof.rotation.y = Math.PI / 4;
+  roof.castShadow = true;
+  houseGroup.add(roof);
+  scene.add(houseGroup);
+  addLandmarkSign(scene, addTexture, "Dover Heights", "home base", -6.7, 2.05, "#f0c36a");
 
   const pitchLine = new THREE.MeshBasicMaterial({ color: "#f9f6e9" });
   const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 6), pitchLine);
@@ -1656,24 +1963,39 @@ function addInterestLandmarks(scene: THREE.Scene) {
       scene.add(plate);
     }
   });
+}
 
-  const surfMaterial = new THREE.MeshStandardMaterial({ color: "#fff4bd", roughness: 0.54 });
-  for (let i = 0; i < 5; i += 1) {
-    const surfboard = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.06, 1.8), surfMaterial);
-    surfboard.position.set(-10.6 + i * 0.52, 0.13, -0.5 + i * 1.8);
-    surfboard.rotation.y = i * 0.36;
-    surfboard.castShadow = true;
-    scene.add(surfboard);
-  }
-
-  const skylineMaterial = new THREE.MeshStandardMaterial({ color: "#38585d", roughness: 0.6 });
-  for (let i = 0; i < 14; i += 1) {
-    const height = 0.8 + (i % 5) * 0.42;
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.9, height, 0.9), skylineMaterial);
-    tower.position.set(-2 + i * 0.8, height / 2, -12.8);
-    tower.castShadow = true;
-    scene.add(tower);
-  }
+function addLandmarkSign(
+  scene: THREE.Scene,
+  addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
+  title: string,
+  subtitle: string,
+  x: number,
+  z: number,
+  color: string,
+) {
+  const texture = addTexture(createCanvasTexture(768, 256, (ctx) => {
+    ctx.fillStyle = "rgba(255,253,244,0.96)";
+    ctx.fillRect(0, 0, 768, 256);
+    ctx.strokeStyle = "#151713";
+    ctx.lineWidth = 14;
+    ctx.strokeRect(7, 7, 754, 242);
+    ctx.fillStyle = color;
+    ctx.fillRect(24, 24, 112, 208);
+    ctx.fillStyle = "#151713";
+    ctx.font = "900 50px Arial";
+    wrapCanvasText(ctx, title, 166, 104, 540, 54);
+    ctx.fillStyle = "#485048";
+    ctx.font = "800 28px Arial";
+    ctx.fillText(subtitle.toUpperCase(), 168, 210);
+  }));
+  const sign = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.7, 0.9),
+    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true }),
+  );
+  sign.position.set(x, 1.35, z);
+  sign.rotation.y = -0.22;
+  scene.add(sign);
 }
 
 function createPlayer() {
@@ -1706,10 +2028,10 @@ function createPlayer() {
 }
 
 export default function MuseumPortfolio() {
-  const [activeId, setActiveId] = useState(projects[0].id);
+  const [activeId, setActiveId] = useState(cityItems[0].id);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
-  const activeProject = projects.find((project) => project.id === activeId) ?? projects[0];
+  const activeProject = selectableItems.find((project) => project.id === activeId) ?? cityItems[0];
 
   const filteredProjects = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
@@ -1755,8 +2077,8 @@ export default function MuseumPortfolio() {
           </p>
           <h1 id="hero-title">Jake Glick</h1>
           <p>
-            Software builder in Sydney making web apps, mobile games, spreadsheet tools,
-            data stories, study software, and a few very honest tutorial-era artifacts.
+            Software builder from Sydney making web apps, mobile games, spreadsheet tools,
+            data stories, study software, and a few useful things from real life.
           </p>
           <div className="hero-stats" aria-label="Portfolio facts">
             {cityStats.map(([value, label]) => (
@@ -1771,32 +2093,27 @@ export default function MuseumPortfolio() {
         <ProjectInspector project={activeProject} />
 
         <div className="interest-strip" aria-label="Personal landmarks">
-          <span>
-            <Landmark size={15} aria-hidden="true" />
-            Sydney
-          </span>
-          <span>
-            <Waves size={15} aria-hidden="true" />
-            Beach
-          </span>
-          <span>
-            <Trophy size={15} aria-hidden="true" />
-            Football
-          </span>
-          <span>
-            <Dumbbell size={15} aria-hidden="true" />
-            Gym
-          </span>
+          {landmarkButtons.map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              className={activeId === id ? "is-active" : ""}
+              onClick={() => setActiveId(id)}
+            >
+              <Icon size={15} aria-hidden="true" />
+              {label}
+            </button>
+          ))}
         </div>
       </section>
 
       <section className="archive-section" id="archive" aria-labelledby="archive-title">
         <div className="section-copy">
           <p className="eyebrow">complete archive</p>
-          <h2 id="archive-title">Everything I could verify, without pretending every repo is the main act.</h2>
+          <h2 id="archive-title">The full trail lives here; the city only keeps the landmarks.</h2>
           <p>
-            The large buildings are products and shipped tools. The smaller plaques are learning
-            projects, prototypes, and early public GitHub artifacts that show the path here.
+            The 3D map is intentionally curated. This archive keeps the shipped apps, prototypes,
+            learning repos, and local practice folders searchable without crowding the landscape.
           </p>
         </div>
 

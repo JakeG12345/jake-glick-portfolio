@@ -406,7 +406,7 @@ canvas {
   pointer-events: none;
 }
 
-.interest-strip span {
+.interest-strip button {
   display: inline-flex;
   min-height: 36px;
   align-items: center;
@@ -415,10 +415,17 @@ canvas {
   padding: 0 11px;
   background: rgba(16, 22, 17, 0.72);
   color: var(--cream);
+  cursor: pointer;
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.74rem;
   font-weight: 850;
   text-transform: uppercase;
+  pointer-events: auto;
+}
+
+.interest-strip button.is-active {
+  border-color: var(--yellow);
+  background: rgba(247, 211, 95, 0.18);
 }
 
 .archive-section,
@@ -639,6 +646,7 @@ canvas {
 .contact-links a:focus-visible,
 .project-links a:focus-visible,
 .contact-card a:focus-visible,
+.interest-strip button:focus-visible,
 .filter-row button:focus-visible,
 .archive-card:focus-visible,
 .search-box input:focus-visible {
@@ -650,6 +658,7 @@ canvas {
   .contact-links a:hover,
   .project-links a:hover,
   .contact-card a:hover,
+  .interest-strip button:hover,
   .filter-row button:hover,
   .archive-card:hover {
     transform: translate(-2px, -2px);
@@ -800,7 +809,7 @@ canvas {
     bottom: 20px;
   }
 
-  .interest-strip span {
+  .interest-strip button {
     min-height: 32px;
     font-size: 0.68rem;
   }
