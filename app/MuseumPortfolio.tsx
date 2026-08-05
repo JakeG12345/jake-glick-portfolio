@@ -1104,8 +1104,8 @@ const sydneyMap = {
   originLongitude: 151.2073,
   originX: -5.2,
   originZ: -4.8,
-  latitudeScale: 315,
-  longitudeScale: 255,
+  latitudeScale: 385,
+  longitudeScale: 330,
 };
 
 function mapSydney(longitude: number, latitude: number, nudge: Partial<MapPoint> = {}): MapPoint {
@@ -1336,13 +1336,20 @@ const cityStats = [
 
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
 const PLAYER_BALL_RADIUS = 0.36;
-const PLAYER_SPEED = 6.9;
+const PLAYER_SPEED = 7.35;
 const PLAYER_BOUNDS = {
-  minX: -11.2 + PLAYER_BALL_RADIUS,
-  maxX: 15.2 - PLAYER_BALL_RADIUS,
-  minZ: -11.8 + PLAYER_BALL_RADIUS,
-  maxZ: 9.4 - PLAYER_BALL_RADIUS,
+  minX: -13.6 + PLAYER_BALL_RADIUS,
+  maxX: 20.8 - PLAYER_BALL_RADIUS,
+  minZ: -14.2 + PLAYER_BALL_RADIUS,
+  maxZ: 11.1 - PLAYER_BALL_RADIUS,
 };
+const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
+
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  const tagName = target.tagName.toLowerCase();
+  return target.isContentEditable || tagName === "input" || tagName === "textarea" || tagName === "select";
+}
 
 function linkIcon(kind: ProjectLink["kind"]) {
   if (kind === "repo") return Code2;
@@ -1989,10 +1996,10 @@ function CityScene({
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#b9dbe0");
-    scene.fog = new THREE.Fog("#b9dbe0", 34, 74);
+    scene.fog = new THREE.Fog("#b9dbe0", 46, 104);
 
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 120);
-    camera.position.set(11, 17.5, 17.5);
+    const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 150);
+    camera.position.set(12, 22.5, 20.5);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -2050,41 +2057,42 @@ function CityScene({
     const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch, roughness: 0.86 });
     const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
 
-    addPlane(35.5, 28.5, 1.7, -1.4, waterMaterial, -0.07);
+    addPlane(44.5, 35.5, 3.1, -2.1, waterMaterial, -0.07);
     addFlatShape(groundGroup, [
-      { x: -12.3, z: -7.45 },
-      { x: -10.2, z: -8.35 },
-      { x: -7.6, z: -7.85 },
-      { x: -5.95, z: -8.55 },
-      { x: -4.55, z: -7.45 },
-      { x: -3.55, z: -8.65 },
-      { x: -1.6, z: -7.55 },
-      { x: -1.35, z: -5.75 },
-      { x: 0.9, z: -4.55 },
-      { x: 4.75, z: -2.15 },
-      { x: 9.15, z: -5.9 },
-      { x: 13.8, z: -6.75 },
-      { x: 14.15, z: -3.25 },
-      { x: 13.35, z: -0.45 },
-      { x: 12.05, z: 2.15 },
-      { x: 9.2, z: 5.92 },
-      { x: 5.8, z: 8.15 },
-      { x: 0.9, z: 8.4 },
-      { x: -4.4, z: 7.6 },
-      { x: -9.9, z: 4.35 },
-      { x: -12.45, z: 0.35 },
+      { x: -13.8, z: -8.65 },
+      { x: -11.3, z: -9.65 },
+      { x: -8.15, z: -9.05 },
+      { x: -6.15, z: -9.8 },
+      { x: -4.5, z: -8.7 },
+      { x: -3.2, z: -10.1 },
+      { x: -0.9, z: -8.75 },
+      { x: -0.35, z: -6.3 },
+      { x: 2.65, z: -4.45 },
+      { x: 6.65, z: -2.25 },
+      { x: 11.25, z: -6.85 },
+      { x: 16.7, z: -8 },
+      { x: 19.95, z: -7.1 },
+      { x: 20.35, z: -3.35 },
+      { x: 19.1, z: -0.1 },
+      { x: 17.35, z: 3.05 },
+      { x: 13.35, z: 7.35 },
+      { x: 8.2, z: 9.75 },
+      { x: 1.25, z: 9.9 },
+      { x: -4.7, z: 8.75 },
+      { x: -10.9, z: 5.05 },
+      { x: -13.9, z: 0.55 },
     ], parkMaterial);
     addFlatShape(groundGroup, [
-      { x: -12.7, z: -12.5 },
-      { x: 2.4, z: -12.5 },
-      { x: 2.2, z: -10.05 },
-      { x: -0.35, z: -8.95 },
-      { x: -2.25, z: -9.42 },
-      { x: -3.55, z: -8.35 },
-      { x: -5.35, z: -8.72 },
-      { x: -6.8, z: -7.9 },
-      { x: -8.6, z: -8.55 },
-      { x: -12.7, z: -8.85 },
+      { x: -14.2, z: -14.25 },
+      { x: 3.7, z: -14.25 },
+      { x: 3.45, z: -11.25 },
+      { x: 0.1, z: -10.12 },
+      { x: -2.25, z: -10.72 },
+      { x: -3.75, z: -9.35 },
+      { x: -5.9, z: -9.8 },
+      { x: -7.6, z: -8.85 },
+      { x: -9.65, z: -9.55 },
+      { x: -14.2, z: -9.85 },
     ], harbourMaterial, 0.015);
     addFlatShape(groundGroup, [
       { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
@@ -2230,18 +2238,24 @@ function CityScene({
       const height = Math.max(1, Math.floor(rect.height));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
+      camera.fov = camera.aspect < 0.75 ? 53 : 46;
       camera.updateProjectionMatrix();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"].includes(key)) {
+      if (MOVEMENT_KEYS.includes(key) && !isEditableTarget(event.target)) {
+        event.preventDefault();
         keys.add(key);
       }
     };
 
     const onKeyUp = (event: KeyboardEvent) => {
-      keys.delete(event.key.toLowerCase());
+      const key = event.key.toLowerCase();
+      if (MOVEMENT_KEYS.includes(key)) {
+        event.preventDefault();
+        keys.delete(key);
+      }
     };
 
     const onPointerDown = (event: PointerEvent) => {
@@ -2259,6 +2273,8 @@ function CityScene({
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     canvas.addEventListener("pointerdown", onPointerDown);
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(canvas);
     resize();
 
     let animationFrame = 0;
@@ -2313,9 +2329,14 @@ function CityScene({
         }
       }
 
-      const cameraTarget = new THREE.Vector3(player.position.x + 9.5, 18.5, player.position.z + 15.8);
-      camera.position.lerp(cameraTarget, 0.055);
-      camera.lookAt(player.position.x + 2.3, 0.75, player.position.z + 0.1);
+      const isNarrowView = camera.aspect < 0.75;
+      const cameraTarget = new THREE.Vector3(
+        player.position.x + (isNarrowView ? 15.4 : 12.2),
+        isNarrowView ? 27.5 : 23.5,
+        player.position.z + (isNarrowView ? 24.2 : 20.4),
+      );
+      camera.position.lerp(cameraTarget, 0.045);
+      camera.lookAt(player.position.x + (isNarrowView ? 3.1 : 2.4), 0.65, player.position.z + (isNarrowView ? 0.2 : -0.15));
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -2357,6 +2378,7 @@ function CityScene({
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       canvas.removeEventListener("pointerdown", onPointerDown);
+      resizeObserver.disconnect();
       textures.forEach((texture) => texture.dispose());
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
@@ -2536,6 +2558,75 @@ function addLandscapeDetails(scene: THREE.Scene) {
   });
 }
 
+function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
+  const bridge = new THREE.Group();
+  bridge.position.set(anchor.x, 0, anchor.z);
+  parent.add(bridge);
+
+  const steel = modelMaterial("#59686e", { roughness: 0.32, metalness: 0.16 });
+  const darkSteel = modelMaterial("#2d3a40", { roughness: 0.42, metalness: 0.14 });
+  const pylonMaterial = modelMaterial("#9b9688", { roughness: 0.72 });
+  const deckMaterial = modelMaterial("#464d50", { roughness: 0.52, metalness: 0.08 });
+  const laneMaterial = new THREE.MeshBasicMaterial({ color: "#f7f1d1" });
+
+  addBox(bridge, [7.2, 0.16, 0.68], deckMaterial, [0, 0.56, 0]);
+  addBox(bridge, [6.9, 0.03, 0.035], laneMaterial, [0, 0.66, -0.13]);
+  addBox(bridge, [6.9, 0.03, 0.035], laneMaterial, [0, 0.66, 0.13]);
+  addBox(bridge, [7.3, 0.08, 0.08], darkSteel, [0, 0.82, -0.42]);
+  addBox(bridge, [7.3, 0.08, 0.08], darkSteel, [0, 0.82, 0.42]);
+
+  [-3.72, 3.72].forEach((x) => {
+    [-0.42, 0.42].forEach((z) => {
+      addBox(bridge, [0.44, 1.86, 0.5], pylonMaterial, [x, 0.93, z]);
+      addBox(bridge, [0.58, 0.16, 0.64], pylonMaterial, [x, 1.94, z]);
+      addBox(bridge, [0.32, 0.28, 0.32], pylonMaterial, [x, 2.16, z]);
+    });
+    addBox(bridge, [0.18, 1.55, 1.22], darkSteel, [x * 0.96, 0.92, 0]);
+  });
+
+  const archPoints = [-0.34, 0.34];
+  archPoints.forEach((z) => {
+    const curve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(-3.52, 0.78, z),
+      new THREE.Vector3(0, 2.92, z),
+      new THREE.Vector3(3.52, 0.78, z),
+    );
+    const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 36, 0.055, 8, false), steel);
+    arch.castShadow = true;
+    bridge.add(arch);
+
+    for (let i = 1; i < 10; i += 1) {
+      const t = i / 10;
+      const archPoint = curve.getPoint(t);
+      const deckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.25, 3.25, t), 0.82, z);
+      addCylinderBetween(bridge, deckPoint, archPoint, 0.018, darkSteel);
+      if (i % 2 === 1) {
+        const nextDeckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.25, 3.25, Math.min(0.98, t + 0.085)), 0.83, -z);
+        addCylinderBetween(bridge, deckPoint, nextDeckPoint, 0.012, steel);
+      }
+    }
+  });
+
+  for (let i = 0; i < 9; i += 1) {
+    const x = -3.2 + i * 0.8;
+    addBox(bridge, [0.06, 0.06, 0.98], darkSteel, [x, 0.91, 0]);
+  }
+
+  [-2.95, -1.72, -0.5, 0.74, 1.98, 3.02].forEach((x, index) => {
+    addCylinderBetween(
+      bridge,
+      new THREE.Vector3(x, 0.76, -0.42),
+      new THREE.Vector3(x + (index % 2 ? 0.46 : -0.46), 1.22, 0.42),
+      0.016,
+      steel,
+    );
+  });
+
+  [-3.18, 3.18].forEach((x) => {
+    addBox(bridge, [0.82, 0.12, 1.12], "#d8c494", [x, 0.2, 0], [0, 0, 0], { roughness: 0.76 });
+  });
+}
+
 function addSydneyLandmarks(
   scene: THREE.Scene,
   addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
@@ -2560,19 +2651,7 @@ function addSydneyLandmarks(
   addBox(landmarks, [8.4, 0.16, 2.15], "#e8d9b6", [operaHouse.x - 0.9, 0.08, operaHouse.z + 1.25]);
   addBox(landmarks, [2.9, 0.08, 1.05], "#d5c7a6", [operaHouse.x + 0.55, 0.16, operaHouse.z + 1.95], [0, -0.2, 0]);
 
-  const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#56646b", roughness: 0.32, metalness: 0.12 });
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.07, 8, 72, Math.PI), bridgeMaterial);
-  arch.position.set(harbourBridge.x, 1.58, harbourBridge.z);
-  arch.rotation.z = Math.PI;
-  arch.castShadow = true;
-  landmarks.add(arch);
-  addBox(landmarks, [6.25, 0.12, 0.28], bridgeMaterial, [harbourBridge.x, 0.62, harbourBridge.z]);
-  [-2.92, 2.92].forEach((x) => {
-    addBox(landmarks, [0.32, 1.44, 0.38], bridgeMaterial, [harbourBridge.x + x, 0.78, harbourBridge.z]);
-  });
-  [-2.1, -1.3, -0.48, 0.42, 1.28, 2.12].forEach((x) => {
-    addBox(landmarks, [0.035, 0.74 + (2.2 - Math.abs(x)) * 0.18, 0.04], bridgeMaterial, [harbourBridge.x + x, 0.96, harbourBridge.z]);
-  });
+  addHarbourBridgeArtwork(landmarks, harbourBridge);
 
   const skylineMaterials = [
     new THREE.MeshStandardMaterial({ color: "#2f5157", roughness: 0.55 }),
