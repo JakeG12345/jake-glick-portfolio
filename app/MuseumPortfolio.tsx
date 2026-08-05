@@ -2083,8 +2083,6 @@ export default function MuseumPortfolio() {
   return (
     <main className="city-page" id="top">
       <section className="city-hero" id="museum" aria-labelledby="hero-title">
-        <CityScene activeId={activeId} setActiveId={setActiveId} />
-
         <nav className="contact-ribbon" aria-label="Primary navigation">
           <a className="brand-lockup" href="#top" aria-label="Jake Glick home">
             <span>JG</span>
@@ -2100,16 +2098,19 @@ export default function MuseumPortfolio() {
           </div>
         </nav>
 
-        <div className="city-intro">
-          <p className="kicker">
-            <MapPin size={16} aria-hidden="true" />
-            Sydney portfolio city
-          </p>
-          <h1 id="hero-title">Jake Glick</h1>
-          <p>
-            Software builder from Sydney making web apps, mobile games, spreadsheet tools,
-            data stories, study software, and a few useful things from real life.
-          </p>
+        <div className="city-hero-copy">
+          <div className="city-intro">
+            <p className="kicker">
+              <MapPin size={16} aria-hidden="true" />
+              Sydney portfolio city
+            </p>
+            <h1 id="hero-title">Jake Glick</h1>
+            <p>
+              Software builder from Sydney making web apps, mobile games, spreadsheet tools,
+              data stories, study software, and a few useful things from real life.
+            </p>
+          </div>
+
           <div className="hero-stats" aria-label="Portfolio facts">
             {cityStats.map(([value, label]) => (
               <span key={label}>
@@ -2120,20 +2121,28 @@ export default function MuseumPortfolio() {
           </div>
         </div>
 
-        <ProjectInspector project={activeProject} />
+        <div className="city-walkthrough">
+          <div className="city-stage">
+            <CityScene activeId={activeId} setActiveId={setActiveId} />
+          </div>
 
-        <div className="interest-strip" aria-label="Personal landmarks">
-          {landmarkButtons.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className={activeId === id ? "is-active" : ""}
-              onClick={() => setActiveId(id)}
-            >
-              <Icon size={15} aria-hidden="true" />
-              {label}
-            </button>
-          ))}
+          <ProjectInspector project={activeProject} />
+        </div>
+
+        <div className="city-controls">
+          <div className="interest-strip" aria-label="Personal landmarks">
+            {landmarkButtons.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                className={activeId === id ? "is-active" : ""}
+                onClick={() => setActiveId(id)}
+              >
+                <Icon size={15} aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
