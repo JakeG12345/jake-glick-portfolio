@@ -1564,7 +1564,7 @@ function CityScene({
     const colliders: THREE.Object3D[] = [];
     const projectGroups = new Map<string, THREE.Group>();
     const rings = new Map<string, THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>>();
-    const billboardMeshes: THREE.Mesh[] = [];
+    const projectStops = new Map<string, { position: THREE.Vector3; radius: number }>();
     const loader = new THREE.TextureLoader();
 
     cityItems.forEach((project) => {
@@ -1602,43 +1602,48 @@ function CityScene({
           }))
         : addTexture(projectTexture(project));
 
-      const billboard = new THREE.Mesh(
-        new THREE.PlaneGeometry(project.tier === "flagship" ? 3.2 : 2.55, project.tier === "flagship" ? 1.9 : 1.5),
+      const imageDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(project.tier === "flagship" ? 2.45 : 2.05, project.tier === "flagship" ? 1.45 : 1.2),
         new THREE.MeshBasicMaterial({ map: imageTexture, side: THREE.DoubleSide }),
       );
-      billboard.position.set(0, project.height + 1.3, 0.38);
-      billboard.userData.projectId = project.id;
-      group.add(billboard);
-      colliders.push(billboard);
-      billboardMeshes.push(billboard);
+      imageDecal.rotation.x = -Math.PI / 2;
+      imageDecal.position.set(0, 0.105, project.tier === "flagship" ? -1.65 : -1.45);
+      imageDecal.userData.projectId = project.id;
+      group.add(imageDecal);
+      colliders.push(imageDecal);
 
       const label = new THREE.Mesh(
         new THREE.PlaneGeometry(2.4, 0.8),
         new THREE.MeshBasicMaterial({ map: addTexture(labelTexture(project)), side: THREE.DoubleSide }),
       );
-      label.position.set(0, 0.95, 0.94);
+      label.rotation.x = -Math.PI / 2;
+      label.position.set(0, 0.11, 1.38);
       label.userData.projectId = project.id;
       group.add(label);
       colliders.push(label);
-      billboardMeshes.push(label);
 
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(1.35, 0.035, 8, 52),
-        new THREE.MeshBasicMaterial({ color: "#fff8dc", transparent: true, opacity: 0.24 }),
+        new THREE.TorusGeometry(2.2, 0.035, 8, 72),
+        new THREE.MeshBasicMaterial({ color: "#fff8dc", transparent: true, opacity: 0.18 }),
       );
       ring.rotation.x = Math.PI / 2;
       ring.position.y = 0.08;
       group.add(ring);
       rings.set(project.id, ring);
+      projectStops.set(project.id, {
+        position: new THREE.Vector3(project.x, 0, project.z),
+        radius: project.tier === "flagship" ? 3.1 : 2.65,
+      });
 
       scene.add(group);
       projectGroups.set(project.id, group);
     });
 
-    const player = createPlayer();
+    const player = createSoccerBall();
     scene.add(player);
     const target = new THREE.Vector3();
     const activeIdRef = { current: initialActiveIdRef.current };
+    let playerControlled = false;
 
     const focusProject = (id: string) => {
       activeIdRef.current = id;
@@ -1647,7 +1652,7 @@ function CityScene({
         ring.material.color.set(projectId === id ? "#fff8dc" : "#c8d0be");
       });
       const group = projectGroups.get(id);
-      if (group) target.set(group.position.x, 0, group.position.z + 2.2);
+      if (group && !playerControlled) target.set(group.position.x, 0, group.position.z + 2.2);
     };
 
     focusProject(initialActiveIdRef.current);
@@ -1708,19 +1713,34 @@ function CityScene({
 
       if (direction.lengthSq() > 0) {
         direction.normalize().multiplyScalar(delta * 7.2);
+        playerControlled = true;
+        const previousPosition = player.position.clone();
         player.position.add(direction);
         player.position.x = THREE.MathUtils.clamp(player.position.x, -21.5, 16.5);
         player.position.z = THREE.MathUtils.clamp(player.position.z, -11.5, 14.5);
         target.copy(player.position);
+        const moved = player.position.clone().sub(previousPosition);
+        const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
+        if (moved.lengthSq() > 0.000001 && Number.isFinite(rollAxis.x)) {
+          player.rotateOnWorldAxis(rollAxis, moved.length() / 0.34);
+        }
       } else {
         player.position.lerp(target, 0.035);
       }
 
-      player.rotation.y += delta * 0.9;
-
-      billboardMeshes.forEach((mesh) => {
-        mesh.lookAt(camera.position.x, mesh.getWorldPosition(new THREE.Vector3()).y, camera.position.z);
+      let nearestId = activeIdRef.current;
+      let nearestDistance = Number.POSITIVE_INFINITY;
+      projectStops.forEach((stop, id) => {
+        const distance = player.position.distanceTo(stop.position);
+        if (distance < stop.radius && distance < nearestDistance) {
+          nearestId = id;
+          nearestDistance = distance;
+        }
       });
+      if (nearestId !== activeIdRef.current) {
+        activeIdRef.current = nearestId;
+        setActiveId(nearestId);
+      }
 
       const cameraTarget = new THREE.Vector3(player.position.x + 9, 10.5, player.position.z + 13);
       camera.position.lerp(cameraTarget, 0.055);
@@ -1993,35 +2013,45 @@ function addLandmarkSign(
     new THREE.PlaneGeometry(2.7, 0.9),
     new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true }),
   );
-  sign.position.set(x, 1.35, z);
-  sign.rotation.y = -0.22;
+  sign.rotation.x = -Math.PI / 2;
+  sign.position.set(x, 0.13, z);
   scene.add(sign);
 }
 
-function createPlayer() {
+function createSoccerBall() {
   const group = new THREE.Group();
-  const body = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.26, 0.55, 4, 12),
-    new THREE.MeshStandardMaterial({ color: "#151713", roughness: 0.45 }),
+  const ball = new THREE.Mesh(
+    new THREE.SphereGeometry(0.34, 48, 24),
+    new THREE.MeshStandardMaterial({ color: "#f8f7ef", roughness: 0.46 }),
   );
-  body.position.y = 0.65;
-  body.castShadow = true;
-  group.add(body);
+  ball.position.y = 0.38;
+  ball.castShadow = true;
+  group.add(ball);
 
-  const head = new THREE.Mesh(
-    new THREE.SphereGeometry(0.24, 24, 12),
-    new THREE.MeshStandardMaterial({ color: "#f0c7a2", roughness: 0.5 }),
-  );
-  head.position.y = 1.2;
-  head.castShadow = true;
-  group.add(head);
+  const patchMaterial = new THREE.MeshBasicMaterial({ color: "#151713", side: THREE.DoubleSide });
+  const patchDirections = [
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(0.94, 0.2, 0.28),
+    new THREE.Vector3(-0.94, 0.2, 0.28),
+    new THREE.Vector3(0.35, 0.06, 0.94),
+    new THREE.Vector3(-0.35, 0.06, -0.94),
+    new THREE.Vector3(0.82, -0.45, -0.34),
+    new THREE.Vector3(-0.82, -0.45, -0.34),
+  ];
+  patchDirections.forEach((direction) => {
+    const normal = direction.clone().normalize();
+    const patch = new THREE.Mesh(new THREE.CircleGeometry(0.105, 5), patchMaterial);
+    patch.position.copy(normal.clone().multiplyScalar(0.345));
+    patch.lookAt(normal.clone().multiplyScalar(0.7));
+    ball.add(patch);
+  });
 
   const marker = new THREE.Mesh(
-    new THREE.TorusGeometry(0.52, 0.025, 8, 36),
+    new THREE.TorusGeometry(0.64, 0.025, 8, 42),
     new THREE.MeshBasicMaterial({ color: "#f7d35f" }),
   );
   marker.rotation.x = Math.PI / 2;
-  marker.position.y = 0.05;
+  marker.position.y = 0.035;
   group.add(marker);
 
   return group;
