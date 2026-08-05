@@ -1536,6 +1536,43 @@ function addBox(
   return mesh;
 }
 
+function addFlatShape(
+  parent: THREE.Object3D,
+  points: MapPoint[],
+  materialOrColor: THREE.Material | string,
+  y = 0,
+  materialParameters: THREE.MeshStandardMaterialParameters = {},
+) {
+  const material =
+    typeof materialOrColor === "string" ? modelMaterial(materialOrColor, materialParameters) : materialOrColor;
+  const shape = new THREE.Shape(points.map((point) => new THREE.Vector2(point.x, -point.z)));
+  const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = y;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+function addFlatDisc(
+  parent: THREE.Object3D,
+  radius: number,
+  materialOrColor: THREE.Material | string,
+  position: MapPoint,
+  y = 0,
+  scale: [number, number] = [1, 1],
+  segments = 40,
+) {
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.CircleGeometry(radius, segments), material);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.scale.set(scale[0], scale[1], 1);
+  mesh.position.set(position.x, y, position.z);
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
 function addCylinder(
   parent: THREE.Object3D,
   radiusTop: number,
@@ -1829,31 +1866,53 @@ function createCityHallModel(project: Project) {
 
 function createHarbourModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [3.05, 0.14, 1.82], "#e8d9b6", [0, 0.07, 0.1]);
-  const shellMaterial = modelMaterial("#fff8e6", { roughness: 0.34, metalness: 0.02 });
-  [-0.92, -0.44, 0.04, 0.52, 1.02].forEach((x, index) => {
-    addCone(group, 0.42 + index * 0.025, 1.32 + index * 0.05, 4, shellMaterial, [x, 0.78, -0.3 + Math.abs(x) * 0.08], [0.02, Math.PI / 4, x * 0.25]);
+  addBox(group, [3.35, 0.16, 1.98], "#e8d9b6", [0, 0.08, 0.18]);
+  addBox(group, [2.86, 0.12, 1.44], "#d4bd92", [0.1, 0.22, 0.03]);
+  const shellMaterial = modelMaterial("#fff8e6", { roughness: 0.28, metalness: 0.03 });
+  const ribMaterial = new THREE.MeshBasicMaterial({ color: "#d9d0bc" });
+  [
+    [-1.02, 0.74, -0.38, -0.22, 1.08],
+    [-0.52, 0.9, -0.28, -0.08, 1.18],
+    [0.02, 1.04, -0.2, 0.04, 1.28],
+    [0.56, 0.94, -0.08, 0.15, 1.16],
+    [1.05, 0.78, 0.08, 0.28, 1.02],
+  ].forEach(([x, height, z, rotation, radius], index) => {
+    addCone(group, radius * 0.38, height, 4, shellMaterial, [x, 0.44 + height / 2, z], [0.12, Math.PI / 4, rotation]);
+    addBox(group, [0.035, height * 0.55, 0.035], ribMaterial, [x + 0.12, 0.58 + height * 0.24, z + 0.08], [0.14, index * 0.16, 0.32]);
   });
-  addBox(group, [2.72, 0.045, 0.08], project.color, [0, 0.2, -0.98]);
-  addBox(group, [2.2, 0.04, 0.12], "#4cbad8", [0.18, 0.18, 1.08], [0, -0.12, 0]);
-  addBox(group, [0.9, 0.035, 0.1], "#4cbad8", [-1.02, 0.18, 0.92], [0, 0.26, 0]);
+  for (let step = 0; step < 4; step += 1) {
+    addBox(group, [2.6 - step * 0.32, 0.035, 0.1], "#c9b287", [0.08, 0.27 + step * 0.04, 1.0 + step * 0.16]);
+  }
+  addBox(group, [2.72, 0.045, 0.08], project.color, [0, 0.24, -1.02]);
+  addBox(group, [2.2, 0.04, 0.12], "#4cbad8", [0.18, 0.2, 1.18], [0, -0.12, 0]);
+  addBox(group, [0.9, 0.035, 0.1], "#4cbad8", [-1.02, 0.2, 1.02], [0, 0.26, 0]);
   return group;
 }
 
 function createBondiModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [3.1, 0.08, 2.2], "#e4c875", [0, 0.04, 0]);
-  addBox(group, [3.1, 0.06, 0.58], "#43a9c5", [0, 0.1, -0.86], [0, 0, 0], { roughness: 0.2 });
+  addBox(group, [3.3, 0.08, 2.36], "#e4c875", [0, 0.04, 0]);
+  addBox(group, [3.25, 0.06, 0.68], "#43a9c5", [0.1, 0.1, -0.9], [0, 0, 0], { roughness: 0.2 });
   const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4" });
-  [-1.1, -0.45, 0.22, 0.9].forEach((x, index) => {
-    addBox(group, [0.5, 0.035, 0.035], foam, [x, 0.16, -0.56 - index * 0.07], [0, -0.18, 0]);
+  [-1.25, -0.62, 0.05, 0.72, 1.28].forEach((x, index) => {
+    addBox(group, [0.56, 0.035, 0.04], foam, [x, 0.16, -0.5 - index * 0.055], [0, -0.2, 0]);
   });
-  addBox(group, [0.78, 0.52, 0.72], "#f5f0d3", [-0.78, 0.46, 0.42]);
-  addBox(group, [0.9, 0.12, 0.82], "#df513f", [-0.78, 0.78, 0.42]);
-  addCylinder(group, 0.035, 0.035, 0.72, "#654b2f", [0.7, 0.48, 0.34], [0, 0, 0], 12);
-  addCone(group, 0.45, 0.28, 24, "#f7d35f", [0.7, 0.95, 0.34]);
-  ["#fff4bd", "#e6533f", "#2f8ec7"].forEach((color, index) => {
-    addBox(group, [0.28, 0.055, 1.18], color, [0.32 + index * 0.34, 0.14, 0.8], [0, -0.45 + index * 0.18, 0]);
+  addBox(group, [0.82, 0.56, 0.72], "#f5f0d3", [-0.82, 0.48, 0.42]);
+  addBox(group, [0.96, 0.14, 0.82], "#df513f", [-0.82, 0.82, 0.42]);
+  addBox(group, [0.18, 0.78, 0.16], "#df513f", [-1.2, 0.54, 0.42]);
+  addBox(group, [0.18, 0.78, 0.16], "#df513f", [-0.44, 0.54, 0.42]);
+  addBox(group, [0.62, 0.08, 0.1], "#fffdf4", [-0.82, 1.12, 0.42]);
+  const umbrellas: Array<[number, number, string]> = [
+    [0.34, 0.18, "#f7d35f"],
+    [0.82, 0.55, "#e6533f"],
+    [1.22, 0.18, "#2f8ec7"],
+  ];
+  umbrellas.forEach(([x, z, color], index) => {
+    addCylinder(group, 0.035, 0.035, 0.72, "#654b2f", [x, 0.48, z], [0, 0, 0], 12);
+    addCone(group, 0.34, 0.22, 24, color, [x, 0.92, z], [0, index * 0.5, 0]);
+  });
+  ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f"].forEach((color, index) => {
+    addBox(group, [0.28, 0.055, 1.18], color, [0.02 + index * 0.35, 0.14, 0.88], [0, -0.48 + index * 0.17, 0]);
   });
   addBox(group, [0.22, 0.22, 0.22], project.color, [-1.32, 0.22, -0.12]);
   return group;
@@ -1862,13 +1921,19 @@ function createBondiModel(project: Project) {
 function createDoverHomeModel(project: Project) {
   const group = new THREE.Group();
   [-0.7, -0.2, 0.34, 0.88].forEach((x, index) => {
-    addBox(group, [0.82, 0.36 + index * 0.07, 1.18], "#bda474", [x, 0.18 + index * 0.035, -0.08 + index * 0.22], [0, -0.16, 0]);
+    addBox(group, [0.82, 0.42 + index * 0.08, 1.18], "#bda474", [x, 0.21 + index * 0.04, -0.08 + index * 0.22], [0, -0.16, 0]);
   });
-  addBox(group, [1.44, 0.72, 1.02], "#fff2cf", [0.12, 0.78, -0.02]);
-  addBox(group, [1.64, 0.16, 1.18], project.color, [0.12, 1.22, -0.02], [0, 0, 0], { roughness: 0.46 });
-  addBox(group, [0.78, 0.34, 0.06], "#94d8e8", [0.06, 0.78, -0.56]);
-  addBox(group, [0.54, 0.08, 0.72], "#d9d0bc", [0.9, 0.5, -0.3], [0, 0.28, 0]);
-  addBox(group, [1.3, 0.05, 0.34], "#176b82", [-0.76, 0.18, 0.82], [0, -0.2, 0], { roughness: 0.2, metalness: 0.04 });
+  addBox(group, [1.52, 0.78, 1.06], "#fff2cf", [0.08, 0.86, -0.04]);
+  addBox(group, [1.76, 0.16, 1.24], project.color, [0.08, 1.34, -0.04], [0, 0, 0], { roughness: 0.46 });
+  addBox(group, [1.7, 0.06, 0.16], "#151713", [0.08, 1.46, -0.7]);
+  addBox(group, [0.78, 0.36, 0.06], "#94d8e8", [0.0, 0.9, -0.6]);
+  addBox(group, [0.36, 0.26, 0.06], "#94d8e8", [-0.54, 0.92, -0.6]);
+  addBox(group, [0.36, 0.26, 0.06], "#94d8e8", [0.54, 0.92, -0.6]);
+  addBox(group, [0.74, 0.08, 0.82], "#d9d0bc", [0.94, 0.56, -0.3], [0, 0.28, 0]);
+  addBox(group, [1.34, 0.05, 0.36], "#176b82", [-0.78, 0.2, 0.9], [0, -0.2, 0], { roughness: 0.2, metalness: 0.04 });
+  addCylinder(group, 0.035, 0.035, 0.72, "#151713", [-1.22, 0.56, 0.95], [0, 0, 0], 12);
+  addCylinder(group, 0.18, 0.1, 0.18, "#f7d35f", [-1.22, 0.96, 0.95], [0, 0, 0], 24);
+  addBox(group, [0.84, 0.04, 0.1], "#fffdf4", [-1.22, 0.67, 0.95], [0, 0.35, 0]);
   return group;
 }
 
@@ -1975,25 +2040,95 @@ function CityScene({
       return mesh;
     };
 
-    const parkMaterial = new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass });
-    const waterMaterial = new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 });
-    const sandMaterial = new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand });
-    const districtMaterial = new THREE.MeshStandardMaterial({ color: "#2c302b", map: road });
-    const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch });
+    const parkMaterial = new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass, roughness: 0.84 });
+    const scrubMaterial = new THREE.MeshStandardMaterial({ color: "#6f9a55", map: grass, roughness: 0.9 });
+    const waterMaterial = new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.22, metalness: 0.08 });
+    const harbourMaterial = new THREE.MeshStandardMaterial({ color: "#267a90", map: water, roughness: 0.24, metalness: 0.06 });
+    const sandMaterial = new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand, roughness: 0.88 });
+    const districtMaterial = new THREE.MeshStandardMaterial({ color: "#2c302b", map: road, roughness: 0.72 });
+    const lightDistrictMaterial = new THREE.MeshStandardMaterial({ color: "#514d45", map: road, roughness: 0.76 });
+    const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch, roughness: 0.86 });
+    const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
 
-    addPlane(32.5, 25.5, 1.5, -1.25, parkMaterial);
-    addPlane(17.5, 4.9, -4.8, -11.2, waterMaterial, -0.04);
-    addPlane(5.2, 12.8, 15.35, -2.2, waterMaterial, -0.045);
-    addPlane(4.4, 5.1, sydneyPlaces.bondiBeach.x + 0.58, sydneyPlaces.bondiBeach.z + 0.34, sandMaterial, 0.012);
-    addPlane(6.7, 4.9, sydneyPlaces.cbd.x + 0.3, sydneyPlaces.cbd.z + 0.3, districtMaterial, 0.02);
-    addPlane(4.8, 4.6, sydneyPlaces.blackbird.x - 0.1, sydneyPlaces.blackbird.z + 0.35, districtMaterial, 0.022);
-    addPlane(5.5, 4.3, sydneyPlaces.eveleigh.x + 0.55, sydneyPlaces.eveleigh.z + 0.2, districtMaterial, 0.024);
-    addPlane(6.8, 4.8, sydneyPlaces.bondiJunction.x - 0.55, sydneyPlaces.bondiJunction.z + 1.15, districtMaterial, 0.026);
-    addPlane(3.5, 8.2, sydneyPlaces.doverHeights.x - 0.55, sydneyPlaces.doverHeights.z + 2.35, districtMaterial, 0.027);
-    addPlane(6.1, 4.8, sydneyPlaces.sportsField.x + 0.45, sydneyPlaces.sportsField.z + 0.3, pitchMaterial, 0.035);
-    addPlane(8.7, 2.45, sydneyPlaces.operaHouse.x - 0.95, sydneyPlaces.operaHouse.z + 1.2, new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 }), 0.018);
+    addPlane(35.5, 28.5, 1.7, -1.4, waterMaterial, -0.07);
+    addFlatShape(groundGroup, [
+      { x: -12.3, z: -7.45 },
+      { x: -10.2, z: -8.35 },
+      { x: -7.6, z: -7.85 },
+      { x: -5.95, z: -8.55 },
+      { x: -4.55, z: -7.45 },
+      { x: -3.55, z: -8.65 },
+      { x: -1.6, z: -7.55 },
+      { x: -1.35, z: -5.75 },
+      { x: 0.9, z: -4.55 },
+      { x: 4.75, z: -2.15 },
+      { x: 9.15, z: -5.9 },
+      { x: 13.8, z: -6.75 },
+      { x: 14.15, z: -3.25 },
+      { x: 13.35, z: -0.45 },
+      { x: 12.05, z: 2.15 },
+      { x: 9.2, z: 5.92 },
+      { x: 5.8, z: 8.15 },
+      { x: 0.9, z: 8.4 },
+      { x: -4.4, z: 7.6 },
+      { x: -9.9, z: 4.35 },
+      { x: -12.45, z: 0.35 },
+    ], parkMaterial);
+    addFlatShape(groundGroup, [
+      { x: -12.7, z: -12.5 },
+      { x: 2.4, z: -12.5 },
+      { x: 2.2, z: -10.05 },
+      { x: -0.35, z: -8.95 },
+      { x: -2.25, z: -9.42 },
+      { x: -3.55, z: -8.35 },
+      { x: -5.35, z: -8.72 },
+      { x: -6.8, z: -7.9 },
+      { x: -8.6, z: -8.55 },
+      { x: -12.7, z: -8.85 },
+    ], harbourMaterial, 0.015);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
+      { x: sydneyPlaces.bondiBeach.x + 2.45, z: sydneyPlaces.bondiBeach.z - 1.05 },
+      { x: sydneyPlaces.bondiBeach.x + 2.15, z: sydneyPlaces.bondiBeach.z + 2.8 },
+      { x: sydneyPlaces.bondiBeach.x - 1.35, z: sydneyPlaces.bondiBeach.z + 2.65 },
+      { x: sydneyPlaces.bondiBeach.x - 2.1, z: sydneyPlaces.bondiBeach.z + 0.85 },
+    ], sandMaterial, 0.035);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.operaHouse.x - 3.45, z: sydneyPlaces.operaHouse.z + 0.15 },
+      { x: sydneyPlaces.operaHouse.x + 3.55, z: sydneyPlaces.operaHouse.z + 0.48 },
+      { x: sydneyPlaces.operaHouse.x + 3.1, z: sydneyPlaces.operaHouse.z + 2.15 },
+      { x: sydneyPlaces.operaHouse.x - 2.7, z: sydneyPlaces.operaHouse.z + 2.05 },
+    ], promenadeMaterial, 0.032);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.cbd.x - 3.3, z: sydneyPlaces.cbd.z - 1.55 },
+      { x: sydneyPlaces.cbd.x + 3.45, z: sydneyPlaces.cbd.z - 1.2 },
+      { x: sydneyPlaces.cbd.x + 3.1, z: sydneyPlaces.cbd.z + 2.85 },
+      { x: sydneyPlaces.cbd.x - 3.55, z: sydneyPlaces.cbd.z + 2.55 },
+    ], districtMaterial, 0.045);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.blackbird.x - 2.55, z: sydneyPlaces.blackbird.z - 1.55 },
+      { x: sydneyPlaces.blackbird.x + 2.25, z: sydneyPlaces.blackbird.z - 1.2 },
+      { x: sydneyPlaces.blackbird.x + 2.6, z: sydneyPlaces.blackbird.z + 2.25 },
+      { x: sydneyPlaces.blackbird.x - 2.35, z: sydneyPlaces.blackbird.z + 2.4 },
+    ], lightDistrictMaterial, 0.052);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.eveleigh.x - 2.7, z: sydneyPlaces.eveleigh.z - 1.75 },
+      { x: sydneyPlaces.eveleigh.x + 2.45, z: sydneyPlaces.eveleigh.z - 1.35 },
+      { x: sydneyPlaces.eveleigh.x + 2.75, z: sydneyPlaces.eveleigh.z + 2.15 },
+      { x: sydneyPlaces.eveleigh.x - 2.4, z: sydneyPlaces.eveleigh.z + 2.35 },
+    ], districtMaterial, 0.054);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.bondiJunction.x - 2.95, z: sydneyPlaces.bondiJunction.z - 2.15 },
+      { x: sydneyPlaces.bondiJunction.x + 2.95, z: sydneyPlaces.bondiJunction.z - 1.95 },
+      { x: sydneyPlaces.bondiJunction.x + 3.25, z: sydneyPlaces.bondiJunction.z + 2.25 },
+      { x: sydneyPlaces.bondiJunction.x - 3.15, z: sydneyPlaces.bondiJunction.z + 2.55 },
+    ], lightDistrictMaterial, 0.05);
+    addFlatDisc(groundGroup, 2.55, scrubMaterial, sydneyPlaces.queensPark, 0.043, [1.35, 0.92], 48);
+    addFlatDisc(groundGroup, 2.15, scrubMaterial, sydneyPlaces.doverHeights, 0.041, [1.2, 1.55], 48);
+    addFlatDisc(groundGroup, 2.42, pitchMaterial, nudgePoint(sydneyPlaces.sportsField, 0.45, 0.3), 0.065, [1.55, 0.92], 48);
 
     addSydneyLandmarks(scene, addTexture);
+    addLandscapeDetails(scene);
     addCityPaths(scene);
 
     const colliders: THREE.Object3D[] = [];
@@ -2311,6 +2446,94 @@ function addPathSegment(
   path.rotation.y = -Math.atan2(dz, dx);
   path.receiveShadow = true;
   scene.add(path);
+}
+
+function addLandscapeDetails(scene: THREE.Scene) {
+  const details = new THREE.Group();
+  scene.add(details);
+
+  const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.84 });
+  const wetSandMaterial = modelMaterial("#cfae63", { roughness: 0.92 });
+  const rockMaterial = modelMaterial("#a58f66", { roughness: 0.92 });
+  const treeTrunk = modelMaterial("#72563a", { roughness: 0.78 });
+  const treeGreen = modelMaterial("#246b3e", { roughness: 0.88 });
+  const palmGreen = modelMaterial("#2f8d55", { roughness: 0.82 });
+
+  const addTree = (point: MapPoint, scale = 1) => {
+    addCylinder(details, 0.045 * scale, 0.06 * scale, 0.42 * scale, treeTrunk, [point.x, 0.27 * scale, point.z], [0, 0, 0], 10);
+    addCone(details, 0.28 * scale, 0.62 * scale, 7, treeGreen, [point.x, 0.78 * scale, point.z]);
+  };
+
+  const addPalm = (point: MapPoint, rotation = 0, scale = 1) => {
+    addCylinder(details, 0.04 * scale, 0.065 * scale, 0.78 * scale, treeTrunk, [point.x, 0.42 * scale, point.z], [0.18, 0, -0.08], 10);
+    for (let i = 0; i < 5; i += 1) {
+      addBox(details, [0.08 * scale, 0.035 * scale, 0.74 * scale], palmGreen, [point.x, 0.86 * scale, point.z], [0.12, rotation + i * 1.25, 0.42]);
+    }
+  };
+
+  [
+    { x: sydneyPlaces.cbd.x - 3.15, z: sydneyPlaces.cbd.z + 2.65 },
+    { x: sydneyPlaces.cbd.x + 3.1, z: sydneyPlaces.cbd.z + 2.35 },
+    { x: sydneyPlaces.blackbird.x - 2.35, z: sydneyPlaces.blackbird.z + 2.15 },
+    { x: sydneyPlaces.eveleigh.x + 2.45, z: sydneyPlaces.eveleigh.z + 2.05 },
+    { x: sydneyPlaces.queensPark.x - 2.6, z: sydneyPlaces.queensPark.z - 0.7 },
+    { x: sydneyPlaces.queensPark.x + 2.15, z: sydneyPlaces.queensPark.z + 0.85 },
+    { x: sydneyPlaces.sportsField.x - 1.55, z: sydneyPlaces.sportsField.z + 2.4 },
+  ].forEach((point, index) => addTree(point, 0.82 + (index % 3) * 0.08));
+
+  for (let i = 0; i < 8; i += 1) {
+    addPalm(
+      {
+        x: sydneyPlaces.bondiBeach.x - 1.72 + i * 0.45,
+        z: sydneyPlaces.bondiBeach.z + 2.22 + Math.sin(i * 0.9) * 0.18,
+      },
+      i * 0.35,
+      0.92,
+    );
+  }
+
+  for (let i = 0; i < 7; i += 1) {
+    addBox(
+      details,
+      [0.055, 0.035, 2.2 + i * 0.18],
+      foamMaterial,
+      [sydneyPlaces.bondiBeach.x + 2.25 + i * 0.16, 0.14, sydneyPlaces.bondiBeach.z - 1.22 + i * 0.58],
+      [0, -0.16, 0],
+    );
+    addBox(
+      details,
+      [0.055, 0.028, 1.4 + i * 0.1],
+      wetSandMaterial,
+      [sydneyPlaces.bondiBeach.x + 1.55 + i * 0.1, 0.085, sydneyPlaces.bondiBeach.z - 0.8 + i * 0.56],
+      [0, -0.12, 0],
+    );
+  }
+
+  for (let i = 0; i < 9; i += 1) {
+    addBox(
+      details,
+      [0.55 + (i % 3) * 0.16, 0.32 + (i % 4) * 0.11, 0.72],
+      rockMaterial,
+      [sydneyPlaces.doverHeights.x - 2.1 + i * 0.42, 0.2 + (i % 4) * 0.045, sydneyPlaces.doverHeights.z + 0.3 + i * 0.34],
+      [0, -0.25 + i * 0.04, 0.04],
+    );
+  }
+
+  [
+    { x: sydneyPlaces.harbourBridge.x + 2.65, z: sydneyPlaces.harbourBridge.z + 0.95 },
+    { x: sydneyPlaces.operaHouse.x - 1.8, z: sydneyPlaces.operaHouse.z - 1.1 },
+    { x: sydneyPlaces.operaHouse.x + 2.3, z: sydneyPlaces.operaHouse.z - 0.65 },
+  ].forEach((point, index) => {
+    addBox(details, [0.72, 0.16, 0.26], "#fff7d6", [point.x, 0.12, point.z], [0, 0.3 - index * 0.22, 0], { roughness: 0.45 });
+    addBox(details, [0.42, 0.09, 0.18], index === 1 ? "#e6533f" : "#2f8ec7", [point.x - 0.04, 0.25, point.z], [0, 0.3 - index * 0.22, 0], { roughness: 0.42 });
+  });
+
+  details.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+    }
+  });
 }
 
 function addSydneyLandmarks(
