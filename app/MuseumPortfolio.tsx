@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, Dispatch, SetStateAction } from "react";
+import type { CSSProperties } from "react";
 import * as THREE from "three";
 import {
   ArrowUpRight,
@@ -17,6 +17,7 @@ import {
   Smartphone,
   Video,
   Waves,
+  X,
 } from "lucide-react";
 
 type ProjectLink = {
@@ -55,6 +56,7 @@ declare global {
     __portfolioCityStatus?: () => {
       active: string;
       canvas: { height: number; width: number };
+      nearby: string | null;
       objects: number;
       player: { x: number; z: number };
     };
@@ -1476,17 +1478,30 @@ function wrapCanvasText(
 
 function CityScene({
   activeId,
-  setActiveId,
+  onInspectProject,
+  onNearbyProjectChange,
 }: {
   activeId: string;
-  setActiveId: Dispatch<SetStateAction<string>>;
+  onInspectProject: (id: string) => void;
+  onNearbyProjectChange: (id: string | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const initialActiveIdRef = useRef(activeId);
+  const onInspectProjectRef = useRef(onInspectProject);
+  const onNearbyProjectChangeRef = useRef(onNearbyProjectChange);
+  const didRunInitialFocusRef = useRef(false);
   const runtimeRef = useRef<{
     focusProject: (id: string) => void;
     captureMetrics: () => { active: string; objects: number; pixelReady: boolean };
   } | null>(null);
+
+  useEffect(() => {
+    onInspectProjectRef.current = onInspectProject;
+  }, [onInspectProject]);
+
+  useEffect(() => {
+    onNearbyProjectChangeRef.current = onNearbyProjectChange;
+  }, [onNearbyProjectChange]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1643,6 +1658,7 @@ function CityScene({
     scene.add(player);
     const target = new THREE.Vector3();
     const activeIdRef = { current: initialActiveIdRef.current };
+    const nearbyIdRef = { current: null as string | null };
     let playerControlled = false;
 
     const focusProject = (id: string) => {
@@ -1656,7 +1672,9 @@ function CityScene({
     };
 
     focusProject(initialActiveIdRef.current);
-    player.position.copy(target);
+    const startPosition = new THREE.Vector3(-8.2, 0, -2.4);
+    target.copy(startPosition);
+    player.position.copy(startPosition);
 
     const keys = new Set<string>();
     const raycaster = new THREE.Raycaster();
@@ -1689,7 +1707,7 @@ function CityScene({
       raycaster.setFromCamera(pointer, camera);
       const hit = raycaster.intersectObjects(colliders, true)[0];
       const id = hit?.object.userData.projectId as string | undefined;
-      if (id) setActiveId(id);
+      if (id) onInspectProjectRef.current?.(id);
     };
 
     window.addEventListener("resize", resize);
@@ -1728,18 +1746,23 @@ function CityScene({
         player.position.lerp(target, 0.035);
       }
 
-      let nearestId = activeIdRef.current;
-      let nearestDistance = Number.POSITIVE_INFINITY;
-      projectStops.forEach((stop, id) => {
-        const distance = player.position.distanceTo(stop.position);
-        if (distance < stop.radius && distance < nearestDistance) {
-          nearestId = id;
-          nearestDistance = distance;
+      if (playerControlled) {
+        let nearestId: string | null = null;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        projectStops.forEach((stop, id) => {
+          const distance = player.position.distanceTo(stop.position);
+          if (distance < stop.radius && distance < nearestDistance) {
+            nearestId = id;
+            nearestDistance = distance;
+          }
+        });
+        if (nearestId !== nearbyIdRef.current) {
+          nearbyIdRef.current = nearestId;
+          if (nearestId) {
+            focusProject(nearestId);
+          }
+          onNearbyProjectChangeRef.current?.(nearestId);
         }
-      });
-      if (nearestId !== activeIdRef.current) {
-        activeIdRef.current = nearestId;
-        setActiveId(nearestId);
       }
 
       const cameraTarget = new THREE.Vector3(player.position.x + 9, 10.5, player.position.z + 13);
@@ -1767,6 +1790,7 @@ function CityScene({
     window.__portfolioCityStatus = () => ({
       active: activeIdRef.current,
       canvas: { width: canvas.width, height: canvas.height },
+      nearby: nearbyIdRef.current,
       objects: scene.children.length,
       player: {
         x: Number(player.position.x.toFixed(2)),
@@ -1796,9 +1820,13 @@ function CityScene({
       delete canvas.dataset.cityObjects;
       delete window.__portfolioCityStatus;
     };
-  }, [setActiveId]);
+  }, []);
 
   useEffect(() => {
+    if (!didRunInitialFocusRef.current) {
+      didRunInitialFocusRef.current = true;
+      return;
+    }
     runtimeRef.current?.focusProject(activeId);
   }, [activeId]);
 
@@ -2059,9 +2087,43 @@ function createSoccerBall() {
 
 export default function MuseumPortfolio() {
   const [activeId, setActiveId] = useState(cityItems[0].id);
+  const [detailMode, setDetailMode] = useState<"closed" | "auto" | "pinned">("closed");
+  const [dismissedZoneId, setDismissedZoneId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const activeProject = selectableItems.find((project) => project.id === activeId) ?? cityItems[0];
+  const detailsOpen = detailMode !== "closed";
+
+  const openProjectDetails = (id: string, scrollToStage = false) => {
+    setActiveId(id);
+    setDetailMode("pinned");
+    setDismissedZoneId(null);
+    if (scrollToStage) {
+      requestAnimationFrame(() => {
+        document.querySelector(".city-stage")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  };
+
+  const closeProjectDetails = () => {
+    setDetailMode("closed");
+    setDismissedZoneId(activeId);
+  };
+
+  const handleNearbyProjectChange = (id: string | null) => {
+    if (detailMode === "pinned") return;
+
+    if (!id) {
+      setDismissedZoneId(null);
+      setDetailMode((mode) => (mode === "auto" ? "closed" : mode));
+      return;
+    }
+
+    setActiveId(id);
+    if (dismissedZoneId !== id) {
+      setDetailMode("auto");
+    }
+  };
 
   const filteredProjects = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
@@ -2123,10 +2185,15 @@ export default function MuseumPortfolio() {
 
         <div className="city-walkthrough">
           <div className="city-stage">
-            <CityScene activeId={activeId} setActiveId={setActiveId} />
+            <CityScene
+              activeId={activeId}
+              onInspectProject={openProjectDetails}
+              onNearbyProjectChange={handleNearbyProjectChange}
+            />
+            {detailsOpen ? (
+              <ProjectInspector project={activeProject} onClose={closeProjectDetails} />
+            ) : null}
           </div>
-
-          <ProjectInspector project={activeProject} />
         </div>
 
         <div className="city-controls">
@@ -2136,7 +2203,7 @@ export default function MuseumPortfolio() {
                 key={id}
                 type="button"
                 className={activeId === id ? "is-active" : ""}
-                onClick={() => setActiveId(id)}
+                onClick={() => openProjectDetails(id, true)}
               >
                 <Icon size={15} aria-hidden="true" />
                 {label}
@@ -2186,7 +2253,7 @@ export default function MuseumPortfolio() {
               className={`archive-card ${project.id === activeId ? "is-active" : ""}`}
               key={project.id}
               type="button"
-              onClick={() => setActiveId(project.id)}
+              onClick={() => openProjectDetails(project.id, true)}
               style={{ "--project-color": project.color } as CSSProperties}
             >
               <span>{project.year}</span>
@@ -2244,9 +2311,19 @@ export default function MuseumPortfolio() {
   );
 }
 
-function ProjectInspector({ project }: { project: Project }) {
+function ProjectInspector({ project, onClose }: { project: Project; onClose: () => void }) {
   return (
     <aside className="project-inspector" style={{ "--project-color": project.color } as CSSProperties}>
+      <div className="inspector-header">
+        <div className="inspector-heading">
+          <p className="room-zone">{project.zone}</p>
+          <h2>{project.title}</h2>
+          <p className="status-line">{project.year} / {project.status}</p>
+        </div>
+        <button className="inspector-close" type="button" onClick={onClose} aria-label="Close project details">
+          <X size={18} aria-hidden="true" />
+        </button>
+      </div>
       <div className="inspector-media">
         {project.image ? (
           <Image
@@ -2264,9 +2341,6 @@ function ProjectInspector({ project }: { project: Project }) {
           </div>
         )}
       </div>
-      <p className="room-zone">{project.zone}</p>
-      <h2>{project.title}</h2>
-      <p className="status-line">{project.year} / {project.status}</p>
       <p>{project.detail}</p>
       <div className="chip-list" aria-label={`${project.title} stack`}>
         {project.stack.map((item) => (

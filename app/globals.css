@@ -263,19 +263,26 @@ canvas {
 
 .city-walkthrough {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(340px, 410px);
-  gap: 22px;
-  align-items: stretch;
   z-index: 2;
 }
 
 .city-stage {
   position: relative;
-  min-height: 590px;
-  height: min(74svh, 820px);
+  min-height: 640px;
+  height: min(76svh, 840px);
   overflow: hidden;
   background: #b9dbe0;
+  z-index: 2;
+}
+
+.city-stage .project-inspector {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  width: min(390px, calc(100% - 36px));
+  max-height: none;
 }
 
 .project-inspector {
@@ -285,8 +292,8 @@ canvas {
   width: 100%;
   min-width: 0;
   max-height: min(74svh, 820px);
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
   border: 2px solid var(--line);
   padding: 16px;
@@ -294,6 +301,35 @@ canvas {
   color: var(--ink);
   box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.28);
   overflow: auto;
+}
+
+.project-inspector > * {
+  flex-shrink: 0;
+}
+
+.inspector-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inspector-heading {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.inspector-close {
+  flex: 0 0 auto;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 2px solid var(--line);
+  background: var(--paper-strong);
+  color: var(--line);
+  cursor: pointer;
 }
 
 .inspector-media {
@@ -658,6 +694,7 @@ canvas {
 .contact-links a:focus-visible,
 .project-links a:focus-visible,
 .contact-card a:focus-visible,
+.inspector-close:focus-visible,
 .interest-strip button:focus-visible,
 .filter-row button:focus-visible,
 .archive-card:focus-visible,
@@ -670,6 +707,7 @@ canvas {
   .contact-links a:hover,
   .project-links a:hover,
   .contact-card a:hover,
+  .inspector-close:hover,
   .interest-strip button:hover,
   .filter-row button:hover,
   .archive-card:hover {
@@ -686,8 +724,7 @@ canvas {
 }
 
 @media (max-width: 1180px) {
-  .city-hero-copy,
-  .city-walkthrough {
+  .city-hero-copy {
     grid-template-columns: 1fr;
   }
 
@@ -703,10 +740,6 @@ canvas {
   .city-stage {
     min-height: 560px;
     height: 70svh;
-  }
-
-  .project-inspector {
-    max-height: none;
   }
 
   .archive-controls,
@@ -807,11 +840,19 @@ canvas {
     height: 64svh;
   }
 
-  .project-inspector {
-    width: 100%;
-    margin: 0;
-    padding: 14px;
-    max-height: none;
+  .city-stage .project-inspector {
+    top: auto;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    max-height: min(430px, calc(100% - 20px));
+    padding: 12px;
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  .inspector-media {
+    aspect-ratio: 16 / 7;
   }
 
   .project-inspector h2 {
