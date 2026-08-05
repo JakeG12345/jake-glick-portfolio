@@ -43,6 +43,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body.is-map-fullscreen {
+  overflow: hidden;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -264,6 +268,53 @@ canvas {
 .city-walkthrough {
   position: relative;
   z-index: 2;
+}
+
+.city-map-shell {
+  display: grid;
+  gap: 8px;
+}
+
+.stage-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.stage-action {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid rgba(255, 247, 223, 0.42);
+  padding: 0 12px;
+  background: rgba(16, 22, 17, 0.82);
+  color: var(--cream);
+  cursor: pointer;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.74rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.city-map-shell:fullscreen,
+.city-map-shell.is-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding: 14px;
+  background: var(--panel);
+}
+
+.city-map-shell.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.city-map-shell:fullscreen .city-stage,
+.city-map-shell.is-fullscreen .city-stage {
+  min-height: 0;
+  height: 100%;
 }
 
 .city-stage {
@@ -695,6 +746,7 @@ canvas {
 .project-links a:focus-visible,
 .contact-card a:focus-visible,
 .inspector-close:focus-visible,
+.stage-action:focus-visible,
 .interest-strip button:focus-visible,
 .filter-row button:focus-visible,
 .archive-card:focus-visible,
@@ -708,6 +760,7 @@ canvas {
   .project-links a:hover,
   .contact-card a:hover,
   .inspector-close:hover,
+  .stage-action:hover,
   .interest-strip button:hover,
   .filter-row button:hover,
   .archive-card:hover {

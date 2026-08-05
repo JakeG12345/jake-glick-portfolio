@@ -12,7 +12,9 @@ import {
   Globe2,
   Landmark,
   Mail,
+  Maximize2,
   MapPin,
+  Minimize2,
   Search,
   Smartphone,
   Video,
@@ -1105,16 +1107,16 @@ const cityItems: Project[] = [
       "WhatsAppWrapped sits in the Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
     proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
     color: "#22d66f",
-    x: 1.2,
-    z: -9.2,
+    x: 1.6,
+    z: -5.6,
     height: 4.1,
   }),
   featuredProject("jashby", {
     zone: "Spreadsheet campus",
     detail:
       "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
-    x: 5.2,
-    z: -5.4,
+    x: 3.9,
+    z: -1.2,
     height: 4.2,
   }),
   {
@@ -1134,8 +1136,8 @@ const cityItems: Project[] = [
     proof: ["Attached DOCX role notes", "Experience entry"],
     source: "Attached DOCX",
     color: "#2f8ec7",
-    x: -2.8,
-    z: -9.6,
+    x: -1.3,
+    z: -5.3,
     height: 4,
     links: [],
   },
@@ -1156,8 +1158,8 @@ const cityItems: Project[] = [
     proof: ["User-provided location context"],
     source: "User request",
     color: "#f0c36a",
-    x: -7.7,
-    z: 2.25,
+    x: 10.9,
+    z: 1.4,
     height: 1.45,
     links: [],
   },
@@ -1178,8 +1180,8 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#4cbad8",
-    x: -10.7,
-    z: 3.25,
+    x: 13.5,
+    z: 4.4,
     height: 1.2,
     links: [],
   },
@@ -1200,8 +1202,8 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#fff1bf",
-    x: -14.5,
-    z: -8.6,
+    x: -5.6,
+    z: -8.5,
     height: 1.8,
     links: [],
   },
@@ -1211,48 +1213,48 @@ const cityItems: Project[] = [
     zone: "Dover garage",
     detail:
       "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
-    x: -6.1,
-    z: 3.8,
+    x: 10.5,
+    z: 2.9,
     height: 2.5,
   }),
   featuredProject("what-the-puck", {
     zone: "Sports field",
     detail:
       "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
-    x: -4.8,
-    z: 9.4,
+    x: 5.4,
+    z: 9.1,
     height: 2.9,
   }),
   featuredProject("moriah-jiu-jitsu", {
     zone: "School sports block",
     detail:
       "The Moriah Jiu-Jitsu tool is placed near the sports side of the city because it is an operational school-sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
-    x: 0.2,
-    z: 6.4,
+    x: 7.4,
+    z: 6.6,
     height: 2.6,
   }),
   featuredProject("degree6", {
     zone: "Network interchange",
     detail:
       "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
-    x: 3.8,
-    z: -9.7,
+    x: 4.4,
+    z: -4.7,
     height: 3.1,
   }),
   featuredProject("idea-aid", {
     zone: "AI workshop",
     detail:
       "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
-    x: 8.8,
-    z: -1.2,
+    x: 6.5,
+    z: 1.3,
     height: 2.2,
   }),
   featuredProject("portfolio", {
     zone: "City hall",
     detail:
       "The portfolio itself is the city hall: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
-    x: 2.2,
-    z: -1,
+    x: 0.5,
+    z: -1.6,
     height: 2.3,
   }),
 ];
@@ -1476,6 +1478,370 @@ function wrapCanvasText(
   ctx.fillText(line, x, lineY);
 }
 
+function modelMaterial(color: string, parameters: THREE.MeshStandardMaterialParameters = {}) {
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness: 0.58,
+    metalness: 0.04,
+    ...parameters,
+  });
+}
+
+function addBox(
+  parent: THREE.Object3D,
+  size: [number, number, number],
+  materialOrColor: THREE.Material | string,
+  position: [number, number, number],
+  rotation: [number, number, number] = [0, 0, 0],
+  materialParameters: THREE.MeshStandardMaterialParameters = {},
+) {
+  const material =
+    typeof materialOrColor === "string" ? modelMaterial(materialOrColor, materialParameters) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(size[0], size[1], size[2]), material);
+  mesh.position.set(position[0], position[1], position[2]);
+  mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
+  parent.add(mesh);
+  return mesh;
+}
+
+function addCylinder(
+  parent: THREE.Object3D,
+  radiusTop: number,
+  radiusBottom: number,
+  height: number,
+  materialOrColor: THREE.Material | string,
+  position: [number, number, number],
+  rotation: [number, number, number] = [0, 0, 0],
+  segments = 24,
+) {
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radiusTop, radiusBottom, height, segments), material);
+  mesh.position.set(position[0], position[1], position[2]);
+  mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
+  parent.add(mesh);
+  return mesh;
+}
+
+function addCone(
+  parent: THREE.Object3D,
+  radius: number,
+  height: number,
+  segments: number,
+  materialOrColor: THREE.Material | string,
+  position: [number, number, number],
+  rotation: [number, number, number] = [0, 0, 0],
+) {
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.ConeGeometry(radius, height, segments), material);
+  mesh.position.set(position[0], position[1], position[2]);
+  mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
+  parent.add(mesh);
+  return mesh;
+}
+
+function addSphere(
+  parent: THREE.Object3D,
+  radius: number,
+  materialOrColor: THREE.Material | string,
+  position: [number, number, number],
+  segments = 24,
+) {
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, segments, Math.max(12, Math.floor(segments / 2))), material);
+  mesh.position.set(position[0], position[1], position[2]);
+  parent.add(mesh);
+  return mesh;
+}
+
+function addCylinderBetween(
+  parent: THREE.Object3D,
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  radius: number,
+  materialOrColor: THREE.Material | string,
+) {
+  const direction = end.clone().sub(start);
+  const length = direction.length();
+  if (length <= 0.001) return undefined;
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, length, 12), material);
+  mesh.position.copy(start.clone().add(end).multiplyScalar(0.5));
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  parent.add(mesh);
+  return mesh;
+}
+
+function addFacadeGrid(
+  parent: THREE.Object3D,
+  width: number,
+  height: number,
+  depth: number,
+  rows: number,
+  columns: number,
+  color = "#fff8dc",
+  yMin = 0.55,
+) {
+  const material = new THREE.MeshBasicMaterial({ color });
+  const cellWidth = Math.min(0.22, width / (columns * 1.75));
+  const cellHeight = Math.min(0.22, height / (rows * 2.05));
+  const usableHeight = Math.max(0.4, height - yMin - 0.38);
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const x = -width / 2 + ((column + 1) * width) / (columns + 1);
+      const y = yMin + (rows === 1 ? 0 : (row * usableHeight) / (rows - 1));
+      [-depth / 2 - 0.02, depth / 2 + 0.02].forEach((z) => {
+        addBox(parent, [cellWidth, cellHeight, 0.026], material, [x, y, z]);
+      });
+    }
+  }
+}
+
+function createProjectModel(project: Project) {
+  if (project.id === "whatsapp-wrapped") return createWhatsAppWrappedModel(project);
+  if (project.id === "jashby") return createJashbyModel(project);
+  if (project.id === "quantium-work-experience") return createQuantiumModel(project);
+  if (project.id === "degree6") return createDegree6Model(project);
+  if (project.id === "car-lifestory-web") return createGarageModel(project);
+  if (project.id === "what-the-puck") return createPuckModel(project);
+  if (project.id === "moriah-jiu-jitsu") return createDojoModel(project);
+  if (project.id === "idea-aid") return createIdeaAidModel(project);
+  if (project.id === "portfolio") return createCityHallModel(project);
+  if (project.id === "sydney-harbour") return createHarbourModel(project);
+  if (project.id === "bondi-beach") return createBondiModel(project);
+  if (project.id === "dover-heights-home") return createDoverHomeModel(project);
+  return createGenericProjectTower(project);
+}
+
+function createGenericProjectTower(project: Project) {
+  const group = new THREE.Group();
+  const width = project.tier === "flagship" ? 1.85 : 1.45;
+  const depth = project.tier === "flagship" ? 1.55 : 1.22;
+  addBox(group, [width, project.height, depth], project.color, [0, project.height / 2, 0], [0, 0, 0], {
+    metalness: project.tier === "flagship" ? 0.14 : 0.04,
+  });
+  addBox(group, [width + 0.24, 0.16, depth + 0.24], "#fff8dc", [0, project.height + 0.08, 0]);
+  addFacadeGrid(group, width, project.height, depth, project.tier === "flagship" ? 7 : 4, 3, "#fff8dc");
+  return group;
+}
+
+function createWhatsAppWrappedModel(project: Project) {
+  const group = new THREE.Group();
+  const dark = modelMaterial("#101611", { roughness: 0.38, metalness: 0.16 });
+  const green = modelMaterial(project.color, { roughness: 0.36, metalness: 0.08 });
+  addBox(group, [1.9, project.height, 1.28], dark, [0, project.height / 2, 0]);
+  addBox(group, [0.24, project.height * 0.86, 1.38], green, [0.95, project.height * 0.43, 0]);
+  addBox(group, [2.08, 0.16, 1.48], "#fff8dc", [0, project.height + 0.08, 0]);
+  addFacadeGrid(group, 1.9, project.height, 1.28, 7, 3, "#83f6aa", 0.75);
+  const bubbleMaterial = modelMaterial("#fffdf4", { roughness: 0.44 });
+  [
+    [-0.36, 1.18, 0.86, 0.34],
+    [0.26, 2.05, 0.76, 0.3],
+    [-0.2, 2.92, 1.02, 0.36],
+  ].forEach(([x, y, width, height], index) => {
+    [-0.69, 0.69].forEach((z) => {
+      addBox(group, [width, height, 0.07], bubbleMaterial, [x, y, z]);
+      addBox(group, [0.16, 0.12, 0.075], index % 2 === 0 ? green : "#101611", [x - width / 2 + 0.12, y - height / 2 - 0.08, z], [0, 0, -0.5]);
+    });
+  });
+  addCone(group, 0.38, 0.72, 3, green, [0, project.height + 0.52, -0.02], [0, Math.PI / 2, Math.PI / 2]);
+  return group;
+}
+
+function createJashbyModel(project: Project) {
+  const group = new THREE.Group();
+  const greenGlass = modelMaterial("#18b96f", { roughness: 0.24, metalness: 0.12 });
+  addBox(group, [2.35, project.height, 1.42], greenGlass, [0, project.height / 2, 0]);
+  addBox(group, [2.62, 0.16, 1.62], "#f6fff2", [0, project.height + 0.08, 0]);
+  addFacadeGrid(group, 2.35, project.height, 1.42, 8, 5, "#dffff0", 0.68);
+  for (let i = 0; i < 4; i += 1) {
+    addBox(group, [2.38, 0.055, 1.28], i % 2 ? "#e8f8ed" : "#fffdf4", [0.1 - i * 0.07, 0.09 + i * 0.07, 0.82 + i * 0.05], [0, i * 0.08, 0]);
+  }
+  const lineMaterial = new THREE.MeshBasicMaterial({ color: "#219760" });
+  for (let col = 0; col < 6; col += 1) {
+    addBox(group, [0.022, 0.03, 1.24], lineMaterial, [-0.9 + col * 0.34, 0.39, 0.95]);
+  }
+  for (let row = 0; row < 4; row += 1) {
+    addBox(group, [2.18, 0.028, 0.026], lineMaterial, [0, 0.28 + row * 0.16, 0.32]);
+  }
+  addBox(group, [0.16, 0.82, 0.12], "#f7d35f", [0.72, project.height + 0.56, 0.02]);
+  return group;
+}
+
+function createQuantiumModel(project: Project) {
+  const group = new THREE.Group();
+  const glass = modelMaterial("#2f8ec7", { roughness: 0.2, metalness: 0.18 });
+  addBox(group, [1.68, project.height, 1.68], glass, [0, project.height / 2, 0]);
+  addBox(group, [1.92, 0.18, 1.92], "#d9eff7", [0, project.height + 0.09, 0]);
+  addBox(group, [0.22, project.height * 0.9, 1.76], "#17476c", [-0.96, project.height * 0.45, 0]);
+  const dotMaterial = new THREE.MeshBasicMaterial({ color: "#aee7ff" });
+  for (let row = 0; row < 8; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      const active = (row + col) % 3 !== 0;
+      [-0.86, 0.86].forEach((z) => {
+        addBox(group, [0.11, 0.11, 0.028], active ? dotMaterial : "#0c3654", [-0.54 + col * 0.36, 0.78 + row * 0.34, z]);
+      });
+    }
+  }
+  [0.42, 0.74, 1.08].forEach((height, index) => {
+    addBox(group, [0.22, height, 0.22], project.color, [0.38 + index * 0.28, project.height + height / 2 + 0.18, -0.38]);
+  });
+  return group;
+}
+
+function createDegree6Model(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [2.55, 0.18, 2.25], "#171925", [0, 0.09, 0], [0, 0.18, 0]);
+  addCylinder(group, 0.42, 0.52, project.height, project.color, [0, project.height / 2 + 0.06, 0], [0, 0, 0], 32);
+  const lineMaterial = modelMaterial("#d8d0ff", { roughness: 0.3, metalness: 0.16 });
+  const nodeMaterial = modelMaterial("#b9a9ff", { emissive: "#1b0d4a", emissiveIntensity: 0.15 });
+  const points = [
+    new THREE.Vector3(-0.96, 1.02, -0.62),
+    new THREE.Vector3(1.08, 1.28, -0.26),
+    new THREE.Vector3(-0.48, 2.18, 0.86),
+    new THREE.Vector3(0.88, 2.68, 0.64),
+    new THREE.Vector3(-1.02, 3.05, -0.1),
+  ];
+  const hub = new THREE.Vector3(0, project.height * 0.56, 0);
+  points.forEach((point, index) => {
+    addCylinderBetween(group, hub, point, 0.025, lineMaterial);
+    addSphere(group, index === 0 ? 0.18 : 0.15, nodeMaterial, [point.x, point.y, point.z], 20);
+  });
+  addSphere(group, 0.22, "#fff8dc", [hub.x, hub.y, hub.z], 24);
+  return group;
+}
+
+function createGarageModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [2.42, 0.96, 1.64], "#f4e4bd", [0, 0.48, 0.1]);
+  addBox(group, [2.66, 0.22, 1.86], project.color, [0, 1.08, 0.1], [0, 0, 0], { roughness: 0.42, metalness: 0.12 });
+  addBox(group, [1.2, 0.58, 0.06], "#1c2322", [0, 0.42, -0.75]);
+  addBox(group, [0.55, 0.34, 0.07], "#aee5f5", [-0.72, 0.62, -0.76]);
+  addBox(group, [0.55, 0.34, 0.07], "#aee5f5", [0.72, 0.62, -0.76]);
+  addBox(group, [1.7, 0.32, 0.86], "#d22f2f", [0, 0.32, -1.34]);
+  addBox(group, [0.92, 0.32, 0.58], "#93d8ff", [0.05, 0.62, -1.34]);
+  [-0.68, 0.68].forEach((x) => {
+    [-1.66, -1.02].forEach((z) => {
+      addCylinder(group, 0.18, 0.18, 0.16, "#171713", [x, 0.24, z], [0, 0, Math.PI / 2], 24);
+      addCylinder(group, 0.09, 0.09, 0.18, "#c9c9c0", [x, 0.24, z], [0, 0, Math.PI / 2], 20);
+    });
+  });
+  addBox(group, [0.66, 0.045, 0.92], "#fffdf4", [-0.95, 0.12, 0.96], [0, -0.1, 0]);
+  addBox(group, [0.48, 0.05, 0.78], "#e8d8a8", [-0.8, 0.2, 1.02], [0, -0.1, 0]);
+  return group;
+}
+
+function createPuckModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [2.75, 0.12, 1.82], "#cfefff", [0, 0.06, 0], [0, 0, 0], { roughness: 0.18, metalness: 0.02 });
+  addBox(group, [2.92, 0.32, 0.12], "#fffdf4", [0, 0.22, -0.96]);
+  addBox(group, [2.92, 0.32, 0.12], "#fffdf4", [0, 0.22, 0.96]);
+  addBox(group, [0.12, 0.32, 1.82], "#fffdf4", [-1.46, 0.22, 0]);
+  addBox(group, [0.12, 0.32, 1.82], "#fffdf4", [1.46, 0.22, 0]);
+  addCylinder(group, 0.26, 0.26, 0.18, "#151713", [0.15, 0.25, 0.02], [0, 0, 0], 32);
+  addCylinder(group, 0.035, 0.035, 0.92, project.color, [-0.82, 0.62, 0.5], [0, 0, 0], 12);
+  addBox(group, [0.52, 0.34, 0.04], "#f7d35f", [-0.56, 0.91, 0.5], [0, 0, 0.1]);
+  addBox(group, [0.08, 0.72, 0.08], "#e95344", [1.18, 0.46, -0.28]);
+  addBox(group, [0.84, 0.08, 0.08], "#e95344", [1.18, 0.86, -0.28]);
+  addBox(group, [0.08, 0.72, 0.08], "#e95344", [0.76, 0.46, -0.28]);
+  return group;
+}
+
+function createDojoModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [2.42, 0.12, 1.82], "#252825", [0, 0.06, 0]);
+  addBox(group, [1.12, 0.045, 1.6], "#2f68c8", [-0.58, 0.16, 0]);
+  addBox(group, [1.12, 0.045, 1.6], project.color, [0.58, 0.16, 0]);
+  addBox(group, [1.82, 0.74, 0.12], "#fffdf4", [0, 0.66, -0.96]);
+  addBox(group, [0.62, 0.34, 0.14], "#151713", [-0.46, 0.73, -1.04]);
+  addBox(group, [0.62, 0.34, 0.14], "#151713", [0.46, 0.73, -1.04]);
+  addBox(group, [0.42, 0.07, 0.16], "#2f68c8", [-0.46, 0.76, -1.12]);
+  addBox(group, [0.42, 0.07, 0.16], project.color, [0.46, 0.76, -1.12]);
+  addBox(group, [0.08, 0.88, 0.08], "#1d201d", [-1.18, 0.54, -0.86]);
+  addBox(group, [0.08, 0.88, 0.08], "#1d201d", [1.18, 0.54, -0.86]);
+  return group;
+}
+
+function createIdeaAidModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [1.92, 1.18, 1.42], "#ede0c6", [0, 0.59, 0]);
+  addBox(group, [2.14, 0.2, 1.62], project.color, [0, 1.28, 0], [0, 0, 0], { roughness: 0.38, metalness: 0.08 });
+  addBox(group, [0.52, 0.58, 0.07], "#242225", [-0.44, 0.56, -0.74]);
+  addBox(group, [0.52, 0.58, 0.07], "#fffdf4", [0.44, 0.56, -0.74]);
+  addSphere(group, 0.36, "#f7d35f", [0, 1.93, 0], 32);
+  addCylinder(group, 0.17, 0.21, 0.22, "#755f38", [0, 1.48, 0], [0, 0, 0], 18);
+  for (let i = 0; i < 7; i += 1) {
+    const angle = (i / 7) * Math.PI * 2;
+    addBox(group, [0.05, 0.26, 0.05], "#f7d35f", [Math.cos(angle) * 0.62, 1.94 + Math.sin(angle) * 0.12, Math.sin(angle) * 0.62], [0, angle, 0.4]);
+  }
+  return group;
+}
+
+function createCityHallModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [2.42, 0.24, 1.72], "#d7c49b", [0, 0.12, 0]);
+  addBox(group, [2.04, 1.28, 1.32], "#fff7df", [0, 0.88, 0]);
+  [-0.72, -0.24, 0.24, 0.72].forEach((x) => {
+    addCylinder(group, 0.075, 0.075, 1.2, "#d9d0bc", [x, 0.82, -0.72], [0, 0, 0], 18);
+    addCylinder(group, 0.075, 0.075, 1.2, "#d9d0bc", [x, 0.82, 0.72], [0, 0, 0], 18);
+  });
+  addBox(group, [2.2, 0.16, 1.48], project.color, [0, 1.58, 0]);
+  addCone(group, 1.04, 0.7, 3, "#f7d35f", [0, 1.98, -0.02], [0, Math.PI / 2, 0]);
+  addBox(group, [0.28, 0.52, 0.08], "#101611", [0, 0.53, -0.69]);
+  return group;
+}
+
+function createHarbourModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [3.05, 0.14, 1.82], "#e8d9b6", [0, 0.07, 0.1]);
+  const shellMaterial = modelMaterial("#fff8e6", { roughness: 0.34, metalness: 0.02 });
+  [-0.92, -0.44, 0.04, 0.52, 1.02].forEach((x, index) => {
+    addCone(group, 0.42 + index * 0.025, 1.32 + index * 0.05, 4, shellMaterial, [x, 0.78, -0.3 + Math.abs(x) * 0.08], [0.02, Math.PI / 4, x * 0.25]);
+  });
+  const steel = modelMaterial("#56646b", { roughness: 0.28, metalness: 0.18 });
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.38, 0.045, 8, 56, Math.PI), steel);
+  arch.position.set(-0.18, 1.22, 0.72);
+  arch.rotation.z = Math.PI;
+  group.add(arch);
+  addBox(group, [2.86, 0.08, 0.18], steel, [-0.18, 0.58, 0.72]);
+  [-1.52, 1.16].forEach((x) => {
+    addBox(group, [0.18, 0.9, 0.22], steel, [x, 0.58, 0.72]);
+  });
+  addBox(group, [2.72, 0.045, 0.08], project.color, [0, 0.2, -0.98]);
+  return group;
+}
+
+function createBondiModel(project: Project) {
+  const group = new THREE.Group();
+  addBox(group, [3.1, 0.08, 2.2], "#e4c875", [0, 0.04, 0]);
+  addBox(group, [3.1, 0.06, 0.58], "#43a9c5", [0, 0.1, -0.86], [0, 0, 0], { roughness: 0.2 });
+  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4" });
+  [-1.1, -0.45, 0.22, 0.9].forEach((x, index) => {
+    addBox(group, [0.5, 0.035, 0.035], foam, [x, 0.16, -0.56 - index * 0.07], [0, -0.18, 0]);
+  });
+  addBox(group, [0.78, 0.52, 0.72], "#f5f0d3", [-0.78, 0.46, 0.42]);
+  addBox(group, [0.9, 0.12, 0.82], "#df513f", [-0.78, 0.78, 0.42]);
+  addCylinder(group, 0.035, 0.035, 0.72, "#654b2f", [0.7, 0.48, 0.34], [0, 0, 0], 12);
+  addCone(group, 0.45, 0.28, 24, "#f7d35f", [0.7, 0.95, 0.34]);
+  ["#fff4bd", "#e6533f", "#2f8ec7"].forEach((color, index) => {
+    addBox(group, [0.28, 0.055, 1.18], color, [0.32 + index * 0.34, 0.14, 0.8], [0, -0.45 + index * 0.18, 0]);
+  });
+  addBox(group, [0.22, 0.22, 0.22], project.color, [-1.32, 0.22, -0.12]);
+  return group;
+}
+
+function createDoverHomeModel(project: Project) {
+  const group = new THREE.Group();
+  [-0.7, -0.2, 0.34, 0.88].forEach((x, index) => {
+    addBox(group, [0.82, 0.36 + index * 0.07, 1.18], "#bda474", [x, 0.18 + index * 0.035, -0.08 + index * 0.22], [0, -0.16, 0]);
+  });
+  addBox(group, [1.44, 0.72, 1.02], "#fff2cf", [0.12, 0.78, -0.02]);
+  addBox(group, [1.64, 0.16, 1.18], project.color, [0.12, 1.22, -0.02], [0, 0, 0], { roughness: 0.46 });
+  addBox(group, [0.78, 0.34, 0.06], "#94d8e8", [0.06, 0.78, -0.56]);
+  addBox(group, [0.54, 0.08, 0.72], "#d9d0bc", [0.9, 0.5, -0.3], [0, 0.28, 0]);
+  addBox(group, [1.3, 0.05, 0.34], "#176b82", [-0.76, 0.18, 0.82], [0, -0.2, 0], { roughness: 0.2, metalness: 0.04 });
+  return group;
+}
+
 function CityScene({
   activeId,
   onInspectProject,
@@ -1517,8 +1883,8 @@ function CityScene({
     scene.background = new THREE.Color("#b9dbe0");
     scene.fog = new THREE.Fog("#b9dbe0", 34, 74);
 
-    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
-    camera.position.set(10, 10, 15);
+    const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 120);
+    camera.position.set(12, 13.5, 18);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -1566,12 +1932,15 @@ function CityScene({
       return mesh;
     };
 
-    addPlane(34, 32, 2, 2, new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass }));
-    addPlane(11, 35, -17, 2, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.04);
-    addPlane(5.2, 35, -10.2, 2, new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand }), 0.01);
-    addPlane(4.2, 25, 1.5, 1.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.02);
-    addPlane(30, 3.1, 1, -3.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.025);
-    addPlane(10.5, 6.2, -7.5, 8.5, new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch }), 0.035);
+    addPlane(34, 30, 2, 1.6, new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass }));
+    addPlane(22, 7.8, -4.3, -10.7, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.04);
+    addPlane(7.2, 26, 16.3, 2.6, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.045);
+    addPlane(5.5, 9.4, 13.1, 4.2, new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand }), 0.01);
+    addPlane(6.6, 5.6, -0.2, -4.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.02);
+    addPlane(7.8, 3.2, -5.6, -8.1, new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 }), 0.018);
+    addPlane(3.4, 16, 7.7, 3.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.025);
+    addPlane(14, 3.1, 5.2, 0.7, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.026);
+    addPlane(8.6, 5.8, 6.2, 7.8, new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch }), 0.035);
 
     addSydneyLandmarks(scene, addTexture);
     addCityPaths(scene);
@@ -1587,28 +1956,16 @@ function CityScene({
       group.position.set(project.x, 0, project.z);
       group.userData.projectId = project.id;
 
-      const base = new THREE.Mesh(
-        new THREE.BoxGeometry(1.75, project.height, 1.55),
-        new THREE.MeshStandardMaterial({
-          color: project.color,
-          roughness: 0.52,
-          metalness: project.tier === "flagship" ? 0.16 : 0.04,
-        }),
-      );
-      base.position.y = project.height / 2;
-      base.castShadow = true;
-      base.receiveShadow = true;
-      base.userData.projectId = project.id;
-      group.add(base);
-      colliders.push(base);
-
-      const cap = new THREE.Mesh(
-        new THREE.BoxGeometry(1.95, 0.18, 1.75),
-        new THREE.MeshStandardMaterial({ color: "#fff8dc", roughness: 0.65 }),
-      );
-      cap.position.y = project.height + 0.12;
-      cap.castShadow = true;
-      group.add(cap);
+      const model = createProjectModel(project);
+      model.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+          object.userData.projectId = project.id;
+          colliders.push(object);
+        }
+      });
+      group.add(model);
 
       const imageTexture = project.image
         ? addTexture(loader.load(project.image, (texture) => {
@@ -1622,7 +1979,7 @@ function CityScene({
         new THREE.MeshBasicMaterial({ map: imageTexture, side: THREE.DoubleSide }),
       );
       imageDecal.rotation.x = -Math.PI / 2;
-      imageDecal.position.set(0, 0.105, project.tier === "flagship" ? -1.65 : -1.45);
+      imageDecal.position.set(0, 0.105, project.tier === "flagship" ? -1.95 : -1.65);
       imageDecal.userData.projectId = project.id;
       group.add(imageDecal);
       colliders.push(imageDecal);
@@ -1672,7 +2029,7 @@ function CityScene({
     };
 
     focusProject(initialActiveIdRef.current);
-    const startPosition = new THREE.Vector3(-8.2, 0, -2.4);
+    const startPosition = new THREE.Vector3(4, 0, 3.2);
     target.copy(startPosition);
     player.position.copy(startPosition);
 
@@ -1711,6 +2068,7 @@ function CityScene({
     };
 
     window.addEventListener("resize", resize);
+    document.addEventListener("fullscreenchange", resize);
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     canvas.addEventListener("pointerdown", onPointerDown);
@@ -1734,8 +2092,8 @@ function CityScene({
         playerControlled = true;
         const previousPosition = player.position.clone();
         player.position.add(direction);
-        player.position.x = THREE.MathUtils.clamp(player.position.x, -21.5, 16.5);
-        player.position.z = THREE.MathUtils.clamp(player.position.z, -11.5, 14.5);
+        player.position.x = THREE.MathUtils.clamp(player.position.x, -11.8, 17.4);
+        player.position.z = THREE.MathUtils.clamp(player.position.z, -12.6, 13.6);
         target.copy(player.position);
         const moved = player.position.clone().sub(previousPosition);
         const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
@@ -1765,9 +2123,9 @@ function CityScene({
         }
       }
 
-      const cameraTarget = new THREE.Vector3(player.position.x + 9, 10.5, player.position.z + 13);
+      const cameraTarget = new THREE.Vector3(player.position.x + 9.6, 13.5, player.position.z + 15.4);
       camera.position.lerp(cameraTarget, 0.055);
-      camera.lookAt(player.position.x, 0.9, player.position.z);
+      camera.lookAt(player.position.x + 1.2, 0.9, player.position.z - 1.1);
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -1803,6 +2161,7 @@ function CityScene({
     return () => {
       cancelAnimationFrame(animationFrame);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("fullscreenchange", resize);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
       canvas.removeEventListener("pointerdown", onPointerDown);
@@ -1835,16 +2194,19 @@ function CityScene({
 
 function addCityPaths(scene: THREE.Scene) {
   const material = new THREE.MeshStandardMaterial({ color: "#e7d093", roughness: 0.86 });
-  const pathSpecs = [
-    [0, -6.8, 17, 0.32],
-    [0, -0.8, 24, 0.28],
-    [2.5, 5.2, 20, 0.28],
-    [-11.5, 1.8, 0.34, 19],
-    [8, 3.2, 0.34, 18],
+  const pathSpecs: Array<[number, number, number, number, number]> = [
+    [-5.6, -7.18, 6.8, 0.28, 0],
+    [-0.15, -5.38, 5.7, 0.3, 0],
+    [1.34, -3.24, 6.65, 0.28, -0.67],
+    [7.6, 0.82, 10.9, 0.32, -0.45],
+    [11.72, 3.35, 0.34, 6.4, 0],
+    [6.28, 6.08, 0.34, 8.75, 0],
+    [5.56, 8.2, 8.4, 0.28, 0],
   ];
-  pathSpecs.forEach(([x, z, width, depth]) => {
+  pathSpecs.forEach(([x, z, width, depth, rotation]) => {
     const path = new THREE.Mesh(new THREE.BoxGeometry(width, 0.035, depth), material);
     path.position.set(x, 0.075, z);
+    path.rotation.y = rotation;
     path.receiveShadow = true;
     scene.add(path);
   });
@@ -1854,38 +2216,36 @@ function addSydneyLandmarks(
   scene: THREE.Scene,
   addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
 ) {
-  const harbourStone = new THREE.MeshStandardMaterial({ color: "#e8d9b6", roughness: 0.68 });
-  const quay = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.16, 2.7), harbourStone);
-  quay.position.set(-14.5, 0.05, -8.6);
-  quay.castShadow = true;
-  quay.receiveShadow = true;
-  scene.add(quay);
+  const landmarks = new THREE.Group();
+  scene.add(landmarks);
+
+  addBox(landmarks, [6.3, 0.16, 2.25], "#e8d9b6", [-5.65, 0.08, -8.35]);
 
   const operaGroup = new THREE.Group();
-  operaGroup.position.set(-14.6, 0.22, -8.7);
+  operaGroup.position.set(-5.78, 0.2, -8.45);
   const shellMaterial = new THREE.MeshStandardMaterial({ color: "#fff8e6", roughness: 0.38 });
-  [-1.8, -0.85, 0, 0.85, 1.8].forEach((offset, index) => {
-    const shell = new THREE.Mesh(new THREE.ConeGeometry(0.7 + index * 0.06, 2.35 + index * 0.1, 4), shellMaterial);
-    shell.position.set(offset * 0.48, 1.05, Math.abs(offset) * 0.08);
+  [-1.55, -0.82, -0.08, 0.68, 1.42].forEach((offset, index) => {
+    const shell = new THREE.Mesh(new THREE.ConeGeometry(0.66 + index * 0.05, 2.02 + index * 0.08, 4), shellMaterial);
+    shell.position.set(offset * 0.46, 0.98, Math.abs(offset) * 0.08);
     shell.rotation.z = offset * 0.24;
     shell.rotation.y = Math.PI / 4;
     shell.castShadow = true;
     operaGroup.add(shell);
   });
-  scene.add(operaGroup);
-  addLandmarkSign(scene, addTexture, "Sydney Opera House", "harbour anchor", -13.1, -6.7, "#fff1bf");
+  landmarks.add(operaGroup);
 
   const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#56646b", roughness: 0.32, metalness: 0.12 });
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.07, 8, 60, Math.PI), bridgeMaterial);
-  arch.position.set(-14.8, 1.55, -4);
+  const arch = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.07, 8, 72, Math.PI), bridgeMaterial);
+  arch.position.set(-5.8, 1.58, -10.15);
   arch.rotation.z = Math.PI;
   arch.castShadow = true;
-  scene.add(arch);
-  [-3.05, 3.05].forEach((x) => {
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1.45, 0.32), bridgeMaterial);
-    tower.position.set(-14.8 + x, 0.78, -4);
-    tower.castShadow = true;
-    scene.add(tower);
+  landmarks.add(arch);
+  addBox(landmarks, [6.25, 0.12, 0.28], bridgeMaterial, [-5.8, 0.62, -10.15]);
+  [-2.92, 2.92].forEach((x) => {
+    addBox(landmarks, [0.32, 1.44, 0.38], bridgeMaterial, [-5.8 + x, 0.78, -10.15]);
+  });
+  [-2.1, -1.3, -0.48, 0.42, 1.28, 2.12].forEach((x) => {
+    addBox(landmarks, [0.035, 0.74 + (2.2 - Math.abs(x)) * 0.18, 0.04], bridgeMaterial, [-5.8 + x, 0.96, -10.15]);
   });
 
   const skylineMaterials = [
@@ -1893,124 +2253,79 @@ function addSydneyLandmarks(
     new THREE.MeshStandardMaterial({ color: "#415f66", roughness: 0.55 }),
     new THREE.MeshStandardMaterial({ color: "#263d44", roughness: 0.48, metalness: 0.08 }),
   ];
-  for (let i = 0; i < 12; i += 1) {
-    const height = 1 + (i % 5) * 0.46;
-    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.78, height, 0.82), skylineMaterials[i % skylineMaterials.length]);
-    tower.position.set(-5.4 + i * 0.7, height / 2, -12.4 + (i % 2) * 0.42);
-    tower.castShadow = true;
-    scene.add(tower);
-  }
-
-  const blackbirdMarker = new THREE.Mesh(
-    new THREE.BoxGeometry(1.1, 3.8, 1),
-    new THREE.MeshStandardMaterial({ color: "#101611", roughness: 0.42, metalness: 0.08 }),
-  );
-  blackbirdMarker.position.set(1.2, 1.9, -11.4);
-  blackbirdMarker.castShadow = true;
-  scene.add(blackbirdMarker);
-  const blackbirdStripe = new THREE.Mesh(
-    new THREE.BoxGeometry(1.14, 0.18, 1.04),
-    new THREE.MeshBasicMaterial({ color: "#22d66f" }),
-  );
-  blackbirdStripe.position.set(1.2, 3.55, -11.4);
-  scene.add(blackbirdStripe);
-
-  const quantiumMarker = new THREE.Mesh(
-    new THREE.BoxGeometry(1.05, 3.5, 1.05),
-    new THREE.MeshStandardMaterial({ color: "#17476c", roughness: 0.4, metalness: 0.12 }),
-  );
-  quantiumMarker.position.set(-2.8, 1.75, -11.1);
-  quantiumMarker.castShadow = true;
-  scene.add(quantiumMarker);
-  const dataDotMaterial = new THREE.MeshBasicMaterial({ color: "#93d8ff" });
-  for (let row = 0; row < 6; row += 1) {
-    for (let col = 0; col < 3; col += 1) {
-      const dot = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.018), dataDotMaterial);
-      dot.position.set(-3.05 + col * 0.24, 0.8 + row * 0.38, -10.565);
-      scene.add(dot);
-    }
+  for (let i = 0; i < 16; i += 1) {
+    const height = 0.92 + (i % 6) * 0.38;
+    const towerGroup = new THREE.Group();
+    towerGroup.position.set(-3.4 + i * 0.46, 0, -6.18 + (i % 3) * 0.43);
+    towerGroup.rotation.y = (i % 2 ? 0.08 : -0.06);
+    addBox(towerGroup, [0.36 + (i % 3) * 0.08, height, 0.44], skylineMaterials[i % skylineMaterials.length], [0, height / 2, 0]);
+    if (i % 2 === 0) addFacadeGrid(towerGroup, 0.36 + (i % 3) * 0.08, height, 0.44, 4, 2, "#bde5dc", 0.44);
+    landmarks.add(towerGroup);
   }
 
   const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.82 });
-  for (let i = 0; i < 5; i += 1) {
-    const foam = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.035, 4.2 + i * 0.42), foamMaterial);
-    foam.position.set(-12.55 + i * 0.28, 0.12, 3.4 + i * 1.38);
-    foam.rotation.y = -0.16;
-    scene.add(foam);
+  for (let i = 0; i < 7; i += 1) {
+    addBox(landmarks, [0.08, 0.035, 3.4 + i * 0.18], foamMaterial, [14.8 + i * 0.16, 0.12, 1.58 + i * 0.78], [0, -0.08, 0]);
   }
 
   const surfColors = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"];
   for (let i = 0; i < 6; i += 1) {
-    const surfboard = new THREE.Mesh(
-      new THREE.BoxGeometry(0.42, 0.06, 1.8),
-      new THREE.MeshStandardMaterial({ color: surfColors[i % surfColors.length], roughness: 0.54 }),
-    );
-    surfboard.position.set(-10.9 + i * 0.45, 0.14, 1.1 + i * 1.25);
-    surfboard.rotation.y = i * 0.34 - 0.22;
-    surfboard.castShadow = true;
-    scene.add(surfboard);
+    addBox(landmarks, [0.35, 0.055, 1.55], surfColors[i % surfColors.length], [12.04 + i * 0.34, 0.15, 3.15 + i * 0.36], [0, i * 0.24 - 0.52, 0], { roughness: 0.54 });
   }
-  addLandmarkSign(scene, addTexture, "Bondi Beach", "surf strip", -9.45, 2.7, "#4cbad8");
 
-  const cliffMaterial = new THREE.MeshStandardMaterial({ color: "#bda474", roughness: 0.86 });
+  const cliffMaterial = modelMaterial("#bda474", { roughness: 0.86 });
   for (let i = 0; i < 5; i += 1) {
-    const cliff = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.8 + i * 0.12, 1.7), cliffMaterial);
-    cliff.position.set(-8.7 + i * 0.55, 0.32 + i * 0.03, 1.25 + i * 0.48);
-    cliff.rotation.y = -0.18;
-    cliff.castShadow = true;
-    cliff.receiveShadow = true;
-    scene.add(cliff);
+    addBox(landmarks, [0.86, 0.62 + i * 0.1, 1.34], cliffMaterial, [10.08 + i * 0.32, 0.31 + i * 0.05, 0.6 + i * 0.35], [0, -0.18, 0]);
   }
 
   const houseGroup = new THREE.Group();
-  houseGroup.position.set(-7.7, 0.2, 2.15);
-  const house = new THREE.Mesh(
-    new THREE.BoxGeometry(1.05, 0.68, 0.9),
-    new THREE.MeshStandardMaterial({ color: "#f6e8c6", roughness: 0.72 }),
-  );
-  house.position.y = 0.42;
-  house.castShadow = true;
-  houseGroup.add(house);
-  const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(0.82, 0.48, 4),
-    new THREE.MeshStandardMaterial({ color: "#cc6543", roughness: 0.62 }),
-  );
-  roof.position.y = 0.98;
-  roof.rotation.y = Math.PI / 4;
-  roof.castShadow = true;
-  houseGroup.add(roof);
-  scene.add(houseGroup);
-  addLandmarkSign(scene, addTexture, "Dover Heights", "home base", -6.7, 2.05, "#f0c36a");
+  houseGroup.position.set(10.86, 0.2, 1.32);
+  addBox(houseGroup, [1.05, 0.68, 0.9], "#f6e8c6", [0, 0.42, 0]);
+  addCone(houseGroup, 0.82, 0.48, 4, "#cc6543", [0, 0.98, 0], [0, Math.PI / 4, 0]);
+  addBox(houseGroup, [0.78, 0.24, 0.05], "#94d8e8", [0, 0.5, -0.48]);
+  landmarks.add(houseGroup);
 
   const pitchLine = new THREE.MeshBasicMaterial({ color: "#f9f6e9" });
-  const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 6), pitchLine);
-  centerLine.position.set(-7.5, 0.11, 8.5);
-  scene.add(centerLine);
+  const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 5.35), pitchLine);
+  centerLine.position.set(6.2, 0.11, 7.8);
+  landmarks.add(centerLine);
   const centerCircle = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.025, 8, 64), pitchLine);
   centerCircle.rotation.x = Math.PI / 2;
-  centerCircle.position.set(-7.5, 0.12, 8.5);
-  scene.add(centerCircle);
-  [-12.2, -2.8].forEach((x) => {
+  centerCircle.position.set(6.2, 0.12, 7.8);
+  landmarks.add(centerCircle);
+  [2.3, 10.1].forEach((x) => {
     const goal = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.55, 1.6), pitchLine);
-    goal.position.set(x, 0.35, 8.5);
-    scene.add(goal);
+    goal.position.set(x, 0.35, 7.8);
+    landmarks.add(goal);
   });
 
   const gymMaterial = new THREE.MeshStandardMaterial({ color: "#252825", roughness: 0.45, metalness: 0.2 });
   const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.6, 14), gymMaterial);
-  bar.position.set(12, 0.45, -9.5);
+  bar.position.set(9.6, 0.45, 5.28);
   bar.rotation.z = Math.PI / 2;
   bar.castShadow = true;
-  scene.add(bar);
+  landmarks.add(bar);
   [-2.25, 2.25].forEach((x) => {
     for (let i = 0; i < 3; i += 1) {
       const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.42 - i * 0.05, 0.42 - i * 0.05, 0.13, 28), gymMaterial);
-      plate.position.set(12 + x + i * 0.12 * Math.sign(x), 0.45, -9.5);
+      plate.position.set(9.6 + x + i * 0.12 * Math.sign(x), 0.45, 5.28);
       plate.rotation.z = Math.PI / 2;
       plate.castShadow = true;
-      scene.add(plate);
+      landmarks.add(plate);
     }
   });
+
+  landmarks.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+    }
+  });
+
+  addLandmarkSign(scene, addTexture, "Sydney Opera House", "harbour anchor", -4.1, -7.2, "#fff1bf");
+  addLandmarkSign(scene, addTexture, "Harbour Bridge", "north-west span", -8.15, -9.04, "#9fb2bd");
+  addLandmarkSign(scene, addTexture, "Bondi Beach", "eastern surf strip", 12.02, 3.02, "#4cbad8");
+  addLandmarkSign(scene, addTexture, "Dover Heights", "home base", 10.0, 0.36, "#f0c36a");
 }
 
 function addLandmarkSign(
@@ -2086,13 +2401,37 @@ function createSoccerBall() {
 }
 
 export default function MuseumPortfolio() {
+  const mapShellRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState(cityItems[0].id);
   const [detailMode, setDetailMode] = useState<"closed" | "auto" | "pinned">("closed");
   const [dismissedZoneId, setDismissedZoneId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const activeProject = selectableItems.find((project) => project.id === activeId) ?? cityItems[0];
   const detailsOpen = detailMode !== "closed";
+
+  useEffect(() => {
+    const syncFullscreenState = () => {
+      setIsMapFullscreen(document.fullscreenElement === mapShellRef.current);
+    };
+    document.addEventListener("fullscreenchange", syncFullscreenState);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreenState);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("is-map-fullscreen", isMapFullscreen);
+    const closeFallbackFullscreen = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !document.fullscreenElement) {
+        setIsMapFullscreen(false);
+      }
+    };
+    document.addEventListener("keydown", closeFallbackFullscreen);
+    return () => {
+      document.body.classList.remove("is-map-fullscreen");
+      document.removeEventListener("keydown", closeFallbackFullscreen);
+    };
+  }, [isMapFullscreen]);
 
   const openProjectDetails = (id: string, scrollToStage = false) => {
     setActiveId(id);
@@ -2100,7 +2439,7 @@ export default function MuseumPortfolio() {
     setDismissedZoneId(null);
     if (scrollToStage) {
       requestAnimationFrame(() => {
-        document.querySelector(".city-stage")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        document.querySelector(".city-map-shell")?.scrollIntoView({ behavior: "smooth", block: "center" });
       });
     }
   };
@@ -2123,6 +2462,10 @@ export default function MuseumPortfolio() {
     if (dismissedZoneId !== id) {
       setDetailMode("auto");
     }
+  };
+
+  const toggleMapFullscreen = () => {
+    setIsMapFullscreen((fullscreen) => !fullscreen);
   };
 
   const filteredProjects = useMemo(() => {
@@ -2184,15 +2527,31 @@ export default function MuseumPortfolio() {
         </div>
 
         <div className="city-walkthrough">
-          <div className="city-stage">
-            <CityScene
-              activeId={activeId}
-              onInspectProject={openProjectDetails}
-              onNearbyProjectChange={handleNearbyProjectChange}
-            />
-            {detailsOpen ? (
-              <ProjectInspector project={activeProject} onClose={closeProjectDetails} />
-            ) : null}
+          <div
+            className={`city-map-shell${isMapFullscreen ? " is-fullscreen" : ""}`}
+            ref={mapShellRef}
+          >
+            <div className="stage-toolbar" aria-label="3D map controls">
+              <button
+                className="stage-action"
+                type="button"
+                onClick={toggleMapFullscreen}
+                aria-label={isMapFullscreen ? "Exit full screen map" : "Open full screen map"}
+              >
+                {isMapFullscreen ? <Minimize2 size={16} aria-hidden="true" /> : <Maximize2 size={16} aria-hidden="true" />}
+                <span>{isMapFullscreen ? "Exit full screen" : "Full screen"}</span>
+              </button>
+            </div>
+            <div className="city-stage">
+              <CityScene
+                activeId={activeId}
+                onInspectProject={openProjectDetails}
+                onNearbyProjectChange={handleNearbyProjectChange}
+              />
+              {detailsOpen ? (
+                <ProjectInspector project={activeProject} onClose={closeProjectDetails} />
+              ) : null}
+            </div>
           </div>
         </div>
 
