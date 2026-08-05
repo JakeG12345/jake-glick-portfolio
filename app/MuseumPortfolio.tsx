@@ -1101,22 +1101,22 @@ const cityItems: Project[] = [
   featuredProject("whatsapp-wrapped", {
     title: "Blackbird / WhatsAppWrapped",
     shortTitle: "Blackbird",
-    zone: "Blackbird startup block",
+    zone: "Surry Hills startup block",
     status: "Blackbird camp build",
     detail:
-      "WhatsAppWrapped sits in the Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
+      "WhatsAppWrapped sits in the Surry Hills / Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
     proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
     color: "#22d66f",
-    x: 1.6,
-    z: -5.6,
+    x: -2.4,
+    z: -4.7,
     height: 4.1,
   }),
   featuredProject("jashby", {
-    zone: "Spreadsheet campus",
+    zone: "Bondi Junction spreadsheet campus",
     detail:
       "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
-    x: 3.9,
-    z: -1.2,
+    x: 5.6,
+    z: 0.1,
     height: 4.2,
   }),
   {
@@ -1124,20 +1124,20 @@ const cityItems: Project[] = [
     title: "Quantium Work Experience",
     shortTitle: "Quantium",
     year: "2024",
-    zone: "CBD data tower",
+    zone: "Eveleigh data yard",
     category: "Experience",
     tier: "built",
     status: "Work experience",
     summary:
-      "A CBD data tower for the Quantium work-experience week around CommBank iQ analytics and market-data scraping.",
+      "An Eveleigh-side data tower for the Quantium work-experience week around CommBank iQ analytics and market-data scraping.",
     detail:
-      "This is mapped as a city workplace rather than a repo. It anchors the analytics side of the portfolio: client data, market signals, and a scraper built in a professional context.",
+      "This is mapped around Eveleigh rather than as a generic office block. It anchors the analytics side of the portfolio: client data, market signals, and a scraper built in a professional context.",
     stack: ["Data analytics", "Web scraping", "CommBank iQ context"],
     proof: ["Attached DOCX role notes", "Experience entry"],
     source: "Attached DOCX",
     color: "#2f8ec7",
-    x: -1.3,
-    z: -5.3,
+    x: -3,
+    z: -0.7,
     height: 4,
     links: [],
   },
@@ -1158,8 +1158,8 @@ const cityItems: Project[] = [
     proof: ["User-provided location context"],
     source: "User request",
     color: "#f0c36a",
-    x: 10.9,
-    z: 1.4,
+    x: 11.5,
+    z: -1.2,
     height: 1.45,
     links: [],
   },
@@ -1180,8 +1180,8 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#4cbad8",
-    x: 13.5,
-    z: 4.4,
+    x: 13.2,
+    z: 3.4,
     height: 1.2,
     links: [],
   },
@@ -1202,8 +1202,8 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#fff1bf",
-    x: -5.6,
-    z: -8.5,
+    x: -7.3,
+    z: -8.9,
     height: 1.8,
     links: [],
   },
@@ -1213,48 +1213,48 @@ const cityItems: Project[] = [
     zone: "Dover garage",
     detail:
       "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
-    x: 10.5,
-    z: 2.9,
+    x: 11,
+    z: 0.4,
     height: 2.5,
   }),
   featuredProject("what-the-puck", {
     zone: "Sports field",
     detail:
       "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
-    x: 5.4,
-    z: 9.1,
+    x: 7.2,
+    z: 6.7,
     height: 2.9,
   }),
   featuredProject("moriah-jiu-jitsu", {
-    zone: "School sports block",
+    zone: "Queens Park school block",
     detail:
-      "The Moriah Jiu-Jitsu tool is placed near the sports side of the city because it is an operational school-sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
-    x: 7.4,
-    z: 6.6,
+      "The Moriah Jiu-Jitsu tool is placed in the Queens Park school block because it is an operational Moriah sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
+    x: 6.3,
+    z: 3,
     height: 2.6,
   }),
   featuredProject("degree6", {
     zone: "Network interchange",
     detail:
       "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
-    x: 4.4,
-    z: -4.7,
+    x: -0.3,
+    z: -2.7,
     height: 3.1,
   }),
   featuredProject("idea-aid", {
     zone: "AI workshop",
     detail:
       "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
-    x: 6.5,
-    z: 1.3,
+    x: 4.7,
+    z: 5,
     height: 2.2,
   }),
   featuredProject("portfolio", {
     zone: "City hall",
     detail:
       "The portfolio itself is the city hall: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
-    x: 0.5,
-    z: -1.6,
+    x: 1.2,
+    z: -0.1,
     height: 2.3,
   }),
 ];
@@ -1748,16 +1748,21 @@ function createPuckModel(project: Project) {
 
 function createDojoModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [2.42, 0.12, 1.82], "#252825", [0, 0.06, 0]);
-  addBox(group, [1.12, 0.045, 1.6], "#2f68c8", [-0.58, 0.16, 0]);
-  addBox(group, [1.12, 0.045, 1.6], project.color, [0.58, 0.16, 0]);
-  addBox(group, [1.82, 0.74, 0.12], "#fffdf4", [0, 0.66, -0.96]);
-  addBox(group, [0.62, 0.34, 0.14], "#151713", [-0.46, 0.73, -1.04]);
-  addBox(group, [0.62, 0.34, 0.14], "#151713", [0.46, 0.73, -1.04]);
-  addBox(group, [0.42, 0.07, 0.16], "#2f68c8", [-0.46, 0.76, -1.12]);
-  addBox(group, [0.42, 0.07, 0.16], project.color, [0.46, 0.76, -1.12]);
-  addBox(group, [0.08, 0.88, 0.08], "#1d201d", [-1.18, 0.54, -0.86]);
-  addBox(group, [0.08, 0.88, 0.08], "#1d201d", [1.18, 0.54, -0.86]);
+  addBox(group, [2.55, 0.12, 1.92], "#252825", [0, 0.06, 0.15]);
+  addBox(group, [2.28, 0.92, 0.84], "#f5ead0", [0, 0.52, -0.54]);
+  addBox(group, [2.48, 0.16, 0.98], project.color, [0, 1.06, -0.54], [0, 0, 0], { roughness: 0.45 });
+  [-0.72, -0.24, 0.24, 0.72].forEach((x) => {
+    addBox(group, [0.24, 0.28, 0.04], "#94d8e8", [x, 0.64, -0.98]);
+  });
+  addBox(group, [1.03, 0.045, 1.3], "#2f68c8", [-0.52, 0.18, 0.52]);
+  addBox(group, [1.03, 0.045, 1.3], project.color, [0.52, 0.18, 0.52]);
+  addBox(group, [1.62, 0.7, 0.12], "#fffdf4", [0, 0.64, 1.28]);
+  addBox(group, [0.56, 0.3, 0.14], "#151713", [-0.42, 0.7, 1.36]);
+  addBox(group, [0.56, 0.3, 0.14], "#151713", [0.42, 0.7, 1.36]);
+  addBox(group, [0.38, 0.065, 0.16], "#2f68c8", [-0.42, 0.74, 1.44]);
+  addBox(group, [0.38, 0.065, 0.16], project.color, [0.42, 0.74, 1.44]);
+  addBox(group, [0.08, 0.78, 0.08], "#1d201d", [-1.16, 0.5, 1.18]);
+  addBox(group, [0.08, 0.78, 0.08], "#1d201d", [1.16, 0.5, 1.18]);
   return group;
 }
 
@@ -1852,6 +1857,7 @@ function CityScene({
   onNearbyProjectChange: (id: string | null) => void;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [webglUnavailable, setWebglUnavailable] = useState(false);
   const initialActiveIdRef = useRef(activeId);
   const onInspectProjectRef = useRef(onInspectProject);
   const onNearbyProjectChangeRef = useRef(onNearbyProjectChange);
@@ -1873,7 +1879,19 @@ function CityScene({
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    } catch {
+      let disposed = false;
+      const fallbackTimer = window.setTimeout(() => {
+        if (!disposed) setWebglUnavailable(true);
+      }, 0);
+      return () => {
+        disposed = true;
+        window.clearTimeout(fallbackTimer);
+      };
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.shadowMap.enabled = true;
@@ -1883,8 +1901,8 @@ function CityScene({
     scene.background = new THREE.Color("#b9dbe0");
     scene.fog = new THREE.Fog("#b9dbe0", 34, 74);
 
-    const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 120);
-    camera.position.set(12, 13.5, 18);
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 120);
+    camera.position.set(11, 17.5, 17.5);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -1932,15 +1950,16 @@ function CityScene({
       return mesh;
     };
 
-    addPlane(34, 30, 2, 1.6, new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass }));
-    addPlane(22, 7.8, -4.3, -10.7, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.04);
-    addPlane(7.2, 26, 16.3, 2.6, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.045);
-    addPlane(5.5, 9.4, 13.1, 4.2, new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand }), 0.01);
-    addPlane(6.6, 5.6, -0.2, -4.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.02);
-    addPlane(7.8, 3.2, -5.6, -8.1, new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 }), 0.018);
-    addPlane(3.4, 16, 7.7, 3.5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.025);
-    addPlane(14, 3.1, 5.2, 0.7, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.026);
-    addPlane(8.6, 5.8, 6.2, 7.8, new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch }), 0.035);
+    addPlane(32, 25, 1.8, -0.8, new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass }));
+    addPlane(16.8, 5.6, -6.7, -11.1, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.04);
+    addPlane(5.4, 18.5, 15.4, 1.6, new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.25, metalness: 0.06 }), -0.045);
+    addPlane(3.9, 6.9, 12.8, 3.2, new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand }), 0.012);
+    addPlane(6.9, 5.4, -3.3, -5, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.02);
+    addPlane(4.6, 4.6, -1.9, -2.2, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.022);
+    addPlane(6, 5.6, 5.6, 2.2, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.024);
+    addPlane(3, 8.4, 10.4, 1.4, new THREE.MeshStandardMaterial({ color: "#2c302b", map: road }), 0.026);
+    addPlane(6.2, 5.2, 7.1, 6.5, new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch }), 0.035);
+    addPlane(8.2, 2.6, -7.2, -8.4, new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 }), 0.018);
 
     addSydneyLandmarks(scene, addTexture);
     addCityPaths(scene);
@@ -1995,16 +2014,16 @@ function CityScene({
       colliders.push(label);
 
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(2.2, 0.035, 8, 72),
-        new THREE.MeshBasicMaterial({ color: "#fff8dc", transparent: true, opacity: 0.18 }),
+        new THREE.TorusGeometry(1.85, 0.022, 8, 72),
+        new THREE.MeshBasicMaterial({ color: "#d8dacb", transparent: true, opacity: 0.035 }),
       );
       ring.rotation.x = Math.PI / 2;
-      ring.position.y = 0.08;
+      ring.position.y = 0.065;
       group.add(ring);
       rings.set(project.id, ring);
       projectStops.set(project.id, {
         position: new THREE.Vector3(project.x, 0, project.z),
-        radius: project.tier === "flagship" ? 3.1 : 2.65,
+        radius: project.tier === "flagship" ? 2.55 : 2.2,
       });
 
       scene.add(group);
@@ -2021,15 +2040,15 @@ function CityScene({
     const focusProject = (id: string) => {
       activeIdRef.current = id;
       rings.forEach((ring, projectId) => {
-        ring.material.opacity = projectId === id ? 0.9 : 0.24;
-        ring.material.color.set(projectId === id ? "#fff8dc" : "#c8d0be");
+        ring.material.opacity = projectId === id ? 0.32 : 0.035;
+        ring.material.color.set(projectId === id ? "#fff8dc" : "#d8dacb");
       });
       const group = projectGroups.get(id);
       if (group && !playerControlled) target.set(group.position.x, 0, group.position.z + 2.2);
     };
 
     focusProject(initialActiveIdRef.current);
-    const startPosition = new THREE.Vector3(4, 0, 3.2);
+    const startPosition = new THREE.Vector3(2.8, 0, 2.2);
     target.copy(startPosition);
     player.position.copy(startPosition);
 
@@ -2092,8 +2111,8 @@ function CityScene({
         playerControlled = true;
         const previousPosition = player.position.clone();
         player.position.add(direction);
-        player.position.x = THREE.MathUtils.clamp(player.position.x, -11.8, 17.4);
-        player.position.z = THREE.MathUtils.clamp(player.position.z, -12.6, 13.6);
+        player.position.x = THREE.MathUtils.clamp(player.position.x, -11.2, 15.2);
+        player.position.z = THREE.MathUtils.clamp(player.position.z, -11.8, 9.4);
         target.copy(player.position);
         const moved = player.position.clone().sub(previousPosition);
         const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
@@ -2123,9 +2142,9 @@ function CityScene({
         }
       }
 
-      const cameraTarget = new THREE.Vector3(player.position.x + 9.6, 13.5, player.position.z + 15.4);
+      const cameraTarget = new THREE.Vector3(player.position.x + 9.5, 18.5, player.position.z + 15.8);
       camera.position.lerp(cameraTarget, 0.055);
-      camera.lookAt(player.position.x + 1.2, 0.9, player.position.z - 1.1);
+      camera.lookAt(player.position.x + 2.3, 0.75, player.position.z + 0.1);
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -2189,19 +2208,31 @@ function CityScene({
     runtimeRef.current?.focusProject(activeId);
   }, [activeId]);
 
+  if (webglUnavailable) {
+    return (
+      <div className="city-canvas city-canvas-fallback" role="img" aria-label="3D portfolio city unavailable">
+        <strong>3D city paused</strong>
+        <span>WebGL is disabled in this browser.</span>
+      </div>
+    );
+  }
+
   return <canvas ref={canvasRef} className="city-canvas" data-scene-ready="true" aria-label="3D portfolio city" />;
 }
 
 function addCityPaths(scene: THREE.Scene) {
   const material = new THREE.MeshStandardMaterial({ color: "#e7d093", roughness: 0.86 });
   const pathSpecs: Array<[number, number, number, number, number]> = [
-    [-5.6, -7.18, 6.8, 0.28, 0],
-    [-0.15, -5.38, 5.7, 0.3, 0],
-    [1.34, -3.24, 6.65, 0.28, -0.67],
-    [7.6, 0.82, 10.9, 0.32, -0.45],
-    [11.72, 3.35, 0.34, 6.4, 0],
-    [6.28, 6.08, 0.34, 8.75, 0],
-    [5.56, 8.2, 8.4, 0.28, 0],
+    [-7.25, -7.38, 6.9, 0.28, 0],
+    [-3.45, -5.25, 0.32, 4.15, 0],
+    [-2.18, -3.08, 4.7, 0.28, -0.32],
+    [-2.9, -2.35, 0.28, 3.9, 0],
+    [2.25, -0.38, 10.2, 0.3, -0.08],
+    [8.92, 1.3, 8.2, 0.3, -0.24],
+    [11.18, 0.62, 0.28, 4.85, 0],
+    [12.72, 1.48, 0.28, 6.65, 0],
+    [6.28, 4.32, 0.28, 4.7, 0],
+    [7.12, 6.28, 6.08, 0.26, 0],
   ];
   pathSpecs.forEach(([x, z, width, depth, rotation]) => {
     const path = new THREE.Mesh(new THREE.BoxGeometry(width, 0.035, depth), material);
@@ -2219,33 +2250,21 @@ function addSydneyLandmarks(
   const landmarks = new THREE.Group();
   scene.add(landmarks);
 
-  addBox(landmarks, [6.3, 0.16, 2.25], "#e8d9b6", [-5.65, 0.08, -8.35]);
-
-  const operaGroup = new THREE.Group();
-  operaGroup.position.set(-5.78, 0.2, -8.45);
-  const shellMaterial = new THREE.MeshStandardMaterial({ color: "#fff8e6", roughness: 0.38 });
-  [-1.55, -0.82, -0.08, 0.68, 1.42].forEach((offset, index) => {
-    const shell = new THREE.Mesh(new THREE.ConeGeometry(0.66 + index * 0.05, 2.02 + index * 0.08, 4), shellMaterial);
-    shell.position.set(offset * 0.46, 0.98, Math.abs(offset) * 0.08);
-    shell.rotation.z = offset * 0.24;
-    shell.rotation.y = Math.PI / 4;
-    shell.castShadow = true;
-    operaGroup.add(shell);
-  });
-  landmarks.add(operaGroup);
+  addBox(landmarks, [7.8, 0.16, 2.2], "#e8d9b6", [-7.25, 0.08, -8.45]);
+  addBox(landmarks, [2.8, 0.08, 1.2], "#d5c7a6", [-4.75, 0.16, -7.55], [0, -0.18, 0]);
 
   const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#56646b", roughness: 0.32, metalness: 0.12 });
   const arch = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.07, 8, 72, Math.PI), bridgeMaterial);
-  arch.position.set(-5.8, 1.58, -10.15);
+  arch.position.set(-8.95, 1.58, -10.16);
   arch.rotation.z = Math.PI;
   arch.castShadow = true;
   landmarks.add(arch);
-  addBox(landmarks, [6.25, 0.12, 0.28], bridgeMaterial, [-5.8, 0.62, -10.15]);
+  addBox(landmarks, [6.25, 0.12, 0.28], bridgeMaterial, [-8.95, 0.62, -10.16]);
   [-2.92, 2.92].forEach((x) => {
-    addBox(landmarks, [0.32, 1.44, 0.38], bridgeMaterial, [-5.8 + x, 0.78, -10.15]);
+    addBox(landmarks, [0.32, 1.44, 0.38], bridgeMaterial, [-8.95 + x, 0.78, -10.16]);
   });
   [-2.1, -1.3, -0.48, 0.42, 1.28, 2.12].forEach((x) => {
-    addBox(landmarks, [0.035, 0.74 + (2.2 - Math.abs(x)) * 0.18, 0.04], bridgeMaterial, [-5.8 + x, 0.96, -10.15]);
+    addBox(landmarks, [0.035, 0.74 + (2.2 - Math.abs(x)) * 0.18, 0.04], bridgeMaterial, [-8.95 + x, 0.96, -10.16]);
   });
 
   const skylineMaterials = [
@@ -2254,61 +2273,58 @@ function addSydneyLandmarks(
     new THREE.MeshStandardMaterial({ color: "#263d44", roughness: 0.48, metalness: 0.08 }),
   ];
   for (let i = 0; i < 16; i += 1) {
-    const height = 0.92 + (i % 6) * 0.38;
+    const height = 0.98 + (i % 6) * 0.38;
     const towerGroup = new THREE.Group();
-    towerGroup.position.set(-3.4 + i * 0.46, 0, -6.18 + (i % 3) * 0.43);
+    towerGroup.position.set(-5.85 + i * 0.42, 0, -6.35 + (i % 3) * 0.36);
     towerGroup.rotation.y = (i % 2 ? 0.08 : -0.06);
     addBox(towerGroup, [0.36 + (i % 3) * 0.08, height, 0.44], skylineMaterials[i % skylineMaterials.length], [0, height / 2, 0]);
     if (i % 2 === 0) addFacadeGrid(towerGroup, 0.36 + (i % 3) * 0.08, height, 0.44, 4, 2, "#bde5dc", 0.44);
     landmarks.add(towerGroup);
   }
 
+  [-3.65, -2.72, -1.78].forEach((x, index) => {
+    addBox(landmarks, [0.52, 0.62 + index * 0.16, 0.42], "#6a7075", [x, 0.32 + index * 0.08, -3.18 + index * 0.42]);
+  });
+
   const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.82 });
-  for (let i = 0; i < 7; i += 1) {
-    addBox(landmarks, [0.08, 0.035, 3.4 + i * 0.18], foamMaterial, [14.8 + i * 0.16, 0.12, 1.58 + i * 0.78], [0, -0.08, 0]);
+  for (let i = 0; i < 6; i += 1) {
+    addBox(landmarks, [0.08, 0.035, 3 + i * 0.16], foamMaterial, [14.2 + i * 0.14, 0.12, 1.1 + i * 0.86], [0, -0.1, 0]);
   }
 
   const surfColors = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"];
   for (let i = 0; i < 6; i += 1) {
-    addBox(landmarks, [0.35, 0.055, 1.55], surfColors[i % surfColors.length], [12.04 + i * 0.34, 0.15, 3.15 + i * 0.36], [0, i * 0.24 - 0.52, 0], { roughness: 0.54 });
+    addBox(landmarks, [0.34, 0.055, 1.42], surfColors[i % surfColors.length], [12.1 + i * 0.26, 0.15, 2.62 + i * 0.44], [0, i * 0.22 - 0.48, 0], { roughness: 0.54 });
   }
 
   const cliffMaterial = modelMaterial("#bda474", { roughness: 0.86 });
   for (let i = 0; i < 5; i += 1) {
-    addBox(landmarks, [0.86, 0.62 + i * 0.1, 1.34], cliffMaterial, [10.08 + i * 0.32, 0.31 + i * 0.05, 0.6 + i * 0.35], [0, -0.18, 0]);
+    addBox(landmarks, [0.86, 0.62 + i * 0.1, 1.18], cliffMaterial, [10.86 + i * 0.34, 0.31 + i * 0.05, -2.24 + i * 0.34], [0, -0.18, 0]);
   }
 
-  const houseGroup = new THREE.Group();
-  houseGroup.position.set(10.86, 0.2, 1.32);
-  addBox(houseGroup, [1.05, 0.68, 0.9], "#f6e8c6", [0, 0.42, 0]);
-  addCone(houseGroup, 0.82, 0.48, 4, "#cc6543", [0, 0.98, 0], [0, Math.PI / 4, 0]);
-  addBox(houseGroup, [0.78, 0.24, 0.05], "#94d8e8", [0, 0.5, -0.48]);
-  landmarks.add(houseGroup);
-
   const pitchLine = new THREE.MeshBasicMaterial({ color: "#f9f6e9" });
-  const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 5.35), pitchLine);
-  centerLine.position.set(6.2, 0.11, 7.8);
+  const centerLine = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 4.3), pitchLine);
+  centerLine.position.set(7.1, 0.11, 6.52);
   landmarks.add(centerLine);
   const centerCircle = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.025, 8, 64), pitchLine);
   centerCircle.rotation.x = Math.PI / 2;
-  centerCircle.position.set(6.2, 0.12, 7.8);
+  centerCircle.position.set(7.1, 0.12, 6.52);
   landmarks.add(centerCircle);
-  [2.3, 10.1].forEach((x) => {
+  [4.32, 9.88].forEach((x) => {
     const goal = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.55, 1.6), pitchLine);
-    goal.position.set(x, 0.35, 7.8);
+    goal.position.set(x, 0.35, 6.52);
     landmarks.add(goal);
   });
 
   const gymMaterial = new THREE.MeshStandardMaterial({ color: "#252825", roughness: 0.45, metalness: 0.2 });
   const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.6, 14), gymMaterial);
-  bar.position.set(9.6, 0.45, 5.28);
+  bar.position.set(9.45, 0.45, 4.72);
   bar.rotation.z = Math.PI / 2;
   bar.castShadow = true;
   landmarks.add(bar);
   [-2.25, 2.25].forEach((x) => {
     for (let i = 0; i < 3; i += 1) {
       const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.42 - i * 0.05, 0.42 - i * 0.05, 0.13, 28), gymMaterial);
-      plate.position.set(9.6 + x + i * 0.12 * Math.sign(x), 0.45, 5.28);
+      plate.position.set(9.45 + x + i * 0.12 * Math.sign(x), 0.45, 4.72);
       plate.rotation.z = Math.PI / 2;
       plate.castShadow = true;
       landmarks.add(plate);
@@ -2322,10 +2338,14 @@ function addSydneyLandmarks(
     }
   });
 
-  addLandmarkSign(scene, addTexture, "Sydney Opera House", "harbour anchor", -4.1, -7.2, "#fff1bf");
-  addLandmarkSign(scene, addTexture, "Harbour Bridge", "north-west span", -8.15, -9.04, "#9fb2bd");
-  addLandmarkSign(scene, addTexture, "Bondi Beach", "eastern surf strip", 12.02, 3.02, "#4cbad8");
-  addLandmarkSign(scene, addTexture, "Dover Heights", "home base", 10.0, 0.36, "#f0c36a");
+  addLandmarkSign(scene, addTexture, "Sydney Opera House", "harbour anchor", -5.55, -7.25, "#fff1bf");
+  addLandmarkSign(scene, addTexture, "Harbour Bridge", "north-west span", -9.75, -9.05, "#9fb2bd");
+  addLandmarkSign(scene, addTexture, "CBD", "city core", -5.1, -4.9, "#7da3a9");
+  addLandmarkSign(scene, addTexture, "Surry Hills", "Blackbird block", -0.8, -4.55, "#22d66f");
+  addLandmarkSign(scene, addTexture, "Eveleigh", "Quantium data yard", -4.35, 0.18, "#2f8ec7");
+  addLandmarkSign(scene, addTexture, "Queens Park", "Moriah College", 4.35, 2.48, "#ff5b2e");
+  addLandmarkSign(scene, addTexture, "Dover Heights", "home base", 10.62, -2.28, "#f0c36a");
+  addLandmarkSign(scene, addTexture, "Bondi Beach", "eastern surf strip", 11.6, 4.88, "#4cbad8");
 }
 
 function addLandmarkSign(
@@ -2388,14 +2408,6 @@ function createSoccerBall() {
     patch.lookAt(normal.clone().multiplyScalar(0.7));
     ball.add(patch);
   });
-
-  const marker = new THREE.Mesh(
-    new THREE.TorusGeometry(0.64, 0.025, 8, 42),
-    new THREE.MeshBasicMaterial({ color: "#f7d35f" }),
-  );
-  marker.rotation.x = Math.PI / 2;
-  marker.position.y = 0.035;
-  group.add(marker);
 
   return group;
 }

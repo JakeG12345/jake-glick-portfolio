@@ -105,6 +105,30 @@ canvas {
   touch-action: none;
 }
 
+.city-canvas-fallback {
+  min-height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  border: 2px solid rgba(255, 247, 223, 0.34);
+  background:
+    linear-gradient(rgba(21, 23, 19, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21, 23, 19, 0.08) 1px, transparent 1px),
+    #b9dbe0;
+  background-size: 38px 38px;
+  color: var(--line);
+  font-family: var(--font-geist-mono), monospace;
+  font-weight: 850;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.city-canvas-fallback strong {
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  text-transform: none;
+}
+
 .contact-ribbon {
   position: relative;
   z-index: 2;
