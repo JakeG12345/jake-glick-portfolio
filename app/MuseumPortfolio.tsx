@@ -60,7 +60,7 @@ declare global {
       canvas: { height: number; width: number };
       nearby: string | null;
       objects: number;
-      player: { x: number; z: number };
+      player: { radius: number; x: number; y: number; z: number };
     };
   }
 }
@@ -1311,6 +1311,14 @@ const cityStats = [
 ];
 
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
+const PLAYER_BALL_RADIUS = 0.36;
+const PLAYER_SPEED = 6.9;
+const PLAYER_BOUNDS = {
+  minX: -11.2 + PLAYER_BALL_RADIUS,
+  maxX: 15.2 - PLAYER_BALL_RADIUS,
+  minZ: -11.8 + PLAYER_BALL_RADIUS,
+  maxZ: 9.4 - PLAYER_BALL_RADIUS,
+};
 
 function linkIcon(kind: ProjectLink["kind"]) {
   if (kind === "repo") return Code2;
@@ -2032,7 +2040,7 @@ function CityScene({
 
     const player = createSoccerBall();
     scene.add(player);
-    const target = new THREE.Vector3();
+    const target = new THREE.Vector3(0, PLAYER_BALL_RADIUS, 0);
     const activeIdRef = { current: initialActiveIdRef.current };
     const nearbyIdRef = { current: null as string | null };
     let playerControlled = false;
@@ -2044,11 +2052,11 @@ function CityScene({
         ring.material.color.set(projectId === id ? "#fff8dc" : "#d8dacb");
       });
       const group = projectGroups.get(id);
-      if (group && !playerControlled) target.set(group.position.x, 0, group.position.z + 2.2);
+      if (group && !playerControlled) target.set(group.position.x, PLAYER_BALL_RADIUS, group.position.z + 2.2);
     };
 
     focusProject(initialActiveIdRef.current);
-    const startPosition = new THREE.Vector3(2.8, 0, 2.2);
+    const startPosition = new THREE.Vector3(2.8, PLAYER_BALL_RADIUS, 2.2);
     target.copy(startPosition);
     player.position.copy(startPosition);
 
@@ -2107,27 +2115,30 @@ function CityScene({
       if (keys.has("d") || keys.has("arrowright")) direction.x += 1;
 
       if (direction.lengthSq() > 0) {
-        direction.normalize().multiplyScalar(delta * 7.2);
+        direction.normalize().multiplyScalar(delta * PLAYER_SPEED);
         playerControlled = true;
         const previousPosition = player.position.clone();
         player.position.add(direction);
-        player.position.x = THREE.MathUtils.clamp(player.position.x, -11.2, 15.2);
-        player.position.z = THREE.MathUtils.clamp(player.position.z, -11.8, 9.4);
+        player.position.x = THREE.MathUtils.clamp(player.position.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
+        player.position.y = PLAYER_BALL_RADIUS;
+        player.position.z = THREE.MathUtils.clamp(player.position.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ);
         target.copy(player.position);
         const moved = player.position.clone().sub(previousPosition);
-        const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
-        if (moved.lengthSq() > 0.000001 && Number.isFinite(rollAxis.x)) {
-          player.rotateOnWorldAxis(rollAxis, moved.length() / 0.34);
+        const travel = Math.hypot(moved.x, moved.z);
+        if (travel > 0.0001) {
+          const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
+          player.rotateOnWorldAxis(rollAxis, travel / PLAYER_BALL_RADIUS);
         }
       } else {
         player.position.lerp(target, 0.035);
+        player.position.y = PLAYER_BALL_RADIUS;
       }
 
       if (playerControlled) {
         let nearestId: string | null = null;
         let nearestDistance = Number.POSITIVE_INFINITY;
         projectStops.forEach((stop, id) => {
-          const distance = player.position.distanceTo(stop.position);
+          const distance = Math.hypot(player.position.x - stop.position.x, player.position.z - stop.position.z);
           if (distance < stop.radius && distance < nearestDistance) {
             nearestId = id;
             nearestDistance = distance;
@@ -2171,7 +2182,9 @@ function CityScene({
       objects: scene.children.length,
       player: {
         x: Number(player.position.x.toFixed(2)),
+        y: Number(player.position.y.toFixed(2)),
         z: Number(player.position.z.toFixed(2)),
+        radius: PLAYER_BALL_RADIUS,
       },
     });
     canvas.dataset.cityReady = "true";
@@ -2384,14 +2397,15 @@ function addLandmarkSign(
 function createSoccerBall() {
   const group = new THREE.Group();
   const ball = new THREE.Mesh(
-    new THREE.SphereGeometry(0.34, 48, 24),
+    new THREE.SphereGeometry(PLAYER_BALL_RADIUS, 48, 24),
     new THREE.MeshStandardMaterial({ color: "#f8f7ef", roughness: 0.46 }),
   );
-  ball.position.y = 0.38;
   ball.castShadow = true;
   group.add(ball);
+  group.userData.colliderRadius = PLAYER_BALL_RADIUS;
 
   const patchMaterial = new THREE.MeshBasicMaterial({ color: "#151713", side: THREE.DoubleSide });
+  const patchBaseNormal = new THREE.Vector3(0, 0, 1);
   const patchDirections = [
     new THREE.Vector3(0, 1, 0),
     new THREE.Vector3(0.94, 0.2, 0.28),
@@ -2403,9 +2417,9 @@ function createSoccerBall() {
   ];
   patchDirections.forEach((direction) => {
     const normal = direction.clone().normalize();
-    const patch = new THREE.Mesh(new THREE.CircleGeometry(0.105, 5), patchMaterial);
-    patch.position.copy(normal.clone().multiplyScalar(0.345));
-    patch.lookAt(normal.clone().multiplyScalar(0.7));
+    const patch = new THREE.Mesh(new THREE.CircleGeometry(PLAYER_BALL_RADIUS * 0.31, 5), patchMaterial);
+    patch.position.copy(normal.clone().multiplyScalar(PLAYER_BALL_RADIUS + 0.004));
+    patch.quaternion.setFromUnitVectors(patchBaseNormal, normal);
     ball.add(patch);
   });
 
