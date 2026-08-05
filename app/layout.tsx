@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Jake Glick | Portfolio",
+  title: "Jake Glick | Build Museum",
   description:
-    "Portfolio for Jake Glick, a Sydney-based young entrepreneurial software developer building web, mobile, spreadsheet, and data-story projects.",
+    "A playable portfolio museum for Jake Glick: web apps, mobile games, spreadsheet tools, data-story projects, and early coding artifacts.",
 };
 
 export default function RootLayout({
