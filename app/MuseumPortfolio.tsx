@@ -64,6 +64,7 @@ declare global {
       camera: { fov: number; x: number; y: number; z: number };
       player: { radius: number; x: number; y: number; z: number };
       target: { x: number; y: number; z: number };
+      walkable: boolean;
     };
   }
 }
@@ -1122,6 +1123,42 @@ function nudgePoint(point: MapPoint, x = 0, z = 0): MapPoint {
   return { x: point.x + x, z: point.z + z };
 }
 
+function pathPolygon(start: MapPoint, end: MapPoint, width: number): MapPoint[] {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const length = Math.hypot(dx, dz);
+  if (length < 0.01) return [];
+  const normalX = (-dz / length) * (width / 2);
+  const normalZ = (dx / length) * (width / 2);
+  return [
+    { x: start.x + normalX, z: start.z + normalZ },
+    { x: end.x + normalX, z: end.z + normalZ },
+    { x: end.x - normalX, z: end.z - normalZ },
+    { x: start.x - normalX, z: start.z - normalZ },
+  ];
+}
+
+function pointInPolygon(point: MapPoint, polygon: MapPoint[]) {
+  let inside = false;
+  for (
+    let currentIndex = 0, previousIndex = polygon.length - 1;
+    currentIndex < polygon.length;
+    previousIndex = currentIndex, currentIndex += 1
+  ) {
+    const current = polygon[currentIndex];
+    const previous = polygon[previousIndex];
+    const intersects =
+      current.z > point.z !== previous.z > point.z &&
+      point.x < ((previous.x - current.x) * (point.z - current.z)) / (previous.z - current.z) + current.x;
+    if (intersects) inside = !inside;
+  }
+  return inside;
+}
+
+function pointInWalkableAreas(x: number, z: number, areas: MapPoint[][]) {
+  return areas.some((area) => pointInPolygon({ x, z }, area));
+}
+
 const sydneyPlaces = {
   harbourBridge: mapSydney(151.2108, -33.8523, { x: -0.5, z: 0.2 }),
   operaHouse: mapSydney(151.2153, -33.8568, { x: -0.25, z: 0.35 }),
@@ -2060,8 +2097,7 @@ function CityScene({
     const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch, roughness: 0.86 });
     const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
 
-    addPlane(180, 150, 9, -5, waterMaterial, -0.07);
-    addFlatShape(groundGroup, [
+    const mainLandShape = [
       { x: -15.1, z: -9.15 },
       { x: -12.35, z: -10.25 },
       { x: -8.65, z: -9.55 },
@@ -2084,8 +2120,8 @@ function CityScene({
       { x: -5.25, z: 9.35 },
       { x: -11.95, z: 5.35 },
       { x: -15.25, z: 0.35 },
-    ], parkMaterial);
-    addFlatShape(groundGroup, [
+    ];
+    const harbourWaterShape = [
       { x: -15.5, z: -15.45 },
       { x: 4.65, z: -15.45 },
       { x: 4.35, z: -11.95 },
@@ -2096,28 +2132,42 @@ function CityScene({
       { x: -8.35, z: -9.28 },
       { x: -10.7, z: -10.08 },
       { x: -15.5, z: -10.45 },
-    ], harbourMaterial, 0.015);
-    addFlatShape(groundGroup, [
+    ];
+    const northShoreShape = [
       { x: sydneyPlaces.harbourBridge.x - 4.9, z: sydneyPlaces.harbourBridge.z - 2.25 },
       { x: sydneyPlaces.harbourBridge.x + 4.55, z: sydneyPlaces.harbourBridge.z - 2.05 },
       { x: sydneyPlaces.harbourBridge.x + 4.9, z: sydneyPlaces.harbourBridge.z - 0.55 },
       { x: sydneyPlaces.harbourBridge.x + 1.55, z: sydneyPlaces.harbourBridge.z + 0.05 },
       { x: sydneyPlaces.harbourBridge.x - 1.35, z: sydneyPlaces.harbourBridge.z - 0.18 },
       { x: sydneyPlaces.harbourBridge.x - 4.75, z: sydneyPlaces.harbourBridge.z - 0.85 },
-    ], scrubMaterial, 0.026);
-    addFlatShape(groundGroup, [
+    ];
+    const bondiSandShape = [
       { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
       { x: sydneyPlaces.bondiBeach.x + 2.45, z: sydneyPlaces.bondiBeach.z - 1.05 },
       { x: sydneyPlaces.bondiBeach.x + 2.15, z: sydneyPlaces.bondiBeach.z + 2.8 },
       { x: sydneyPlaces.bondiBeach.x - 1.35, z: sydneyPlaces.bondiBeach.z + 2.65 },
       { x: sydneyPlaces.bondiBeach.x - 2.1, z: sydneyPlaces.bondiBeach.z + 0.85 },
-    ], sandMaterial, 0.035);
-    addFlatShape(groundGroup, [
+    ];
+    const operaPromenadeShape = [
       { x: sydneyPlaces.operaHouse.x - 3.45, z: sydneyPlaces.operaHouse.z + 0.15 },
       { x: sydneyPlaces.operaHouse.x + 3.55, z: sydneyPlaces.operaHouse.z + 0.48 },
       { x: sydneyPlaces.operaHouse.x + 3.1, z: sydneyPlaces.operaHouse.z + 2.15 },
       { x: sydneyPlaces.operaHouse.x - 2.7, z: sydneyPlaces.operaHouse.z + 2.05 },
-    ], promenadeMaterial, 0.032);
+    ];
+    const walkableAreas = [
+      mainLandShape,
+      northShoreShape,
+      bondiSandShape,
+      operaPromenadeShape,
+      pathPolygon(sydneyPlaces.harbourBridge, sydneyPlaces.operaHouse, 1.28),
+    ].filter((area) => area.length >= 3);
+
+    addPlane(180, 150, 9, -5, waterMaterial, -0.07);
+    addFlatShape(groundGroup, mainLandShape, parkMaterial);
+    addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
+    addFlatShape(groundGroup, northShoreShape, scrubMaterial, 0.026);
+    addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.035);
+    addFlatShape(groundGroup, operaPromenadeShape, promenadeMaterial, 0.032);
     addFlatShape(groundGroup, [
       { x: sydneyPlaces.cbd.x - 3.3, z: sydneyPlaces.cbd.z - 1.55 },
       { x: sydneyPlaces.cbd.x + 3.45, z: sydneyPlaces.cbd.z - 1.2 },
@@ -2286,12 +2336,14 @@ function CityScene({
         return;
       }
       if (raycaster.ray.intersectPlane(groundPlane, clickedPoint)) {
-        playerControlled = true;
-        target.set(
-          THREE.MathUtils.clamp(clickedPoint.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX),
-          PLAYER_BALL_RADIUS,
-          THREE.MathUtils.clamp(clickedPoint.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ),
-        );
+        const nextTarget = {
+          x: THREE.MathUtils.clamp(clickedPoint.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX),
+          z: THREE.MathUtils.clamp(clickedPoint.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ),
+        };
+        if (pointInWalkableAreas(nextTarget.x, nextTarget.z, walkableAreas)) {
+          playerControlled = true;
+          target.set(nextTarget.x, PLAYER_BALL_RADIUS, nextTarget.z);
+        }
       }
     };
 
@@ -2330,10 +2382,18 @@ function CityScene({
         direction.normalize().multiplyScalar(delta * PLAYER_SPEED);
         playerControlled = true;
         const previousPosition = player.position.clone();
-        player.position.add(direction);
-        player.position.x = THREE.MathUtils.clamp(player.position.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
+        const nextX = THREE.MathUtils.clamp(previousPosition.x + direction.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
+        const nextZ = THREE.MathUtils.clamp(previousPosition.z + direction.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ);
+        if (pointInWalkableAreas(nextX, nextZ, walkableAreas)) {
+          player.position.set(nextX, PLAYER_BALL_RADIUS, nextZ);
+        } else if (pointInWalkableAreas(nextX, previousPosition.z, walkableAreas)) {
+          player.position.set(nextX, PLAYER_BALL_RADIUS, previousPosition.z);
+        } else if (pointInWalkableAreas(previousPosition.x, nextZ, walkableAreas)) {
+          player.position.set(previousPosition.x, PLAYER_BALL_RADIUS, nextZ);
+        } else {
+          player.position.copy(previousPosition);
+        }
         player.position.y = PLAYER_BALL_RADIUS;
-        player.position.z = THREE.MathUtils.clamp(player.position.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ);
         target.copy(player.position);
         const moved = player.position.clone().sub(previousPosition);
         const travel = Math.hypot(moved.x, moved.z);
@@ -2344,7 +2404,13 @@ function CityScene({
         }
       } else {
         const previousPosition = player.position.clone();
-        player.position.lerp(target, 0.035);
+        const nextPosition = player.position.clone().lerp(target, 0.035);
+        if (pointInWalkableAreas(nextPosition.x, nextPosition.z, walkableAreas)) {
+          player.position.copy(nextPosition);
+        } else {
+          target.copy(previousPosition);
+          player.position.copy(previousPosition);
+        }
         player.position.y = PLAYER_BALL_RADIUS;
         const moved = player.position.clone().sub(previousPosition);
         const travel = Math.hypot(moved.x, moved.z);
@@ -2437,6 +2503,7 @@ function CityScene({
         y: Number(target.y.toFixed(2)),
         z: Number(target.z.toFixed(2)),
       },
+      walkable: pointInWalkableAreas(player.position.x, player.position.z, walkableAreas),
     });
     canvas.dataset.cityReady = "true";
     canvas.dataset.cityObjects = String(scene.children.length);
