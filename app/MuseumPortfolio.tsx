@@ -1159,6 +1159,37 @@ function pointInWalkableAreas(x: number, z: number, areas: MapPoint[][]) {
   return areas.some((area) => pointInPolygon({ x, z }, area));
 }
 
+function pointInWalkableAreasWithRadius(x: number, z: number, areas: MapPoint[][], radius: number) {
+  if (!pointInWalkableAreas(x, z, areas)) return false;
+  if (radius <= 0.01) return true;
+
+  const sampleCount = 14;
+  for (let i = 0; i < sampleCount; i += 1) {
+    const angle = (i / sampleCount) * Math.PI * 2;
+    const sampleX = x + Math.cos(angle) * radius;
+    const sampleZ = z + Math.sin(angle) * radius;
+    if (!pointInWalkableAreas(sampleX, sampleZ, areas)) return false;
+  }
+  return true;
+}
+
+function segmentInWalkableAreas(start: MapPoint, end: MapPoint, areas: MapPoint[][], radius: number) {
+  const distance = Math.hypot(end.x - start.x, end.z - start.z);
+  const steps = Math.max(1, Math.ceil(distance / Math.max(0.16, radius * 0.55)));
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    if (!pointInWalkableAreasWithRadius(
+      THREE.MathUtils.lerp(start.x, end.x, t),
+      THREE.MathUtils.lerp(start.z, end.z, t),
+      areas,
+      radius,
+    )) {
+      return false;
+    }
+  }
+  return true;
+}
+
 const sydneyPlaces = {
   harbourBridge: mapSydney(151.2108, -33.8523, { x: -0.5, z: 0.2 }),
   milsonsPoint: mapSydney(151.2116, -33.8462, { x: -0.2, z: 0.55 }),
@@ -1383,10 +1414,97 @@ const PLAYER_SPEED = 7.55;
 const PLAYER_BOUNDS = {
   minX: -16.9 + PLAYER_BALL_RADIUS,
   maxX: 24.7 - PLAYER_BALL_RADIUS,
-  minZ: -20.25 + PLAYER_BALL_RADIUS,
+  minZ: -26.4 + PLAYER_BALL_RADIUS,
   maxZ: 11.65 - PLAYER_BALL_RADIUS,
 };
 const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
+type CityRouteKind = "road" | "rail" | "bridge";
+type CityRoute = {
+  start: MapPoint;
+  end: MapPoint;
+  width: number;
+  kind: CityRouteKind;
+  walkWidth?: number;
+};
+
+const cityRoutes: CityRoute[] = [
+  { start: sydneyPlaces.northSydney, end: sydneyPlaces.milsonsPoint, width: 0.36, walkWidth: 1.36, kind: "road" },
+  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.kirribilli, width: 0.28, walkWidth: 1.1, kind: "road" },
+  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.harbourBridge, width: 0.42, walkWidth: 1.68, kind: "bridge" },
+  { start: sydneyPlaces.northSydney, end: sydneyPlaces.milsonsPoint, width: 0.13, kind: "rail" },
+  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.harbourBridge, width: 0.13, kind: "rail" },
+  { start: sydneyPlaces.harbourBridge, end: sydneyPlaces.operaHouse, width: 0.38, walkWidth: 1.48, kind: "bridge" },
+  { start: sydneyPlaces.operaHouse, end: sydneyPlaces.cbd, width: 0.38, walkWidth: 1.2, kind: "road" },
+  { start: sydneyPlaces.cbd, end: sydneyPlaces.blackbird, width: 0.34, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.blackbird, end: sydneyPlaces.eveleigh, width: 0.32, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.cbd, end: sydneyPlaces.bondiJunction, width: 0.36, walkWidth: 1.12, kind: "road" },
+  { start: sydneyPlaces.bondiJunction, end: sydneyPlaces.queensPark, width: 0.32, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.queensPark, end: sydneyPlaces.sportsField, width: 0.3, walkWidth: 1.04, kind: "road" },
+  { start: sydneyPlaces.bondiJunction, end: sydneyPlaces.doverHeights, width: 0.3, walkWidth: 1.04, kind: "road" },
+  { start: sydneyPlaces.doverHeights, end: sydneyPlaces.bondiBeach, width: 0.28, walkWidth: 1.02, kind: "road" },
+  { start: sydneyPlaces.bondiJunction, end: sydneyPlaces.bondiBeach, width: 0.28, walkWidth: 1.02, kind: "road" },
+  { start: sydneyPlaces.centralStation, end: sydneyPlaces.eveleigh, width: 0.16, kind: "rail" },
+];
+
+const cityNavigationNodes = [
+  sydneyPlaces.northSydney,
+  sydneyPlaces.milsonsPoint,
+  sydneyPlaces.kirribilli,
+  sydneyPlaces.harbourBridge,
+  sydneyPlaces.operaHouse,
+  sydneyPlaces.cbd,
+  sydneyPlaces.blackbird,
+  sydneyPlaces.eveleigh,
+  sydneyPlaces.centralStation,
+  sydneyPlaces.bondiJunction,
+  sydneyPlaces.queensPark,
+  sydneyPlaces.sportsField,
+  sydneyPlaces.doverHeights,
+  sydneyPlaces.bondiBeach,
+];
+
+function findWalkableRoute(start: MapPoint, destination: MapPoint, areas: MapPoint[][], radius: number) {
+  if (!pointInWalkableAreasWithRadius(destination.x, destination.z, areas, radius)) return null;
+
+  const nodes = [start, ...cityNavigationNodes, destination];
+  const destinationIndex = nodes.length - 1;
+  const distances = nodes.map(() => Number.POSITIVE_INFINITY);
+  const previous = nodes.map(() => -1);
+  const visited = nodes.map(() => false);
+  distances[0] = 0;
+
+  for (let step = 0; step < nodes.length; step += 1) {
+    let current = -1;
+    let currentDistance = Number.POSITIVE_INFINITY;
+    for (let index = 0; index < nodes.length; index += 1) {
+      if (!visited[index] && distances[index] < currentDistance) {
+        current = index;
+        currentDistance = distances[index];
+      }
+    }
+    if (current === -1 || current === destinationIndex) break;
+
+    visited[current] = true;
+    for (let next = 0; next < nodes.length; next += 1) {
+      if (visited[next] || next === current) continue;
+      if (!segmentInWalkableAreas(nodes[current], nodes[next], areas, radius)) continue;
+      const edgeDistance = Math.hypot(nodes[current].x - nodes[next].x, nodes[current].z - nodes[next].z);
+      const candidateDistance = currentDistance + edgeDistance;
+      if (candidateDistance < distances[next]) {
+        distances[next] = candidateDistance;
+        previous[next] = current;
+      }
+    }
+  }
+
+  if (previous[destinationIndex] === -1) return null;
+
+  const route: MapPoint[] = [];
+  for (let index = destinationIndex; index !== 0; index = previous[index]) {
+    route.unshift(nodes[index]);
+  }
+  return route;
+}
 
 function isEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false;
@@ -2137,16 +2255,31 @@ function CityScene({
       { x: -15.5, z: -10.45 },
     ];
     const northShoreShape = [
-      { x: sydneyPlaces.northSydney.x - 7.2, z: sydneyPlaces.northSydney.z - 1.15 },
-      { x: sydneyPlaces.northSydney.x - 3.25, z: sydneyPlaces.northSydney.z - 2.3 },
-      { x: sydneyPlaces.northSydney.x + 2.65, z: sydneyPlaces.northSydney.z - 1.95 },
-      { x: sydneyPlaces.kirribilli.x + 4.25, z: sydneyPlaces.kirribilli.z - 0.65 },
-      { x: sydneyPlaces.kirribilli.x + 3.55, z: sydneyPlaces.kirribilli.z + 1.35 },
-      { x: sydneyPlaces.harbourBridge.x + 4.95, z: sydneyPlaces.harbourBridge.z - 0.2 },
-      { x: sydneyPlaces.harbourBridge.x + 2.35, z: sydneyPlaces.harbourBridge.z + 0.6 },
-      { x: sydneyPlaces.harbourBridge.x - 1.55, z: sydneyPlaces.harbourBridge.z + 0.3 },
-      { x: sydneyPlaces.milsonsPoint.x - 3.7, z: sydneyPlaces.milsonsPoint.z + 0.85 },
-      { x: sydneyPlaces.northSydney.x - 6.6, z: sydneyPlaces.northSydney.z + 0.9 },
+      { x: sydneyPlaces.northSydney.x - 10.9, z: sydneyPlaces.northSydney.z - 6.2 },
+      { x: sydneyPlaces.northSydney.x - 5.45, z: sydneyPlaces.northSydney.z - 7.45 },
+      { x: sydneyPlaces.northSydney.x + 2.9, z: sydneyPlaces.northSydney.z - 6.95 },
+      { x: sydneyPlaces.northSydney.x + 8.2, z: sydneyPlaces.northSydney.z - 4.3 },
+      { x: sydneyPlaces.kirribilli.x + 9.25, z: sydneyPlaces.kirribilli.z - 2.35 },
+      { x: sydneyPlaces.kirribilli.x + 7.4, z: sydneyPlaces.kirribilli.z + 1.75 },
+      { x: sydneyPlaces.harbourBridge.x + 5.35, z: sydneyPlaces.harbourBridge.z + 1.24 },
+      { x: sydneyPlaces.harbourBridge.x + 2.1, z: sydneyPlaces.harbourBridge.z + 0.54 },
+      { x: sydneyPlaces.harbourBridge.x - 2.55, z: sydneyPlaces.harbourBridge.z + 0.38 },
+      { x: sydneyPlaces.milsonsPoint.x - 5.75, z: sydneyPlaces.milsonsPoint.z + 1.62 },
+      { x: sydneyPlaces.northSydney.x - 10.25, z: sydneyPlaces.northSydney.z - 0.45 },
+    ];
+    const lavenderBayShape = [
+      { x: sydneyPlaces.milsonsPoint.x - 5.45, z: sydneyPlaces.milsonsPoint.z + 1.58 },
+      { x: sydneyPlaces.milsonsPoint.x - 3.45, z: sydneyPlaces.milsonsPoint.z + 0.56 },
+      { x: sydneyPlaces.milsonsPoint.x - 0.8, z: sydneyPlaces.milsonsPoint.z + 0.82 },
+      { x: sydneyPlaces.milsonsPoint.x - 1.15, z: sydneyPlaces.milsonsPoint.z + 2.38 },
+      { x: sydneyPlaces.milsonsPoint.x - 3.92, z: sydneyPlaces.milsonsPoint.z + 2.98 },
+    ];
+    const kirribilliHeadlandShape = [
+      { x: sydneyPlaces.kirribilli.x - 0.5, z: sydneyPlaces.kirribilli.z - 0.1 },
+      { x: sydneyPlaces.kirribilli.x + 4.8, z: sydneyPlaces.kirribilli.z - 0.42 },
+      { x: sydneyPlaces.kirribilli.x + 5.55, z: sydneyPlaces.kirribilli.z + 1.65 },
+      { x: sydneyPlaces.kirribilli.x + 2.1, z: sydneyPlaces.kirribilli.z + 2.95 },
+      { x: sydneyPlaces.kirribilli.x - 0.85, z: sydneyPlaces.kirribilli.z + 1.9 },
     ];
     const bondiSandShape = [
       { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
@@ -2162,10 +2295,10 @@ function CityScene({
       { x: sydneyPlaces.operaHouse.x - 2.7, z: sydneyPlaces.operaHouse.z + 2.05 },
     ];
     const northSydneyDistrictShape = [
-      { x: sydneyPlaces.northSydney.x - 3.05, z: sydneyPlaces.northSydney.z - 1.05 },
-      { x: sydneyPlaces.northSydney.x + 3.2, z: sydneyPlaces.northSydney.z - 0.82 },
-      { x: sydneyPlaces.northSydney.x + 2.85, z: sydneyPlaces.northSydney.z + 1.82 },
-      { x: sydneyPlaces.northSydney.x - 3.4, z: sydneyPlaces.northSydney.z + 1.52 },
+      { x: sydneyPlaces.northSydney.x - 4.75, z: sydneyPlaces.northSydney.z - 3.2 },
+      { x: sydneyPlaces.northSydney.x + 4.9, z: sydneyPlaces.northSydney.z - 2.8 },
+      { x: sydneyPlaces.northSydney.x + 4.35, z: sydneyPlaces.northSydney.z + 1.9 },
+      { x: sydneyPlaces.northSydney.x - 5.1, z: sydneyPlaces.northSydney.z + 1.55 },
     ];
     const milsonsPromenadeShape = [
       { x: sydneyPlaces.milsonsPoint.x - 3.65, z: sydneyPlaces.milsonsPoint.z + 0.4 },
@@ -2173,25 +2306,37 @@ function CityScene({
       { x: sydneyPlaces.kirribilli.x + 3.25, z: sydneyPlaces.kirribilli.z + 2.15 },
       { x: sydneyPlaces.milsonsPoint.x - 3.45, z: sydneyPlaces.milsonsPoint.z + 2.0 },
     ];
+    const cityRouteWalkways = cityRoutes
+      .filter((route) => route.kind !== "rail")
+      .map((route) => pathPolygon(route.start, route.end, route.walkWidth ?? Math.max(1.04, route.width + PLAYER_BALL_RADIUS * 2.35)));
     const walkableAreas = [
       mainLandShape,
       northShoreShape,
+      lavenderBayShape,
+      kirribilliHeadlandShape,
       northSydneyDistrictShape,
       milsonsPromenadeShape,
       bondiSandShape,
       operaPromenadeShape,
-      pathPolygon(sydneyPlaces.harbourBridge, sydneyPlaces.operaHouse, 1.28),
-      pathPolygon(sydneyPlaces.harbourBridge, sydneyPlaces.milsonsPoint, 1.45),
-      pathPolygon(sydneyPlaces.milsonsPoint, sydneyPlaces.northSydney, 1.18),
-      pathPolygon(sydneyPlaces.milsonsPoint, sydneyPlaces.kirribilli, 0.9),
+      ...cityRouteWalkways,
     ].filter((area) => area.length >= 3);
 
     addPlane(180, 150, 9, -5, waterMaterial, -0.07);
     addFlatShape(groundGroup, mainLandShape, parkMaterial);
     addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
     addFlatShape(groundGroup, northShoreShape, scrubMaterial, 0.026);
+    addFlatShape(groundGroup, lavenderBayShape, scrubMaterial, 0.03);
+    addFlatShape(groundGroup, kirribilliHeadlandShape, scrubMaterial, 0.031);
     addFlatShape(groundGroup, northSydneyDistrictShape, districtMaterial, 0.049);
     addFlatShape(groundGroup, milsonsPromenadeShape, promenadeMaterial, 0.055);
+    cityRoutes
+      .filter((route) => route.kind === "bridge")
+      .forEach((route) => addFlatShape(
+        groundGroup,
+        pathPolygon(route.start, route.end, route.walkWidth ?? 1.45),
+        promenadeMaterial,
+        0.058,
+      ));
     addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.035);
     addFlatShape(groundGroup, operaPromenadeShape, promenadeMaterial, 0.032);
     addFlatShape(groundGroup, [
@@ -2323,6 +2468,14 @@ function CityScene({
     const cameraForward = new THREE.Vector3();
     const cameraRight = new THREE.Vector3();
     const cameraLead = new THREE.Vector3();
+    const queuedTargets: THREE.Vector3[] = [];
+
+    const setAutoRoute = (route: MapPoint[]) => {
+      queuedTargets.length = 0;
+      const [first, ...rest] = route;
+      rest.forEach((point) => queuedTargets.push(new THREE.Vector3(point.x, PLAYER_BALL_RADIUS, point.z)));
+      if (first) target.set(first.x, PLAYER_BALL_RADIUS, first.z);
+    };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -2366,9 +2519,15 @@ function CityScene({
           x: THREE.MathUtils.clamp(clickedPoint.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX),
           z: THREE.MathUtils.clamp(clickedPoint.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ),
         };
-        if (pointInWalkableAreas(nextTarget.x, nextTarget.z, walkableAreas)) {
+        const route = findWalkableRoute(
+          { x: player.position.x, z: player.position.z },
+          nextTarget,
+          walkableAreas,
+          PLAYER_BALL_RADIUS,
+        );
+        if (route) {
           playerControlled = true;
-          target.set(nextTarget.x, PLAYER_BALL_RADIUS, nextTarget.z);
+          setAutoRoute(route);
         }
       }
     };
@@ -2407,14 +2566,15 @@ function CityScene({
       if (direction.lengthSq() > 0) {
         direction.normalize().multiplyScalar(delta * PLAYER_SPEED);
         playerControlled = true;
+        queuedTargets.length = 0;
         const previousPosition = player.position.clone();
         const nextX = THREE.MathUtils.clamp(previousPosition.x + direction.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
         const nextZ = THREE.MathUtils.clamp(previousPosition.z + direction.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ);
-        if (pointInWalkableAreas(nextX, nextZ, walkableAreas)) {
+        if (pointInWalkableAreasWithRadius(nextX, nextZ, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(nextX, PLAYER_BALL_RADIUS, nextZ);
-        } else if (pointInWalkableAreas(nextX, previousPosition.z, walkableAreas)) {
+        } else if (pointInWalkableAreasWithRadius(nextX, previousPosition.z, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(nextX, PLAYER_BALL_RADIUS, previousPosition.z);
-        } else if (pointInWalkableAreas(previousPosition.x, nextZ, walkableAreas)) {
+        } else if (pointInWalkableAreasWithRadius(previousPosition.x, nextZ, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(previousPosition.x, PLAYER_BALL_RADIUS, nextZ);
         } else {
           player.position.copy(previousPosition);
@@ -2430,10 +2590,22 @@ function CityScene({
         }
       } else {
         const previousPosition = player.position.clone();
-        const nextPosition = player.position.clone().lerp(target, 0.035);
-        if (pointInWalkableAreas(nextPosition.x, nextPosition.z, walkableAreas)) {
+        if (Math.hypot(player.position.x - target.x, player.position.z - target.z) < 0.18 && queuedTargets.length > 0) {
+          target.copy(queuedTargets.shift()!);
+        }
+
+        const toTarget = target.clone().sub(player.position);
+        toTarget.y = 0;
+        const remaining = Math.hypot(toTarget.x, toTarget.z);
+        if (remaining > 0.001) toTarget.multiplyScalar(1 / remaining);
+        const travelDistance = Math.min(remaining, delta * PLAYER_SPEED * 0.72);
+        const nextPosition = player.position.clone();
+        nextPosition.x += toTarget.x * travelDistance;
+        nextPosition.z += toTarget.z * travelDistance;
+        if (pointInWalkableAreasWithRadius(nextPosition.x, nextPosition.z, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.copy(nextPosition);
         } else {
+          queuedTargets.length = 0;
           target.copy(previousPosition);
           player.position.copy(previousPosition);
         }
@@ -2529,7 +2701,20 @@ function CityScene({
         y: Number(target.y.toFixed(2)),
         z: Number(target.z.toFixed(2)),
       },
+      routeQueue: queuedTargets.length,
       walkable: pointInWalkableAreas(player.position.x, player.position.z, walkableAreas),
+      radiusWalkable: pointInWalkableAreasWithRadius(player.position.x, player.position.z, walkableAreas, PLAYER_BALL_RADIUS),
+      safeLandmarks: {
+        harbourBridge: pointInWalkableAreasWithRadius(sydneyPlaces.harbourBridge.x, sydneyPlaces.harbourBridge.z, walkableAreas, PLAYER_BALL_RADIUS),
+        milsonsPoint: pointInWalkableAreasWithRadius(sydneyPlaces.milsonsPoint.x, sydneyPlaces.milsonsPoint.z, walkableAreas, PLAYER_BALL_RADIUS),
+        northSydney: pointInWalkableAreasWithRadius(sydneyPlaces.northSydney.x, sydneyPlaces.northSydney.z, walkableAreas, PLAYER_BALL_RADIUS),
+      },
+      northSydneyReachable: Boolean(findWalkableRoute(
+        { x: player.position.x, z: player.position.z },
+        sydneyPlaces.northSydney,
+        walkableAreas,
+        PLAYER_BALL_RADIUS,
+      )),
     });
     canvas.dataset.cityReady = "true";
     canvas.dataset.cityObjects = String(scene.children.length);
@@ -2580,34 +2765,20 @@ function CityScene({
 
 function addCityPaths(scene: THREE.Scene) {
   const roadMaterial = new THREE.MeshStandardMaterial({ color: "#e7d093", roughness: 0.86 });
+  const bridgeMaterial = new THREE.MeshStandardMaterial({ color: "#d8c494", roughness: 0.76 });
   const railMaterial = new THREE.MeshStandardMaterial({ color: "#29343a", roughness: 0.62, metalness: 0.06 });
-  const routes: Array<[MapPoint, MapPoint, number, THREE.Material]> = [
-    [sydneyPlaces.northSydney, sydneyPlaces.milsonsPoint, 0.3, roadMaterial],
-    [sydneyPlaces.milsonsPoint, sydneyPlaces.kirribilli, 0.22, roadMaterial],
-    [sydneyPlaces.milsonsPoint, sydneyPlaces.harbourBridge, 0.28, roadMaterial],
-    [sydneyPlaces.northSydney, sydneyPlaces.milsonsPoint, 0.13, railMaterial],
-    [sydneyPlaces.milsonsPoint, sydneyPlaces.harbourBridge, 0.13, railMaterial],
-    [sydneyPlaces.harbourBridge, sydneyPlaces.operaHouse, 0.28, roadMaterial],
-    [sydneyPlaces.operaHouse, sydneyPlaces.cbd, 0.34, roadMaterial],
-    [sydneyPlaces.cbd, sydneyPlaces.blackbird, 0.34, roadMaterial],
-    [sydneyPlaces.blackbird, sydneyPlaces.eveleigh, 0.32, roadMaterial],
-    [sydneyPlaces.cbd, sydneyPlaces.bondiJunction, 0.36, roadMaterial],
-    [sydneyPlaces.bondiJunction, sydneyPlaces.queensPark, 0.32, roadMaterial],
-    [sydneyPlaces.queensPark, sydneyPlaces.sportsField, 0.3, roadMaterial],
-    [sydneyPlaces.bondiJunction, sydneyPlaces.doverHeights, 0.3, roadMaterial],
-    [sydneyPlaces.doverHeights, sydneyPlaces.bondiBeach, 0.28, roadMaterial],
-    [sydneyPlaces.bondiJunction, sydneyPlaces.bondiBeach, 0.28, roadMaterial],
-    [sydneyPlaces.centralStation, sydneyPlaces.eveleigh, 0.16, railMaterial],
-  ];
 
-  routes.forEach(([start, end, width, material]) => {
-    addPathSegment(scene, start, end, width, material);
+  cityRoutes.forEach((route) => {
+    const material = route.kind === "rail" ? railMaterial : route.kind === "bridge" ? bridgeMaterial : roadMaterial;
+    addPathSegment(scene, route.start, route.end, route.width, material);
   });
 
   [
     sydneyPlaces.northSydney,
     sydneyPlaces.milsonsPoint,
     sydneyPlaces.kirribilli,
+    sydneyPlaces.harbourBridge,
+    sydneyPlaces.operaHouse,
     sydneyPlaces.cbd,
     sydneyPlaces.blackbird,
     sydneyPlaces.eveleigh,
@@ -2674,6 +2845,10 @@ function addLandscapeDetails(scene: THREE.Scene) {
     { x: sydneyPlaces.eveleigh.x + 2.45, z: sydneyPlaces.eveleigh.z + 2.05 },
     { x: sydneyPlaces.northSydney.x - 2.95, z: sydneyPlaces.northSydney.z + 0.55 },
     { x: sydneyPlaces.northSydney.x + 2.55, z: sydneyPlaces.northSydney.z + 0.35 },
+    { x: sydneyPlaces.northSydney.x - 6.85, z: sydneyPlaces.northSydney.z - 1.1 },
+    { x: sydneyPlaces.northSydney.x - 4.35, z: sydneyPlaces.northSydney.z - 3.7 },
+    { x: sydneyPlaces.northSydney.x + 0.85, z: sydneyPlaces.northSydney.z - 4.35 },
+    { x: sydneyPlaces.northSydney.x + 5.1, z: sydneyPlaces.northSydney.z - 2.65 },
     { x: sydneyPlaces.milsonsPoint.x - 2.4, z: sydneyPlaces.milsonsPoint.z + 0.92 },
     { x: sydneyPlaces.kirribilli.x + 2.35, z: sydneyPlaces.kirribilli.z + 1.1 },
     { x: sydneyPlaces.queensPark.x - 2.6, z: sydneyPlaces.queensPark.z - 0.7 },
@@ -2746,6 +2921,27 @@ function addLandscapeDetails(scene: THREE.Scene) {
   addBox(details, [0.34, 0.06, 1.28], "#d5c7a6", [sydneyPlaces.kirribilli.x + 1.72, 0.11, sydneyPlaces.kirribilli.z + 1.48], [0, 0.36, 0], { roughness: 0.72 });
 
   [
+    [sydneyPlaces.milsonsPoint.x - 4.55, sydneyPlaces.milsonsPoint.z + 1.58, 2.6, -0.2],
+    [sydneyPlaces.milsonsPoint.x - 1.55, sydneyPlaces.milsonsPoint.z + 2.04, 2.2, 0.12],
+    [sydneyPlaces.kirribilli.x + 1.2, sydneyPlaces.kirribilli.z + 2.22, 2.5, 0.32],
+    [sydneyPlaces.kirribilli.x + 3.95, sydneyPlaces.kirribilli.z + 1.38, 1.8, -0.44],
+    [sydneyPlaces.harbourBridge.x - 1.2, sydneyPlaces.harbourBridge.z + 0.64, 2.15, -0.05],
+  ].forEach(([x, z, length, rotation], index) => {
+    addBox(details, [length, 0.08, 0.16], "#bba985", [x, 0.14, z], [0, rotation, 0], { roughness: 0.84 });
+    addBox(details, [length * 0.92, 0.024, 0.08], wakeMaterial, [x, 0.19, z + 0.12 + index * 0.01], [0, rotation, 0]);
+  });
+
+  for (let i = 0; i < 13; i += 1) {
+    addBox(
+      details,
+      [0.46 + (i % 4) * 0.12, 0.22 + (i % 3) * 0.08, 0.36 + (i % 2) * 0.1],
+      rockMaterial,
+      [sydneyPlaces.northSydney.x - 6.05 + i * 0.72, 0.15 + (i % 2) * 0.03, sydneyPlaces.northSydney.z + 0.72 + Math.sin(i * 0.8) * 0.24],
+      [0, -0.28 + i * 0.07, 0.02],
+    );
+  }
+
+  [
     { x: sydneyPlaces.harbourBridge.x + 2.65, z: sydneyPlaces.harbourBridge.z + 0.95 },
     { x: sydneyPlaces.operaHouse.x - 1.8, z: sydneyPlaces.operaHouse.z - 1.1 },
     { x: sydneyPlaces.operaHouse.x + 2.3, z: sydneyPlaces.operaHouse.z - 0.65 },
@@ -2780,8 +2976,10 @@ function addLandscapeDetails(scene: THREE.Scene) {
 
 function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   const bridge = new THREE.Group();
-  bridge.position.set(anchor.x, 0, anchor.z);
-  bridge.rotation.y = -0.08;
+  const northLanding = sydneyPlaces.milsonsPoint;
+  bridge.position.set((anchor.x + northLanding.x) / 2, 0, (anchor.z + northLanding.z) / 2);
+  bridge.rotation.y = -Math.atan2(northLanding.z - anchor.z, northLanding.x - anchor.x);
+  bridge.scale.set(0.82, 1, 1);
   parent.add(bridge);
 
   const steel = modelMaterial("#59686e", { roughness: 0.32, metalness: 0.16 });
@@ -2789,6 +2987,7 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   const pylonMaterial = modelMaterial("#9b9688", { roughness: 0.72 });
   const deckMaterial = modelMaterial("#464d50", { roughness: 0.52, metalness: 0.08 });
   const laneMaterial = new THREE.MeshBasicMaterial({ color: "#f7f1d1" });
+  const lampMaterial = modelMaterial("#ffe9a6", { roughness: 0.35, metalness: 0.03 });
 
   addBox(bridge, [8.25, 0.12, 0.92], "#d8c494", [0, 0.28, 0], [0, 0, 0], { roughness: 0.76 });
   addBox(bridge, [7.7, 0.16, 0.72], deckMaterial, [0, 0.58, 0]);
@@ -2834,6 +3033,8 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   for (let i = 0; i < 11; i += 1) {
     const x = -3.5 + i * 0.7;
     addBox(bridge, [0.055, 0.06, 1.06], darkSteel, [x, 0.94, 0]);
+    addCylinder(bridge, 0.025, 0.025, 0.42, darkSteel, [x, 0.94, -0.62], [0, 0, 0], 8);
+    addCylinder(bridge, 0.055, 0.055, 0.04, lampMaterial, [x, 1.18, -0.62], [0, 0, 0], 12);
     if (i > 0) {
       addCylinderBetween(
         bridge,
@@ -2901,14 +3102,33 @@ function addSydneyLandmarks(
     new THREE.MeshStandardMaterial({ color: "#54747d", roughness: 0.5, metalness: 0.06 }),
     new THREE.MeshStandardMaterial({ color: "#d7c49b", roughness: 0.64 }),
   ];
-  for (let i = 0; i < 10; i += 1) {
-    const height = 0.7 + (i % 5) * 0.32;
+  addBox(landmarks, [6.6, 0.18, 0.74], "#343b3c", [northSydney.x - 0.05, 0.16, northSydney.z - 0.65], [0, 0.05, 0], { roughness: 0.72 });
+  addBox(landmarks, [5.9, 0.08, 0.28], "#d8c494", [northSydney.x - 0.08, 0.3, northSydney.z - 0.22], [0, 0.05, 0], { roughness: 0.7 });
+  for (let i = 0; i < 16; i += 1) {
+    const height = 0.72 + (i % 6) * 0.34;
     const towerGroup = new THREE.Group();
-    towerGroup.position.set(northSydney.x - 2.1 + i * 0.45, 0, northSydney.z - 0.6 + (i % 4) * 0.42);
-    towerGroup.rotation.y = i % 2 ? -0.1 : 0.12;
-    addBox(towerGroup, [0.38 + (i % 3) * 0.08, height, 0.44], northMaterials[i % northMaterials.length], [0, height / 2, 0]);
-    if (i % 3 !== 1) addFacadeGrid(towerGroup, 0.38 + (i % 3) * 0.08, height, 0.44, 4, 2, "#c7f0e6", 0.38);
+    const width = 0.4 + (i % 3) * 0.1;
+    towerGroup.position.set(
+      northSydney.x - 3.0 + (i % 8) * 0.82,
+      0,
+      northSydney.z - 1.3 + Math.floor(i / 8) * 1.08 + (i % 2) * 0.14,
+    );
+    towerGroup.rotation.y = i % 2 ? -0.12 : 0.1;
+    addBox(towerGroup, [width, height, 0.5], northMaterials[i % northMaterials.length], [0, height / 2, 0]);
+    if (i % 3 !== 1) addFacadeGrid(towerGroup, width, height, 0.5, 4, 3, "#c7f0e6", 0.38);
     landmarks.add(towerGroup);
+  }
+  for (let i = 0; i < 18; i += 1) {
+    const suburb = new THREE.Group();
+    suburb.position.set(
+      northSydney.x - 6.35 + (i % 9) * 1.28,
+      0,
+      northSydney.z - 4.65 + Math.floor(i / 9) * 1.15 + (i % 2) * 0.18,
+    );
+    suburb.rotation.y = -0.18 + (i % 5) * 0.08;
+    addBox(suburb, [0.62, 0.22 + (i % 3) * 0.05, 0.52], i % 2 ? "#efe1bf" : "#fff7d6", [0, 0.14, 0], [0, 0, 0], { roughness: 0.76 });
+    addBox(suburb, [0.72, 0.1, 0.6], i % 3 ? "#c84f3b" : "#4cbad8", [0, 0.33 + (i % 3) * 0.025, 0], [0, 0, 0], { roughness: 0.65 });
+    landmarks.add(suburb);
   }
 
   addBox(landmarks, [3.4, 0.08, 0.58], "#d8c494", [milsonsPoint.x - 0.25, 0.12, milsonsPoint.z + 0.6], [0, -0.08, 0], { roughness: 0.7 });
@@ -2918,6 +3138,9 @@ function addSydneyLandmarks(
   addCylinder(landmarks, 0.38, 0.38, 0.08, "#fff7df", [milsonsPoint.x - 0.28, 0.52, milsonsPoint.z - 0.18], [Math.PI / 2, 0, 0], 32);
   addCylinder(landmarks, 0.24, 0.24, 0.09, "#f7d35f", [milsonsPoint.x - 0.28, 0.54, milsonsPoint.z - 0.18], [Math.PI / 2, 0, 0], 32);
   addBox(landmarks, [1.7, 0.08, 0.12], "#fffdf4", [milsonsPoint.x - 0.25, 0.55, milsonsPoint.z - 0.18], [0, -0.08, 0]);
+  addBox(landmarks, [2.6, 0.12, 0.52], "#fff2c9", [milsonsPoint.x - 2.92, 0.22, milsonsPoint.z + 1.42], [0, -0.18, 0], { roughness: 0.68 });
+  addBox(landmarks, [1.85, 0.34, 0.36], "#c84f3b", [milsonsPoint.x - 2.95, 0.43, milsonsPoint.z + 1.42], [0, -0.18, 0], { roughness: 0.62 });
+  addBox(landmarks, [1.1, 0.08, 0.72], "#f7d35f", [milsonsPoint.x - 2.95, 0.67, milsonsPoint.z + 1.42], [0, -0.18, 0]);
 
   addBox(landmarks, [1.45, 0.13, 0.56], "#fff7d6", [kirribilli.x + 0.4, 0.16, kirribilli.z + 0.74], [0, -0.34, 0]);
   addBox(landmarks, [1.08, 0.42, 0.42], "#efe1bf", [kirribilli.x + 0.08, 0.42, kirribilli.z + 0.76], [0, -0.34, 0]);
