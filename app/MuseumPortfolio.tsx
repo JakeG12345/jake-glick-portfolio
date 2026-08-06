@@ -1246,8 +1246,8 @@ const archiveDistricts = {
     entry: { x: -11.65, z: 5.55 },
   },
   learningCentre: {
-    center: { x: 20.45, z: 8.2 },
-    entry: { x: 16.55, z: 7.35 },
+    center: { x: 18.75, z: 14.0 },
+    entry: { x: 17.05, z: 12.9 },
   },
 };
 
@@ -2286,30 +2286,114 @@ function createHarbourModel(project: Project) {
 
 function createBondiModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [3.3, 0.08, 2.36], "#e4c875", [0, 0.04, 0]);
-  addBox(group, [3.25, 0.06, 0.68], "#43a9c5", [0.1, 0.1, -0.9], [0, 0, 0], { roughness: 0.2 });
-  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4" });
-  [-1.25, -0.62, 0.05, 0.72, 1.28].forEach((x, index) => {
-    addBox(group, [0.56, 0.035, 0.04], foam, [x, 0.16, -0.5 - index * 0.055], [0, -0.2, 0]);
+  const sandMaterial = modelMaterial("#e7c873", { roughness: 0.9 });
+  const wetSandMaterial = modelMaterial("#cfae63", { roughness: 0.88 });
+  const waterMaterial = modelMaterial("#35b7c9", { roughness: 0.18, metalness: 0.04 });
+  const promenadeMaterial = modelMaterial("#d8c494", { roughness: 0.76 });
+  const poolWater = modelMaterial("#74d7e8", { roughness: 0.16, metalness: 0.03 });
+  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.9 });
+  const red = modelMaterial("#e6533f", { roughness: 0.52 });
+  const yellow = modelMaterial("#f7d35f", { roughness: 0.52 });
+
+  addFlatShape(group, [
+    { x: -1.95, z: -1.15 },
+    { x: -0.74, z: -1.48 },
+    { x: 0.68, z: -1.36 },
+    { x: 1.6, z: -0.86 },
+    { x: 1.86, z: 0.22 },
+    { x: 1.35, z: 1.23 },
+    { x: 0.04, z: 1.56 },
+    { x: -1.24, z: 1.22 },
+    { x: -2.1, z: 0.34 },
+  ], sandMaterial, 0.042);
+  addFlatShape(group, [
+    { x: 0.42, z: -1.42 },
+    { x: 1.82, z: -1.08 },
+    { x: 2.08, z: -0.18 },
+    { x: 1.72, z: 0.74 },
+    { x: 0.92, z: 1.14 },
+    { x: 0.46, z: 0.6 },
+    { x: 0.74, z: -0.24 },
+  ], waterMaterial, 0.065);
+  addFlatShape(group, [
+    { x: 0.1, z: -1.26 },
+    { x: 0.78, z: -1.16 },
+    { x: 1.16, z: -0.72 },
+    { x: 1.06, z: 0.08 },
+    { x: 0.56, z: 0.76 },
+    { x: 0.2, z: 0.5 },
+    { x: 0.46, z: -0.22 },
+  ], wetSandMaterial, 0.072);
+  for (let i = 0; i < 7; i += 1) {
+    addBox(
+      group,
+      [1.08 - i * 0.045, 0.03, 0.052],
+      foam,
+      [0.52 + i * 0.22, 0.13 + i * 0.004, -1.0 + i * 0.33],
+      [0, -0.56 + i * 0.09, 0],
+    );
+  }
+
+  addBox(group, [2.2, 0.1, 0.44], promenadeMaterial, [-1.0, 0.12, -0.96], [0, 0.1, 0]);
+  addBox(group, [0.08, 0.32, 1.48], promenadeMaterial, [-1.82, 0.24, 0.06], [0, -0.18, 0]);
+
+  addBox(group, [1.48, 0.58, 0.62], "#fff7df", [-1.12, 0.48, -0.58]);
+  addBox(group, [1.66, 0.14, 0.74], "#4cbad8", [-1.12, 0.86, -0.58], [0, 0, 0], { roughness: 0.48 });
+  addBox(group, [0.34, 0.44, 0.07], "#1c2322", [-1.12, 0.46, -0.94]);
+  [-1.56, -0.72].forEach((x) => {
+    addCylinder(group, 0.055, 0.055, 0.5, "#d9d0bc", [x, 0.48, -0.95], [0, 0, 0], 16);
+    addBox(group, [0.19, 0.22, 0.075], "#94d8e8", [x, 0.58, -0.96]);
   });
-  addBox(group, [0.82, 0.56, 0.72], "#f5f0d3", [-0.82, 0.48, 0.42]);
-  addBox(group, [0.96, 0.14, 0.82], "#df513f", [-0.82, 0.82, 0.42]);
-  addBox(group, [0.18, 0.78, 0.16], "#df513f", [-1.2, 0.54, 0.42]);
-  addBox(group, [0.18, 0.78, 0.16], "#df513f", [-0.44, 0.54, 0.42]);
-  addBox(group, [0.62, 0.08, 0.1], "#fffdf4", [-0.82, 1.12, 0.42]);
-  const umbrellas: Array<[number, number, string]> = [
-    [0.34, 0.18, "#f7d35f"],
-    [0.82, 0.55, "#e6533f"],
-    [1.22, 0.18, "#2f8ec7"],
+  addBox(group, [1.74, 0.045, 0.08], project.color, [-1.12, 1.02, -0.95]);
+
+  const pool = new THREE.Group();
+  pool.position.set(1.18, 0, 0.72);
+  pool.rotation.y = -0.34;
+  addBox(pool, [0.96, 0.055, 0.72], "#fffdf4", [0, 0.14, 0]);
+  addBox(pool, [0.78, 0.045, 0.54], poolWater, [0, 0.18, 0]);
+  [-0.18, 0.0, 0.18].forEach((z) => {
+    addBox(pool, [0.74, 0.018, 0.018], foam, [0, 0.215, z]);
+  });
+  addBox(pool, [0.08, 0.2, 0.68], "#d8c494", [-0.55, 0.24, 0]);
+  addBox(pool, [0.36, 0.05, 0.5], "#e8d9b6", [-0.78, 0.16, 0.24], [0, 0.16, 0]);
+  group.add(pool);
+
+  for (let step = 0; step < 4; step += 1) {
+    addBox(group, [0.68 + step * 0.22, 0.055, 0.12], "#bda474", [1.38, 0.14 + step * 0.035, 1.12 + step * 0.16], [0, -0.32, 0]);
+  }
+
+  addBox(group, [0.56, 0.44, 0.46], "#fff4bd", [-1.4, 0.42, 0.62]);
+  addBox(group, [0.68, 0.12, 0.54], red, [-1.4, 0.7, 0.62]);
+  addBox(group, [0.11, 0.76, 0.1], red, [-1.66, 0.48, 0.62]);
+  addBox(group, [0.11, 0.76, 0.1], red, [-1.14, 0.48, 0.62]);
+  addBox(group, [0.5, 0.055, 0.08], yellow, [-1.4, 0.96, 0.62]);
+
+  ([
+    [-0.42, 0.16, "#f7d35f"],
+    [0.1, 0.58, "#e6533f"],
+    [-0.34, 0.94, "#2f8ec7"],
+  ] as const).forEach(([x, z, color], index) => {
+    addCylinder(group, 0.028, 0.028, 0.58, "#654b2f", [x, 0.4, z], [0, 0, 0], 12);
+    addCone(group, 0.28, 0.18, 20, color, [x, 0.74, z], [0, index * 0.52, 0]);
+  });
+  ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"].forEach((color, index) => {
+    addBox(
+      group,
+      [0.22, 0.045, 0.82],
+      color,
+      [-0.72 + index * 0.31, 0.13, 0.94 - (index % 2) * 0.24],
+      [0, -0.72 + index * 0.22, 0],
+      { roughness: 0.54 },
+    );
+  });
+  const patrolFlags: Array<[number, number, THREE.Material]> = [
+    [-0.92, -0.18, red],
+    [-0.18, -0.2, yellow],
   ];
-  umbrellas.forEach(([x, z, color], index) => {
-    addCylinder(group, 0.035, 0.035, 0.72, "#654b2f", [x, 0.48, z], [0, 0, 0], 12);
-    addCone(group, 0.34, 0.22, 24, color, [x, 0.92, z], [0, index * 0.5, 0]);
+  patrolFlags.forEach(([x, z, material], index) => {
+    addCylinder(group, 0.025, 0.025, 0.66, "#151713", [x, 0.44, z], [0, 0, 0], 10);
+    addBox(group, [0.26, 0.18, 0.035], material, [x, 0.72, z], [0, 0.24 + index * 0.2, 0]);
   });
-  ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f"].forEach((color, index) => {
-    addBox(group, [0.28, 0.055, 1.18], color, [0.02 + index * 0.35, 0.14, 0.88], [0, -0.48 + index * 0.17, 0]);
-  });
-  addBox(group, [0.22, 0.22, 0.22], project.color, [-1.32, 0.22, -0.12]);
   return group;
 }
 
@@ -2750,7 +2834,7 @@ function CityScene({
       const group = projectGroups.get(id);
       const project = mapItems.find((item) => item.id === id);
       if (group && project && !playerControlled) {
-        const destination = project.mapKind
+        const destination = project.mapKind || project.category === "Landmark"
           ? { x: group.position.x, z: group.position.z }
           : { x: group.position.x, z: group.position.z + 2.2 };
         const route = findWalkableRoute(
@@ -3675,6 +3759,27 @@ function addSydneyLandmarks(
   for (let i = 0; i < 6; i += 1) {
     addBox(landmarks, [0.34, 0.055, 1.42], surfColors[i % surfColors.length], [bondiBeach.x - 0.9 + i * 0.27, 0.15, bondiBeach.z + 1.0 + i * 0.34], [0, i * 0.22 - 0.48, 0], { roughness: 0.54 });
   }
+  const bondiPool = new THREE.Group();
+  bondiPool.position.set(bondiBeach.x + 1.65, 0, bondiBeach.z + 1.62);
+  bondiPool.rotation.y = -0.28;
+  addBox(bondiPool, [1.34, 0.055, 0.88], "#fffdf4", [0, 0.14, 0], [0, 0, 0], { roughness: 0.48 });
+  addBox(bondiPool, [1.1, 0.04, 0.68], "#74d7e8", [0, 0.18, 0], [0, 0, 0], { roughness: 0.16, metalness: 0.03 });
+  [-0.24, 0, 0.24].forEach((z) => {
+    addBox(bondiPool, [1.04, 0.018, 0.018], foamMaterial, [0, 0.21, z]);
+  });
+  addBox(bondiPool, [0.18, 0.34, 0.94], "#d8c494", [-0.78, 0.32, 0], [0, 0, 0], { roughness: 0.72 });
+  addBox(bondiPool, [0.62, 0.08, 0.36], "#e8d9b6", [-1.05, 0.18, 0.36], [0, 0.12, 0], { roughness: 0.78 });
+  landmarks.add(bondiPool);
+  [-0.65, -0.24, 0.18, 0.58].forEach((offset, index) => {
+    addBox(
+      landmarks,
+      [0.4, 0.045, 0.78],
+      index % 2 ? "#e6533f" : "#f7d35f",
+      [bondiBeach.x - 0.85 + offset, 0.16, bondiBeach.z - 0.06 + index * 0.2],
+      [0, -0.48 + index * 0.18, 0],
+      { roughness: 0.54 },
+    );
+  });
 
   const cliffMaterial = modelMaterial("#bda474", { roughness: 0.86 });
   for (let i = 0; i < 5; i += 1) {
