@@ -64,7 +64,15 @@ declare global {
       camera: { fov: number; x: number; y: number; z: number };
       player: { radius: number; x: number; y: number; z: number };
       target: { x: number; y: number; z: number };
+      routeQueue: number;
       walkable: boolean;
+      radiusWalkable: boolean;
+      safeLandmarks: { harbourBridge: boolean; milsonsPoint: boolean; northSydney: boolean };
+      northSydneyReachable: boolean;
+      bridgeCrossingReady: boolean;
+      reachableProjectCount: number;
+      screenLandmarks: Record<string, { visible: boolean; x: number; y: number }>;
+      screenWaterSamples: Record<string, { radiusWalkable: boolean; visible: boolean; x: number; y: number }>;
     };
   }
 }
@@ -1216,6 +1224,21 @@ const sydneyPlaces = {
   bondiBeach: mapSydney(151.2743, -33.8915, { x: -0.4, z: 0.15 }),
 };
 
+const cityProjectPlots = {
+  whatsappWrapped: nudgePoint(sydneyPlaces.blackbird, 6.25, -3.6),
+  jashby: nudgePoint(sydneyPlaces.bondiJunction, 3.75, -2.85),
+  quantium: nudgePoint(sydneyPlaces.eveleigh, -4.35, -0.75),
+  doverHome: nudgePoint(sydneyPlaces.doverHeights, 1.25, -1.15),
+  bondiBeach: nudgePoint(sydneyPlaces.bondiBeach, -0.2, 1.15),
+  sydneyHarbour: nudgePoint(sydneyPlaces.operaHouse, 2.2, -1.9),
+  carLifestory: nudgePoint(sydneyPlaces.doverHeights, -4.95, 3.75),
+  whatThePuck: nudgePoint(sydneyPlaces.sportsField, 3.65, 2.05),
+  moriahJiuJitsu: nudgePoint(sydneyPlaces.queensPark, 0.15, -2.75),
+  degree6: nudgePoint(sydneyPlaces.centralStation, -4.35, 3.55),
+  ideaAid: nudgePoint(sydneyPlaces.queensPark, -4.9, 4.2),
+  portfolio: nudgePoint(sydneyPlaces.cbd, -6.25, -1.15),
+};
+
 const cityItems: Project[] = [
   featuredProject("whatsapp-wrapped", {
     title: "Blackbird / WhatsAppWrapped",
@@ -1226,14 +1249,14 @@ const cityItems: Project[] = [
       "WhatsAppWrapped sits in the Surry Hills / Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
     proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
     color: "#22d66f",
-    ...nudgePoint(sydneyPlaces.blackbird, 4.65, -2.95),
+    ...cityProjectPlots.whatsappWrapped,
     height: 4.1,
   }),
   featuredProject("jashby", {
     zone: "Bondi Junction spreadsheet campus",
     detail:
       "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
-    ...nudgePoint(sydneyPlaces.bondiJunction, 1.95, -2.2),
+    ...cityProjectPlots.jashby,
     height: 4.2,
   }),
   {
@@ -1253,7 +1276,7 @@ const cityItems: Project[] = [
     proof: ["Attached DOCX role notes", "Experience entry"],
     source: "Attached DOCX",
     color: "#2f8ec7",
-    ...nudgePoint(sydneyPlaces.eveleigh, -3.05, -0.4),
+    ...cityProjectPlots.quantium,
     height: 4,
     links: [],
   },
@@ -1274,7 +1297,7 @@ const cityItems: Project[] = [
     proof: ["User-provided location context"],
     source: "User request",
     color: "#f0c36a",
-    ...nudgePoint(sydneyPlaces.doverHeights, 0.75, -0.45),
+    ...cityProjectPlots.doverHome,
     height: 1.45,
     links: [],
   },
@@ -1295,7 +1318,7 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#4cbad8",
-    ...nudgePoint(sydneyPlaces.bondiBeach, -0.75, 0.55),
+    ...cityProjectPlots.bondiBeach,
     height: 1.2,
     links: [],
   },
@@ -1316,7 +1339,7 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#fff1bf",
-    ...nudgePoint(sydneyPlaces.operaHouse, 1.35, -1.15),
+    ...cityProjectPlots.sydneyHarbour,
     height: 1.8,
     links: [],
   },
@@ -1326,42 +1349,42 @@ const cityItems: Project[] = [
     zone: "Dover garage",
     detail:
       "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
-    ...nudgePoint(sydneyPlaces.doverHeights, -3.55, 2.95),
+    ...cityProjectPlots.carLifestory,
     height: 2.5,
   }),
   featuredProject("what-the-puck", {
     zone: "Sports field",
     detail:
       "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
-    ...nudgePoint(sydneyPlaces.sportsField, 2.15, 1.55),
+    ...cityProjectPlots.whatThePuck,
     height: 2.9,
   }),
   featuredProject("moriah-jiu-jitsu", {
     zone: "Queens Park school block",
     detail:
       "The Moriah Jiu-Jitsu tool is placed in the Queens Park school block because it is an operational Moriah sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
-    ...nudgePoint(sydneyPlaces.queensPark, 0.95, -1.15),
+    ...cityProjectPlots.moriahJiuJitsu,
     height: 2.6,
   }),
   featuredProject("degree6", {
     zone: "Network interchange",
     detail:
       "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
-    ...nudgePoint(sydneyPlaces.centralStation, -3.1, 2.45),
+    ...cityProjectPlots.degree6,
     height: 3.1,
   }),
   featuredProject("idea-aid", {
     zone: "AI workshop",
     detail:
       "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
-    ...nudgePoint(sydneyPlaces.queensPark, -3.35, 2.95),
+    ...cityProjectPlots.ideaAid,
     height: 2.2,
   }),
   featuredProject("portfolio", {
     zone: "City hall",
     detail:
       "The portfolio itself is the city hall: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
-    ...nudgePoint(sydneyPlaces.cbd, -4.75, -0.25),
+    ...cityProjectPlots.portfolio,
     height: 2.3,
   }),
 ];
@@ -1419,12 +1442,12 @@ const cityStats = [
 
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
 const PLAYER_BALL_RADIUS = 0.36;
-const PLAYER_SPEED = 7.55;
+const PLAYER_SPEED = 11.2;
 const PLAYER_BOUNDS = {
-  minX: -16.9 + PLAYER_BALL_RADIUS,
-  maxX: 24.7 - PLAYER_BALL_RADIUS,
-  minZ: -26.4 + PLAYER_BALL_RADIUS,
-  maxZ: 11.65 - PLAYER_BALL_RADIUS,
+  minX: -19.6 + PLAYER_BALL_RADIUS,
+  maxX: 26.2 - PLAYER_BALL_RADIUS,
+  minZ: -26.6 + PLAYER_BALL_RADIUS,
+  maxZ: 12.6 - PLAYER_BALL_RADIUS,
 };
 const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
 type CityRouteKind = "road" | "rail" | "bridge";
@@ -1437,15 +1460,15 @@ type CityRoute = {
 };
 
 const cityRoutes: CityRoute[] = [
-  { start: sydneyPlaces.northSydney, end: sydneyPlaces.milsonsPoint, width: 0.36, walkWidth: 1.36, kind: "road" },
-  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.kirribilli, width: 0.28, walkWidth: 1.1, kind: "road" },
-  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.harbourBridge, width: 0.42, walkWidth: 1.68, kind: "bridge" },
+  { start: sydneyPlaces.northSydney, end: sydneyPlaces.milsonsPoint, width: 0.36, walkWidth: 1.48, kind: "road" },
+  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.kirribilli, width: 0.28, walkWidth: 1.24, kind: "road" },
+  { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.harbourBridge, width: 0.58, walkWidth: 2.08, kind: "bridge" },
   { start: sydneyPlaces.northSydney, end: sydneyPlaces.milsonsPoint, width: 0.13, kind: "rail" },
   { start: sydneyPlaces.milsonsPoint, end: sydneyPlaces.harbourBridge, width: 0.13, kind: "rail" },
-  { start: sydneyPlaces.harbourBridge, end: sydneyPlaces.operaHouse, width: 0.38, walkWidth: 1.48, kind: "bridge" },
-  { start: sydneyPlaces.operaHouse, end: sydneyPlaces.cbd, width: 0.38, walkWidth: 1.2, kind: "road" },
-  { start: sydneyPlaces.cbd, end: sydneyPlaces.blackbird, width: 0.34, walkWidth: 1.08, kind: "road" },
-  { start: sydneyPlaces.blackbird, end: sydneyPlaces.eveleigh, width: 0.32, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.harbourBridge, end: sydneyPlaces.operaHouse, width: 0.54, walkWidth: 1.9, kind: "bridge" },
+  { start: sydneyPlaces.operaHouse, end: sydneyPlaces.cbd, width: 0.38, walkWidth: 1.26, kind: "road" },
+  { start: sydneyPlaces.cbd, end: sydneyPlaces.blackbird, width: 0.34, walkWidth: 1.18, kind: "road" },
+  { start: sydneyPlaces.blackbird, end: sydneyPlaces.eveleigh, width: 0.32, walkWidth: 1.18, kind: "road" },
   { start: sydneyPlaces.cbd, end: sydneyPlaces.bondiJunction, width: 0.36, walkWidth: 1.12, kind: "road" },
   { start: sydneyPlaces.bondiJunction, end: sydneyPlaces.queensPark, width: 0.32, walkWidth: 1.08, kind: "road" },
   { start: sydneyPlaces.queensPark, end: sydneyPlaces.sportsField, width: 0.3, walkWidth: 1.04, kind: "road" },
@@ -1453,9 +1476,22 @@ const cityRoutes: CityRoute[] = [
   { start: sydneyPlaces.doverHeights, end: sydneyPlaces.bondiBeach, width: 0.28, walkWidth: 1.02, kind: "road" },
   { start: sydneyPlaces.bondiJunction, end: sydneyPlaces.bondiBeach, width: 0.28, walkWidth: 1.02, kind: "road" },
   { start: sydneyPlaces.centralStation, end: sydneyPlaces.eveleigh, width: 0.16, kind: "rail" },
+  { start: sydneyPlaces.blackbird, end: cityProjectPlots.whatsappWrapped, width: 0.3, walkWidth: 1.18, kind: "road" },
+  { start: sydneyPlaces.bondiJunction, end: cityProjectPlots.jashby, width: 0.3, walkWidth: 1.14, kind: "road" },
+  { start: sydneyPlaces.eveleigh, end: cityProjectPlots.quantium, width: 0.3, walkWidth: 1.14, kind: "road" },
+  { start: sydneyPlaces.doverHeights, end: cityProjectPlots.doverHome, width: 0.26, walkWidth: 1.02, kind: "road" },
+  { start: sydneyPlaces.bondiBeach, end: cityProjectPlots.bondiBeach, width: 0.26, walkWidth: 1.02, kind: "road" },
+  { start: sydneyPlaces.operaHouse, end: cityProjectPlots.sydneyHarbour, width: 0.3, walkWidth: 1.12, kind: "road" },
+  { start: sydneyPlaces.doverHeights, end: cityProjectPlots.carLifestory, width: 0.28, walkWidth: 1.06, kind: "road" },
+  { start: sydneyPlaces.sportsField, end: cityProjectPlots.whatThePuck, width: 0.28, walkWidth: 1.06, kind: "road" },
+  { start: sydneyPlaces.queensPark, end: cityProjectPlots.moriahJiuJitsu, width: 0.28, walkWidth: 1.06, kind: "road" },
+  { start: sydneyPlaces.centralStation, end: cityProjectPlots.degree6, width: 0.28, walkWidth: 1.06, kind: "road" },
+  { start: sydneyPlaces.queensPark, end: cityProjectPlots.ideaAid, width: 0.28, walkWidth: 1.06, kind: "road" },
+  { start: sydneyPlaces.cbd, end: cityProjectPlots.portfolio, width: 0.3, walkWidth: 1.14, kind: "road" },
 ];
 
 const cityNavigationNodes = [
+  ...Object.values(cityProjectPlots),
   sydneyPlaces.northSydney,
   sydneyPlaces.milsonsPoint,
   sydneyPlaces.kirribilli,
@@ -1874,21 +1910,31 @@ function createWhatsAppWrappedModel(project: Project) {
   const group = new THREE.Group();
   const dark = modelMaterial("#101611", { roughness: 0.38, metalness: 0.16 });
   const green = modelMaterial(project.color, { roughness: 0.36, metalness: 0.08 });
+  const card = modelMaterial("#fffdf4", { roughness: 0.48 });
   addBox(group, [1.9, project.height, 1.28], dark, [0, project.height / 2, 0]);
   addBox(group, [0.24, project.height * 0.86, 1.38], green, [0.95, project.height * 0.43, 0]);
   addBox(group, [2.08, 0.16, 1.48], "#fff8dc", [0, project.height + 0.08, 0]);
   addFacadeGrid(group, 1.9, project.height, 1.28, 7, 3, "#83f6aa", 0.75);
-  const bubbleMaterial = modelMaterial("#fffdf4", { roughness: 0.44 });
   [
     [-0.36, 1.18, 0.86, 0.34],
     [0.26, 2.05, 0.76, 0.3],
     [-0.2, 2.92, 1.02, 0.36],
   ].forEach(([x, y, width, height], index) => {
     [-0.69, 0.69].forEach((z) => {
-      addBox(group, [width, height, 0.07], bubbleMaterial, [x, y, z]);
+      addBox(group, [width, height, 0.07], card, [x, y, z]);
       addBox(group, [0.16, 0.12, 0.075], index % 2 === 0 ? green : "#101611", [x - width / 2 + 0.12, y - height / 2 - 0.08, z], [0, 0, -0.5]);
     });
   });
+  addBox(group, [1.42, 0.08, 0.88], card, [-1.18, 0.28, 1.02], [0, -0.18, 0]);
+  addBox(group, [1.02, 0.06, 0.1], green, [-1.24, 0.36, 0.72], [0, -0.18, 0]);
+  [0.22, 0.42, 0.72, 0.48].forEach((height, index) => {
+    addBox(group, [0.14, height, 0.12], index % 2 ? "#83f6aa" : green, [-1.72 + index * 0.28, 0.34 + height / 2, 1.08], [0, -0.18, 0]);
+  });
+  const orbitMaterial = new THREE.MeshBasicMaterial({ color: "#83f6aa", transparent: true, opacity: 0.72 });
+  const orbit = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.025, 8, 72), orbitMaterial);
+  orbit.rotation.set(Math.PI / 2, 0, -0.22);
+  orbit.position.set(0.02, project.height + 0.15, 0);
+  group.add(orbit);
   addCone(group, 0.38, 0.72, 3, green, [0, project.height + 0.52, -0.02], [0, Math.PI / 2, Math.PI / 2]);
   return group;
 }
@@ -1903,12 +1949,23 @@ function createJashbyModel(project: Project) {
     addBox(group, [2.38, 0.055, 1.28], i % 2 ? "#e8f8ed" : "#fffdf4", [0.1 - i * 0.07, 0.09 + i * 0.07, 0.82 + i * 0.05], [0, i * 0.08, 0]);
   }
   const lineMaterial = new THREE.MeshBasicMaterial({ color: "#219760" });
+  const cellMaterial = new THREE.MeshBasicMaterial({ color: "#dffff0" });
   for (let col = 0; col < 6; col += 1) {
     addBox(group, [0.022, 0.03, 1.24], lineMaterial, [-0.9 + col * 0.34, 0.39, 0.95]);
   }
   for (let row = 0; row < 4; row += 1) {
     addBox(group, [2.18, 0.028, 0.026], lineMaterial, [0, 0.28 + row * 0.16, 0.32]);
   }
+  for (let row = 0; row < 3; row += 1) {
+    for (let col = 0; col < 5; col += 1) {
+      if ((row + col) % 2 === 0) {
+        addBox(group, [0.22, 0.024, 0.16], cellMaterial, [-0.74 + col * 0.36, 0.5 + row * 0.18, 0.68], [0, 0, 0]);
+      }
+    }
+  }
+  addCylinder(group, 0.32, 0.32, 0.1, "#f7d35f", [-1.22, 1.02, -0.68], [Math.PI / 2, 0, 0], 32);
+  addBox(group, [0.56, 0.06, 0.12], "#fffdf4", [-1.22, 1.03, -0.68], [0, 0, 0.25]);
+  addBox(group, [0.12, 0.06, 0.56], "#fffdf4", [-1.22, 1.03, -0.68], [0, 0, 0.25]);
   addBox(group, [0.16, 0.82, 0.12], "#f7d35f", [0.72, project.height + 0.56, 0.02]);
   return group;
 }
@@ -1919,6 +1976,7 @@ function createQuantiumModel(project: Project) {
   addBox(group, [1.68, project.height, 1.68], glass, [0, project.height / 2, 0]);
   addBox(group, [1.92, 0.18, 1.92], "#d9eff7", [0, project.height + 0.09, 0]);
   addBox(group, [0.22, project.height * 0.9, 1.76], "#17476c", [-0.96, project.height * 0.45, 0]);
+  addBox(group, [1.08, 0.08, 1.35], "#101a22", [1.08, 0.42, -0.18], [0, 0.22, 0], { roughness: 0.4, metalness: 0.12 });
   const dotMaterial = new THREE.MeshBasicMaterial({ color: "#aee7ff" });
   for (let row = 0; row < 8; row += 1) {
     for (let col = 0; col < 4; col += 1) {
@@ -1928,9 +1986,22 @@ function createQuantiumModel(project: Project) {
       });
     }
   }
+  for (let row = 0; row < 5; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      const color = ["#17476c", "#2f8ec7", "#aee7ff", "#f7d35f"][(row + col) % 4];
+      addBox(group, [0.16, 0.035, 0.12], color, [0.7 + col * 0.24, 0.5, -0.68 + row * 0.22], [0, 0.22, 0]);
+    }
+  }
   [0.42, 0.74, 1.08].forEach((height, index) => {
     addBox(group, [0.22, height, 0.22], project.color, [0.38 + index * 0.28, project.height + height / 2 + 0.18, -0.38]);
   });
+  const dataOrbit = new THREE.Mesh(
+    new THREE.TorusGeometry(1.26, 0.022, 8, 72),
+    new THREE.MeshBasicMaterial({ color: "#aee7ff", transparent: true, opacity: 0.68 }),
+  );
+  dataOrbit.rotation.set(Math.PI / 2, 0.28, 0.15);
+  dataOrbit.position.set(0.04, project.height + 0.12, 0.02);
+  group.add(dataOrbit);
   return group;
 }
 
@@ -1953,6 +2024,20 @@ function createDegree6Model(project: Project) {
     addSphere(group, index === 0 ? 0.18 : 0.15, nodeMaterial, [point.x, point.y, point.z], 20);
   });
   addSphere(group, 0.22, "#fff8dc", [hub.x, hub.y, hub.z], 24);
+  const graphFloorPoints = [
+    new THREE.Vector3(-0.9, 0.28, 0.86),
+    new THREE.Vector3(-0.2, 0.36, 1.02),
+    new THREE.Vector3(0.62, 0.32, 0.72),
+    new THREE.Vector3(1.04, 0.42, -0.28),
+    new THREE.Vector3(-0.72, 0.38, -0.82),
+  ];
+  graphFloorPoints.forEach((point, index) => {
+    addSphere(group, 0.1 + (index % 2) * 0.035, index === 1 ? "#fff8dc" : nodeMaterial, [point.x, point.y, point.z], 18);
+    if (index > 0) addCylinderBetween(group, graphFloorPoints[index - 1], point, 0.018, lineMaterial);
+  });
+  addCylinder(group, 0.34, 0.34, 0.045, "#fff8dc", [0.95, 1.24, -0.96], [Math.PI / 2, 0, 0], 32);
+  addCylinder(group, 0.24, 0.24, 0.05, "#171925", [0.95, 1.25, -0.96], [Math.PI / 2, 0, 0], 32);
+  addBox(group, [0.08, 0.08, 0.52], "#fff8dc", [1.2, 1.05, -0.72], [0.45, 0, -0.55]);
   return group;
 }
 
@@ -2018,12 +2103,23 @@ function createIdeaAidModel(project: Project) {
   addBox(group, [2.14, 0.2, 1.62], project.color, [0, 1.28, 0], [0, 0, 0], { roughness: 0.38, metalness: 0.08 });
   addBox(group, [0.52, 0.58, 0.07], "#242225", [-0.44, 0.56, -0.74]);
   addBox(group, [0.52, 0.58, 0.07], "#fffdf4", [0.44, 0.56, -0.74]);
+  addBox(group, [1.52, 0.08, 0.9], "#242225", [0.02, 0.22, 1.05], [0, -0.12, 0], { roughness: 0.42, metalness: 0.16 });
+  addBox(group, [1.18, 0.045, 0.64], "#fffdf4", [0.02, 0.3, 1.05], [0, -0.12, 0], { roughness: 0.5 });
+  ["#22d66f", "#2f8ec7", "#f7d35f"].forEach((color, index) => {
+    addBox(group, [0.52 - index * 0.08, 0.035, 0.045], color, [-0.28 + index * 0.08, 0.35 + index * 0.09, 0.78 + index * 0.12], [0, -0.12, 0]);
+  });
   addSphere(group, 0.36, "#f7d35f", [0, 1.93, 0], 32);
   addCylinder(group, 0.17, 0.21, 0.22, "#755f38", [0, 1.48, 0], [0, 0, 0], 18);
   for (let i = 0; i < 7; i += 1) {
     const angle = (i / 7) * Math.PI * 2;
     addBox(group, [0.05, 0.26, 0.05], "#f7d35f", [Math.cos(angle) * 0.62, 1.94 + Math.sin(angle) * 0.12, Math.sin(angle) * 0.62], [0, angle, 0.4]);
   }
+  [
+    new THREE.Vector3(-0.5, 1.38, 0.55),
+    new THREE.Vector3(0.5, 1.38, 0.55),
+    new THREE.Vector3(-0.7, 1.2, -0.38),
+    new THREE.Vector3(0.7, 1.2, -0.38),
+  ].forEach((point) => addCylinderBetween(group, new THREE.Vector3(0, 1.74, 0), point, 0.018, "#ffe9a6"));
   return group;
 }
 
@@ -2323,7 +2419,7 @@ function CityScene({
     const projectPlotShapes = cityItems.map((project) => {
       const isFlagship = project.tier === "flagship" || project.id === "whatsapp-wrapped" || project.id === "jashby";
       const isLandmark = project.category === "Landmark";
-      return plotPolygon(project, isFlagship ? 4.2 : isLandmark ? 3.15 : 3.45, isFlagship ? 3.35 : isLandmark ? 2.7 : 2.9);
+      return plotPolygon(project, isFlagship ? 5.15 : isLandmark ? 3.75 : 4.3, isFlagship ? 4.15 : isLandmark ? 3.15 : 3.55);
     });
     const walkableAreas = [
       mainLandShape,
@@ -2493,7 +2589,6 @@ function CityScene({
     const clickedPoint = new THREE.Vector3();
     const cameraForward = new THREE.Vector3();
     const cameraRight = new THREE.Vector3();
-    const cameraLead = new THREE.Vector3();
     const queuedTargets: THREE.Vector3[] = [];
 
     const setAutoRoute = (route: MapPoint[]) => {
@@ -2596,11 +2691,15 @@ function CityScene({
         const previousPosition = player.position.clone();
         const nextX = THREE.MathUtils.clamp(previousPosition.x + direction.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX);
         const nextZ = THREE.MathUtils.clamp(previousPosition.z + direction.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ);
-        if (pointInWalkableAreasWithRadius(nextX, nextZ, walkableAreas, PLAYER_BALL_RADIUS)) {
+        const previousMapPoint = { x: previousPosition.x, z: previousPosition.z };
+        const nextMapPoint = { x: nextX, z: nextZ };
+        const nextXMapPoint = { x: nextX, z: previousPosition.z };
+        const nextZMapPoint = { x: previousPosition.x, z: nextZ };
+        if (segmentInWalkableAreas(previousMapPoint, nextMapPoint, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(nextX, PLAYER_BALL_RADIUS, nextZ);
-        } else if (pointInWalkableAreasWithRadius(nextX, previousPosition.z, walkableAreas, PLAYER_BALL_RADIUS)) {
+        } else if (segmentInWalkableAreas(previousMapPoint, nextXMapPoint, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(nextX, PLAYER_BALL_RADIUS, previousPosition.z);
-        } else if (pointInWalkableAreasWithRadius(previousPosition.x, nextZ, walkableAreas, PLAYER_BALL_RADIUS)) {
+        } else if (segmentInWalkableAreas(previousMapPoint, nextZMapPoint, walkableAreas, PLAYER_BALL_RADIUS)) {
           player.position.set(previousPosition.x, PLAYER_BALL_RADIUS, nextZ);
         } else {
           player.position.copy(previousPosition);
@@ -2612,7 +2711,6 @@ function CityScene({
         if (travel > 0.0001) {
           const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
           player.rotateOnWorldAxis(rollAxis, travel / PLAYER_BALL_RADIUS);
-          cameraLead.lerp(moved.normalize().multiplyScalar(1.5), 0.18);
         }
       } else {
         const previousPosition = player.position.clone();
@@ -2624,11 +2722,16 @@ function CityScene({
         toTarget.y = 0;
         const remaining = Math.hypot(toTarget.x, toTarget.z);
         if (remaining > 0.001) toTarget.multiplyScalar(1 / remaining);
-        const travelDistance = Math.min(remaining, delta * PLAYER_SPEED * 0.72);
+        const travelDistance = Math.min(remaining, delta * PLAYER_SPEED * 0.9);
         const nextPosition = player.position.clone();
         nextPosition.x += toTarget.x * travelDistance;
         nextPosition.z += toTarget.z * travelDistance;
-        if (pointInWalkableAreasWithRadius(nextPosition.x, nextPosition.z, walkableAreas, PLAYER_BALL_RADIUS)) {
+        if (segmentInWalkableAreas(
+          { x: previousPosition.x, z: previousPosition.z },
+          { x: nextPosition.x, z: nextPosition.z },
+          walkableAreas,
+          PLAYER_BALL_RADIUS,
+        )) {
           player.position.copy(nextPosition);
         } else {
           queuedTargets.length = 0;
@@ -2641,9 +2744,6 @@ function CityScene({
         if (travel > 0.0001) {
           const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
           player.rotateOnWorldAxis(rollAxis, travel / PLAYER_BALL_RADIUS);
-          cameraLead.lerp(moved.normalize().multiplyScalar(1.15), 0.08);
-        } else {
-          cameraLead.multiplyScalar(0.95);
         }
       }
 
@@ -2668,15 +2768,15 @@ function CityScene({
 
       const isNarrowView = camera.aspect < 0.75;
       const cameraTarget = new THREE.Vector3(
-        player.position.x + (isNarrowView ? 14.6 : 10.2) + cameraLead.x * 0.46,
-        isNarrowView ? 24.8 : 19.8,
-        player.position.z + (isNarrowView ? 22.6 : 17.4) + cameraLead.z * 0.46,
+        player.position.x + (isNarrowView ? 14.2 : 9.8),
+        isNarrowView ? 23.6 : 18.8,
+        player.position.z + (isNarrowView ? 21.4 : 16.2),
       );
-      camera.position.lerp(cameraTarget, 0.06);
+      camera.position.lerp(cameraTarget, 0.085);
       camera.lookAt(
-        player.position.x + cameraLead.x + (isNarrowView ? 2.4 : 1.55),
-        1.35,
-        player.position.z + cameraLead.z + (isNarrowView ? -0.1 : -0.7),
+        player.position.x + (isNarrowView ? 2.1 : 1.25),
+        1.2,
+        player.position.z + (isNarrowView ? -0.35 : -0.95),
       );
 
       renderer.render(scene, camera);
@@ -2704,44 +2804,83 @@ function CityScene({
       },
     };
 
-    window.__portfolioCityStatus = () => ({
-      active: activeIdRef.current,
-      canvas: { width: canvas.width, height: canvas.height },
-      bounds: PLAYER_BOUNDS,
-      camera: {
-        fov: Number(camera.fov.toFixed(2)),
-        x: Number(camera.position.x.toFixed(2)),
-        y: Number(camera.position.y.toFixed(2)),
-        z: Number(camera.position.z.toFixed(2)),
-      },
-      nearby: nearbyIdRef.current,
-      objects: scene.children.length,
-      player: {
-        x: Number(player.position.x.toFixed(2)),
-        y: Number(player.position.y.toFixed(2)),
-        z: Number(player.position.z.toFixed(2)),
-        radius: PLAYER_BALL_RADIUS,
-      },
-      target: {
-        x: Number(target.x.toFixed(2)),
-        y: Number(target.y.toFixed(2)),
-        z: Number(target.z.toFixed(2)),
-      },
-      routeQueue: queuedTargets.length,
-      walkable: pointInWalkableAreas(player.position.x, player.position.z, walkableAreas),
-      radiusWalkable: pointInWalkableAreasWithRadius(player.position.x, player.position.z, walkableAreas, PLAYER_BALL_RADIUS),
-      safeLandmarks: {
-        harbourBridge: pointInWalkableAreasWithRadius(sydneyPlaces.harbourBridge.x, sydneyPlaces.harbourBridge.z, walkableAreas, PLAYER_BALL_RADIUS),
-        milsonsPoint: pointInWalkableAreasWithRadius(sydneyPlaces.milsonsPoint.x, sydneyPlaces.milsonsPoint.z, walkableAreas, PLAYER_BALL_RADIUS),
-        northSydney: pointInWalkableAreasWithRadius(sydneyPlaces.northSydney.x, sydneyPlaces.northSydney.z, walkableAreas, PLAYER_BALL_RADIUS),
-      },
-      northSydneyReachable: Boolean(findWalkableRoute(
-        { x: player.position.x, z: player.position.z },
-        sydneyPlaces.northSydney,
-        walkableAreas,
-        PLAYER_BALL_RADIUS,
-      )),
-    });
+    window.__portfolioCityStatus = () => {
+      const rect = canvas.getBoundingClientRect();
+      const toScreenPoint = (point: MapPoint) => {
+        const projected = new THREE.Vector3(point.x, 0.12, point.z).project(camera);
+        return {
+          x: Number((((projected.x + 1) / 2) * rect.width).toFixed(1)),
+          y: Number((((1 - projected.y) / 2) * rect.height).toFixed(1)),
+          visible: projected.z >= -1 && projected.z <= 1,
+        };
+      };
+      const toWaterSample = (point: MapPoint) => ({
+        ...toScreenPoint(point),
+        radiusWalkable: pointInWalkableAreasWithRadius(point.x, point.z, walkableAreas, PLAYER_BALL_RADIUS),
+      });
+      const currentPoint = { x: player.position.x, z: player.position.z };
+      return {
+        active: activeIdRef.current,
+        canvas: { width: canvas.width, height: canvas.height },
+        bounds: PLAYER_BOUNDS,
+        camera: {
+          fov: Number(camera.fov.toFixed(2)),
+          x: Number(camera.position.x.toFixed(2)),
+          y: Number(camera.position.y.toFixed(2)),
+          z: Number(camera.position.z.toFixed(2)),
+        },
+        nearby: nearbyIdRef.current,
+        objects: scene.children.length,
+        player: {
+          x: Number(player.position.x.toFixed(2)),
+          y: Number(player.position.y.toFixed(2)),
+          z: Number(player.position.z.toFixed(2)),
+          radius: PLAYER_BALL_RADIUS,
+        },
+        target: {
+          x: Number(target.x.toFixed(2)),
+          y: Number(target.y.toFixed(2)),
+          z: Number(target.z.toFixed(2)),
+        },
+        routeQueue: queuedTargets.length,
+        walkable: pointInWalkableAreas(player.position.x, player.position.z, walkableAreas),
+        radiusWalkable: pointInWalkableAreasWithRadius(player.position.x, player.position.z, walkableAreas, PLAYER_BALL_RADIUS),
+        safeLandmarks: {
+          harbourBridge: pointInWalkableAreasWithRadius(sydneyPlaces.harbourBridge.x, sydneyPlaces.harbourBridge.z, walkableAreas, PLAYER_BALL_RADIUS),
+          milsonsPoint: pointInWalkableAreasWithRadius(sydneyPlaces.milsonsPoint.x, sydneyPlaces.milsonsPoint.z, walkableAreas, PLAYER_BALL_RADIUS),
+          northSydney: pointInWalkableAreasWithRadius(sydneyPlaces.northSydney.x, sydneyPlaces.northSydney.z, walkableAreas, PLAYER_BALL_RADIUS),
+        },
+        northSydneyReachable: Boolean(findWalkableRoute(
+          currentPoint,
+          sydneyPlaces.northSydney,
+          walkableAreas,
+          PLAYER_BALL_RADIUS,
+        )),
+        bridgeCrossingReady:
+          segmentInWalkableAreas(sydneyPlaces.operaHouse, sydneyPlaces.harbourBridge, walkableAreas, PLAYER_BALL_RADIUS) &&
+          segmentInWalkableAreas(sydneyPlaces.harbourBridge, sydneyPlaces.milsonsPoint, walkableAreas, PLAYER_BALL_RADIUS),
+        reachableProjectCount: cityItems.filter((project) => Boolean(findWalkableRoute(
+          currentPoint,
+          project,
+          walkableAreas,
+          PLAYER_BALL_RADIUS,
+        ))).length,
+        screenLandmarks: {
+          harbourBridge: toScreenPoint(sydneyPlaces.harbourBridge),
+          milsonsPoint: toScreenPoint(sydneyPlaces.milsonsPoint),
+          northSydney: toScreenPoint(sydneyPlaces.northSydney),
+          operaHouse: toScreenPoint(sydneyPlaces.operaHouse),
+          blackbird: toScreenPoint(cityProjectPlots.whatsappWrapped),
+          jashby: toScreenPoint(cityProjectPlots.jashby),
+          quantium: toScreenPoint(cityProjectPlots.quantium),
+        },
+        screenWaterSamples: {
+          westHarbour: toWaterSample({ x: -13.2, z: -13.6 }),
+          centreHarbour: toWaterSample({ x: 1.7, z: -13.9 }),
+          eastHarbour: toWaterSample({ x: 8.4, z: -10.6 }),
+        },
+      };
+    };
     canvas.dataset.cityReady = "true";
     canvas.dataset.cityObjects = String(scene.children.length);
 
@@ -2797,6 +2936,9 @@ function addCityPaths(scene: THREE.Scene) {
   cityRoutes.forEach((route) => {
     const material = route.kind === "rail" ? railMaterial : route.kind === "bridge" ? bridgeMaterial : roadMaterial;
     addPathSegment(scene, route.start, route.end, route.width, material);
+    if (route.kind === "bridge") {
+      addBridgeCrossingLane(scene, route.start, route.end);
+    }
   });
 
   [
@@ -2836,6 +2978,35 @@ function addPathSegment(
   path.rotation.y = -Math.atan2(dz, dx);
   path.receiveShadow = true;
   scene.add(path);
+}
+
+function addBridgeCrossingLane(scene: THREE.Scene, start: MapPoint, end: MapPoint) {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const length = Math.hypot(dx, dz);
+  if (length < 0.05) return;
+
+  const lane = new THREE.Group();
+  lane.position.set(start.x + dx / 2, 0, start.z + dz / 2);
+  lane.rotation.y = -Math.atan2(dz, dx);
+  scene.add(lane);
+
+  const deck = modelMaterial("#f1d99b", { roughness: 0.74 });
+  const rail = modelMaterial("#2d3a40", { roughness: 0.46, metalness: 0.12 });
+  const paint = new THREE.MeshBasicMaterial({ color: "#fff8dc" });
+
+  addBox(lane, [length, 0.06, 1.22], deck, [0, 0.16, 0], [0, 0, 0]);
+  [-0.68, 0.68].forEach((z) => {
+    addBox(lane, [length, 0.08, 0.05], rail, [0, 0.25, z], [0, 0, 0]);
+    for (let i = 0; i < Math.floor(length / 0.58); i += 1) {
+      const x = -length / 2 + 0.35 + i * 0.58;
+      addCylinder(lane, 0.025, 0.025, 0.3, rail, [x, 0.38, z], [0, 0, 0], 8);
+    }
+  });
+  for (let i = 0; i < Math.floor(length / 0.86); i += 1) {
+    const x = -length / 2 + 0.42 + i * 0.86;
+    addBox(lane, [0.34, 0.025, 0.05], paint, [x, 0.205, 0], [0, 0, 0]);
+  }
 }
 
 function addLandscapeDetails(scene: THREE.Scene) {
