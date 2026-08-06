@@ -1138,6 +1138,15 @@ function pathPolygon(start: MapPoint, end: MapPoint, width: number): MapPoint[] 
   ];
 }
 
+function plotPolygon(center: MapPoint, width: number, depth = width): MapPoint[] {
+  return [
+    { x: center.x - width / 2, z: center.z - depth / 2 },
+    { x: center.x + width / 2, z: center.z - depth / 2 },
+    { x: center.x + width / 2, z: center.z + depth / 2 },
+    { x: center.x - width / 2, z: center.z + depth / 2 },
+  ];
+}
+
 function pointInPolygon(point: MapPoint, polygon: MapPoint[]) {
   let inside = false;
   for (
@@ -1217,14 +1226,14 @@ const cityItems: Project[] = [
       "WhatsAppWrapped sits in the Surry Hills / Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
     proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
     color: "#22d66f",
-    ...sydneyPlaces.blackbird,
+    ...nudgePoint(sydneyPlaces.blackbird, 4.65, -2.95),
     height: 4.1,
   }),
   featuredProject("jashby", {
     zone: "Bondi Junction spreadsheet campus",
     detail:
       "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
-    ...nudgePoint(sydneyPlaces.bondiJunction, 0.55, -0.95),
+    ...nudgePoint(sydneyPlaces.bondiJunction, 1.95, -2.2),
     height: 4.2,
   }),
   {
@@ -1244,7 +1253,7 @@ const cityItems: Project[] = [
     proof: ["Attached DOCX role notes", "Experience entry"],
     source: "Attached DOCX",
     color: "#2f8ec7",
-    ...sydneyPlaces.eveleigh,
+    ...nudgePoint(sydneyPlaces.eveleigh, -3.05, -0.4),
     height: 4,
     links: [],
   },
@@ -1265,7 +1274,7 @@ const cityItems: Project[] = [
     proof: ["User-provided location context"],
     source: "User request",
     color: "#f0c36a",
-    ...sydneyPlaces.doverHeights,
+    ...nudgePoint(sydneyPlaces.doverHeights, 0.75, -0.45),
     height: 1.45,
     links: [],
   },
@@ -1286,7 +1295,7 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#4cbad8",
-    ...sydneyPlaces.bondiBeach,
+    ...nudgePoint(sydneyPlaces.bondiBeach, -0.75, 0.55),
     height: 1.2,
     links: [],
   },
@@ -1307,7 +1316,7 @@ const cityItems: Project[] = [
     proof: ["User-requested landmark"],
     source: "User request",
     color: "#fff1bf",
-    ...sydneyPlaces.operaHouse,
+    ...nudgePoint(sydneyPlaces.operaHouse, 1.35, -1.15),
     height: 1.8,
     links: [],
   },
@@ -1317,42 +1326,42 @@ const cityItems: Project[] = [
     zone: "Dover garage",
     detail:
       "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
-    ...nudgePoint(sydneyPlaces.doverHeights, -2.55, 2.55),
+    ...nudgePoint(sydneyPlaces.doverHeights, -3.55, 2.95),
     height: 2.5,
   }),
   featuredProject("what-the-puck", {
     zone: "Sports field",
     detail:
       "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
-    ...nudgePoint(sydneyPlaces.sportsField, 1.1, 1.1),
+    ...nudgePoint(sydneyPlaces.sportsField, 2.15, 1.55),
     height: 2.9,
   }),
   featuredProject("moriah-jiu-jitsu", {
     zone: "Queens Park school block",
     detail:
       "The Moriah Jiu-Jitsu tool is placed in the Queens Park school block because it is an operational Moriah sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
-    ...nudgePoint(sydneyPlaces.queensPark, -0.25, 0.25),
+    ...nudgePoint(sydneyPlaces.queensPark, 0.95, -1.15),
     height: 2.6,
   }),
   featuredProject("degree6", {
     zone: "Network interchange",
     detail:
       "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
-    ...nudgePoint(sydneyPlaces.centralStation, -0.45, 0.75),
+    ...nudgePoint(sydneyPlaces.centralStation, -3.1, 2.45),
     height: 3.1,
   }),
   featuredProject("idea-aid", {
     zone: "AI workshop",
     detail:
       "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
-    ...nudgePoint(sydneyPlaces.queensPark, -2.65, 2.45),
+    ...nudgePoint(sydneyPlaces.queensPark, -3.35, 2.95),
     height: 2.2,
   }),
   featuredProject("portfolio", {
     zone: "City hall",
     detail:
       "The portfolio itself is the city hall: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
-    ...nudgePoint(sydneyPlaces.cbd, -1.65, 0.2),
+    ...nudgePoint(sydneyPlaces.cbd, -4.75, -0.25),
     height: 2.3,
   }),
 ];
@@ -2159,8 +2168,8 @@ function CityScene({
     scene.background = new THREE.Color("#b9dbe0");
     scene.fog = new THREE.Fog("#b9dbe0", 46, 104);
 
-    const camera = new THREE.PerspectiveCamera(49, 1, 0.1, 190);
-    camera.position.set(18, 32, 30);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 190);
+    camera.position.set(11, 20, 18);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -2217,6 +2226,8 @@ function CityScene({
     const lightDistrictMaterial = new THREE.MeshStandardMaterial({ color: "#514d45", map: road, roughness: 0.76 });
     const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch, roughness: 0.86 });
     const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
+    const projectPlotMaterial = new THREE.MeshStandardMaterial({ color: "#3c4039", map: road, roughness: 0.78 });
+    const landmarkPlotMaterial = new THREE.MeshStandardMaterial({ color: "#cfbd91", roughness: 0.82 });
 
     const mainLandShape = [
       { x: -15.1, z: -9.15 },
@@ -2309,6 +2320,11 @@ function CityScene({
     const cityRouteWalkways = cityRoutes
       .filter((route) => route.kind !== "rail")
       .map((route) => pathPolygon(route.start, route.end, route.walkWidth ?? Math.max(1.04, route.width + PLAYER_BALL_RADIUS * 2.35)));
+    const projectPlotShapes = cityItems.map((project) => {
+      const isFlagship = project.tier === "flagship" || project.id === "whatsapp-wrapped" || project.id === "jashby";
+      const isLandmark = project.category === "Landmark";
+      return plotPolygon(project, isFlagship ? 4.2 : isLandmark ? 3.15 : 3.45, isFlagship ? 3.35 : isLandmark ? 2.7 : 2.9);
+    });
     const walkableAreas = [
       mainLandShape,
       northShoreShape,
@@ -2318,6 +2334,7 @@ function CityScene({
       milsonsPromenadeShape,
       bondiSandShape,
       operaPromenadeShape,
+      ...projectPlotShapes,
       ...cityRouteWalkways,
     ].filter((area) => area.length >= 3);
 
@@ -2339,29 +2356,38 @@ function CityScene({
       ));
     addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.035);
     addFlatShape(groundGroup, operaPromenadeShape, promenadeMaterial, 0.032);
+    projectPlotShapes.forEach((shape, index) => {
+      const project = cityItems[index];
+      addFlatShape(
+        groundGroup,
+        shape,
+        project.category === "Landmark" ? landmarkPlotMaterial : projectPlotMaterial,
+        0.061 + index * 0.0008,
+      );
+    });
     addFlatShape(groundGroup, [
-      { x: sydneyPlaces.cbd.x - 3.3, z: sydneyPlaces.cbd.z - 1.55 },
-      { x: sydneyPlaces.cbd.x + 3.45, z: sydneyPlaces.cbd.z - 1.2 },
-      { x: sydneyPlaces.cbd.x + 3.1, z: sydneyPlaces.cbd.z + 2.85 },
-      { x: sydneyPlaces.cbd.x - 3.55, z: sydneyPlaces.cbd.z + 2.55 },
+      { x: sydneyPlaces.cbd.x - 4.2, z: sydneyPlaces.cbd.z - 2.05 },
+      { x: sydneyPlaces.cbd.x + 4.35, z: sydneyPlaces.cbd.z - 1.55 },
+      { x: sydneyPlaces.cbd.x + 3.95, z: sydneyPlaces.cbd.z + 3.65 },
+      { x: sydneyPlaces.cbd.x - 4.55, z: sydneyPlaces.cbd.z + 3.35 },
     ], districtMaterial, 0.045);
     addFlatShape(groundGroup, [
-      { x: sydneyPlaces.blackbird.x - 2.55, z: sydneyPlaces.blackbird.z - 1.55 },
-      { x: sydneyPlaces.blackbird.x + 2.25, z: sydneyPlaces.blackbird.z - 1.2 },
-      { x: sydneyPlaces.blackbird.x + 2.6, z: sydneyPlaces.blackbird.z + 2.25 },
-      { x: sydneyPlaces.blackbird.x - 2.35, z: sydneyPlaces.blackbird.z + 2.4 },
+      { x: sydneyPlaces.blackbird.x - 3.35, z: sydneyPlaces.blackbird.z - 2.65 },
+      { x: sydneyPlaces.blackbird.x + 3.95, z: sydneyPlaces.blackbird.z - 2.25 },
+      { x: sydneyPlaces.blackbird.x + 3.85, z: sydneyPlaces.blackbird.z + 2.85 },
+      { x: sydneyPlaces.blackbird.x - 3.25, z: sydneyPlaces.blackbird.z + 2.8 },
     ], lightDistrictMaterial, 0.052);
     addFlatShape(groundGroup, [
-      { x: sydneyPlaces.eveleigh.x - 2.7, z: sydneyPlaces.eveleigh.z - 1.75 },
-      { x: sydneyPlaces.eveleigh.x + 2.45, z: sydneyPlaces.eveleigh.z - 1.35 },
-      { x: sydneyPlaces.eveleigh.x + 2.75, z: sydneyPlaces.eveleigh.z + 2.15 },
-      { x: sydneyPlaces.eveleigh.x - 2.4, z: sydneyPlaces.eveleigh.z + 2.35 },
+      { x: sydneyPlaces.eveleigh.x - 3.65, z: sydneyPlaces.eveleigh.z - 2.65 },
+      { x: sydneyPlaces.eveleigh.x + 3.15, z: sydneyPlaces.eveleigh.z - 2.05 },
+      { x: sydneyPlaces.eveleigh.x + 3.35, z: sydneyPlaces.eveleigh.z + 2.85 },
+      { x: sydneyPlaces.eveleigh.x - 3.55, z: sydneyPlaces.eveleigh.z + 3.05 },
     ], districtMaterial, 0.054);
     addFlatShape(groundGroup, [
-      { x: sydneyPlaces.bondiJunction.x - 2.95, z: sydneyPlaces.bondiJunction.z - 2.15 },
-      { x: sydneyPlaces.bondiJunction.x + 2.95, z: sydneyPlaces.bondiJunction.z - 1.95 },
-      { x: sydneyPlaces.bondiJunction.x + 3.25, z: sydneyPlaces.bondiJunction.z + 2.25 },
-      { x: sydneyPlaces.bondiJunction.x - 3.15, z: sydneyPlaces.bondiJunction.z + 2.55 },
+      { x: sydneyPlaces.bondiJunction.x - 3.95, z: sydneyPlaces.bondiJunction.z - 3.05 },
+      { x: sydneyPlaces.bondiJunction.x + 4.35, z: sydneyPlaces.bondiJunction.z - 2.85 },
+      { x: sydneyPlaces.bondiJunction.x + 4.55, z: sydneyPlaces.bondiJunction.z + 3.05 },
+      { x: sydneyPlaces.bondiJunction.x - 4.15, z: sydneyPlaces.bondiJunction.z + 3.35 },
     ], lightDistrictMaterial, 0.05);
     addFlatDisc(groundGroup, 2.55, scrubMaterial, sydneyPlaces.queensPark, 0.043, [1.35, 0.92], 48);
     addFlatDisc(groundGroup, 2.15, scrubMaterial, sydneyPlaces.doverHeights, 0.041, [1.2, 1.55], 48);
@@ -2483,7 +2509,7 @@ function CityScene({
       const height = Math.max(1, Math.floor(rect.height));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.fov = camera.aspect < 0.75 ? 59 : 49;
+      camera.fov = camera.aspect < 0.75 ? 50 : 40;
       camera.updateProjectionMatrix();
     };
 
@@ -2642,15 +2668,15 @@ function CityScene({
 
       const isNarrowView = camera.aspect < 0.75;
       const cameraTarget = new THREE.Vector3(
-        player.position.x + (isNarrowView ? 22.5 : 18.4) + cameraLead.x * 0.28,
-        isNarrowView ? 37.5 : 32.6,
-        player.position.z + (isNarrowView ? 35.5 : 30.4) + cameraLead.z * 0.28,
+        player.position.x + (isNarrowView ? 14.6 : 10.2) + cameraLead.x * 0.46,
+        isNarrowView ? 24.8 : 19.8,
+        player.position.z + (isNarrowView ? 22.6 : 17.4) + cameraLead.z * 0.46,
       );
-      camera.position.lerp(cameraTarget, 0.045);
+      camera.position.lerp(cameraTarget, 0.06);
       camera.lookAt(
-        player.position.x + cameraLead.x + (isNarrowView ? 3.8 : 3.1),
-        0.7,
-        player.position.z + cameraLead.z + (isNarrowView ? 0.35 : -0.25),
+        player.position.x + cameraLead.x + (isNarrowView ? 2.4 : 1.55),
+        1.35,
+        player.position.z + cameraLead.z + (isNarrowView ? -0.1 : -0.7),
       );
 
       renderer.render(scene, camera);
@@ -3155,18 +3181,23 @@ function addSydneyLandmarks(
   for (let i = 0; i < 16; i += 1) {
     const height = 0.98 + (i % 6) * 0.38;
     const towerGroup = new THREE.Group();
-    towerGroup.position.set(cbd.x - 1.25 + i * 0.42, 0, cbd.z - 0.9 + (i % 3) * 0.36);
-    towerGroup.rotation.y = (i % 2 ? 0.08 : -0.06);
-    addBox(towerGroup, [0.36 + (i % 3) * 0.08, height, 0.44], skylineMaterials[i % skylineMaterials.length], [0, height / 2, 0]);
-    if (i % 2 === 0) addFacadeGrid(towerGroup, 0.36 + (i % 3) * 0.08, height, 0.44, 4, 2, "#bde5dc", 0.44);
+    const width = 0.4 + (i % 3) * 0.1;
+    towerGroup.position.set(
+      cbd.x - 2.45 + (i % 8) * 0.72,
+      0,
+      cbd.z - 1.45 + Math.floor(i / 8) * 1.08 + (i % 3) * 0.16,
+    );
+    towerGroup.rotation.y = (i % 2 ? 0.1 : -0.08);
+    addBox(towerGroup, [width, height, 0.48], skylineMaterials[i % skylineMaterials.length], [0, height / 2, 0]);
+    if (i % 2 === 0) addFacadeGrid(towerGroup, width, height, 0.48, 4, 3, "#bde5dc", 0.44);
     landmarks.add(towerGroup);
   }
 
-  [-0.9, -0.05, 0.78].forEach((x, index) => {
-    addBox(landmarks, [0.52, 0.62 + index * 0.16, 0.42], "#6a7075", [blackbird.x + x, 0.32 + index * 0.08, blackbird.z + 0.58 + index * 0.38]);
+  [-1.25, 0.05, 1.38].forEach((x, index) => {
+    addBox(landmarks, [0.52, 0.62 + index * 0.16, 0.42], "#6a7075", [blackbird.x + x, 0.32 + index * 0.08, blackbird.z + 0.78 + index * 0.54]);
   });
-  [-0.9, 0.08, 0.98].forEach((x, index) => {
-    addBox(landmarks, [0.58, 0.86 + index * 0.22, 0.5], "#244d69", [eveleigh.x + x, 0.43 + index * 0.11, eveleigh.z - 0.65 + index * 0.26]);
+  [-1.35, 0.05, 1.45].forEach((x, index) => {
+    addBox(landmarks, [0.58, 0.86 + index * 0.22, 0.5], "#244d69", [eveleigh.x + x, 0.43 + index * 0.11, eveleigh.z - 0.85 + index * 0.42]);
   });
   [-1.08, -0.25, 0.6, 1.38].forEach((x, index) => {
     addBox(landmarks, [0.5, 0.48 + index * 0.09, 0.42], "#efe1bf", [bondiJunction.x + x, 0.24 + index * 0.045, bondiJunction.z + 1.2 - (index % 2) * 0.5]);
