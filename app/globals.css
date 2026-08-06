@@ -11,6 +11,8 @@
   --panel: #101611;
   --panel-soft: #19221b;
   --cream: #fff7df;
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 * {
@@ -295,6 +297,7 @@ canvas {
 }
 
 .city-map-shell {
+  position: relative;
   display: grid;
   gap: 8px;
 }
@@ -343,11 +346,15 @@ canvas {
 
 .city-stage {
   position: relative;
-  min-height: 640px;
-  height: min(76svh, 840px);
+  min-height: 680px;
+  height: min(80svh, 920px);
   overflow: hidden;
   background: #b9dbe0;
   z-index: 2;
+}
+
+.city-stage .city-canvas {
+  cursor: grab;
 }
 
 .city-stage .project-inspector {
@@ -815,8 +822,8 @@ canvas {
   }
 
   .city-stage {
-    min-height: 560px;
-    height: 70svh;
+    min-height: 600px;
+    height: 74svh;
   }
 
   .archive-controls,
@@ -913,8 +920,8 @@ canvas {
   }
 
   .city-stage {
-    min-height: 460px;
-    height: 64svh;
+    min-height: 500px;
+    height: 66svh;
   }
 
   .city-stage .project-inspector {

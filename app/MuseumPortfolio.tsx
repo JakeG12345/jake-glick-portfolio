@@ -60,7 +60,10 @@ declare global {
       canvas: { height: number; width: number };
       nearby: string | null;
       objects: number;
+      bounds: { maxX: number; maxZ: number; minX: number; minZ: number };
+      camera: { fov: number; x: number; y: number; z: number };
       player: { radius: number; x: number; y: number; z: number };
+      target: { x: number; y: number; z: number };
     };
   }
 }
@@ -1104,8 +1107,8 @@ const sydneyMap = {
   originLongitude: 151.2073,
   originX: -5.2,
   originZ: -4.8,
-  latitudeScale: 385,
-  longitudeScale: 330,
+  latitudeScale: 415,
+  longitudeScale: 365,
 };
 
 function mapSydney(longitude: number, latitude: number, nudge: Partial<MapPoint> = {}): MapPoint {
@@ -1336,12 +1339,12 @@ const cityStats = [
 
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
 const PLAYER_BALL_RADIUS = 0.36;
-const PLAYER_SPEED = 7.35;
+const PLAYER_SPEED = 7.55;
 const PLAYER_BOUNDS = {
-  minX: -13.6 + PLAYER_BALL_RADIUS,
-  maxX: 20.8 - PLAYER_BALL_RADIUS,
-  minZ: -14.2 + PLAYER_BALL_RADIUS,
-  maxZ: 11.1 - PLAYER_BALL_RADIUS,
+  minX: -14.8 + PLAYER_BALL_RADIUS,
+  maxX: 24.7 - PLAYER_BALL_RADIUS,
+  minZ: -15.35 + PLAYER_BALL_RADIUS,
+  maxZ: 11.65 - PLAYER_BALL_RADIUS,
 };
 const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
 
@@ -1456,7 +1459,7 @@ function patternTexture(kind: "grass" | "sand" | "water" | "road" | "pitch") {
       ctx.fillRect(0, 0, 512, 512);
       for (let i = 0; i < 900; i += 1) {
         ctx.fillStyle = i % 2 ? "rgba(126,91,41,0.16)" : "rgba(255,252,221,0.18)";
-        ctx.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
+        ctx.fillRect((i * 97 + (i % 19) * 37) % 512, (i * 193 + (i % 17) * 29) % 512, 2, 2);
       }
       return;
     }
@@ -1998,8 +2001,8 @@ function CityScene({
     scene.background = new THREE.Color("#b9dbe0");
     scene.fog = new THREE.Fog("#b9dbe0", 46, 104);
 
-    const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 150);
-    camera.position.set(12, 22.5, 20.5);
+    const camera = new THREE.PerspectiveCamera(49, 1, 0.1, 190);
+    camera.position.set(18, 32, 30);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -2057,43 +2060,51 @@ function CityScene({
     const pitchMaterial = new THREE.MeshStandardMaterial({ color: "#2c8d4a", map: pitch, roughness: 0.86 });
     const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
 
-    addPlane(44.5, 35.5, 3.1, -2.1, waterMaterial, -0.07);
+    addPlane(180, 150, 9, -5, waterMaterial, -0.07);
     addFlatShape(groundGroup, [
-      { x: -13.8, z: -8.65 },
-      { x: -11.3, z: -9.65 },
-      { x: -8.15, z: -9.05 },
-      { x: -6.15, z: -9.8 },
-      { x: -4.5, z: -8.7 },
-      { x: -3.2, z: -10.1 },
-      { x: -0.9, z: -8.75 },
-      { x: -0.35, z: -6.3 },
-      { x: 2.65, z: -4.45 },
-      { x: 6.65, z: -2.25 },
-      { x: 11.25, z: -6.85 },
-      { x: 16.7, z: -8 },
-      { x: 19.95, z: -7.1 },
-      { x: 20.35, z: -3.35 },
-      { x: 19.1, z: -0.1 },
-      { x: 17.35, z: 3.05 },
-      { x: 13.35, z: 7.35 },
-      { x: 8.2, z: 9.75 },
-      { x: 1.25, z: 9.9 },
-      { x: -4.7, z: 8.75 },
-      { x: -10.9, z: 5.05 },
-      { x: -13.9, z: 0.55 },
+      { x: -15.1, z: -9.15 },
+      { x: -12.35, z: -10.25 },
+      { x: -8.65, z: -9.55 },
+      { x: -6.35, z: -10.55 },
+      { x: -4.35, z: -9.15 },
+      { x: -2.7, z: -10.75 },
+      { x: 0.15, z: -9.05 },
+      { x: 1.05, z: -6.35 },
+      { x: 4.55, z: -4.05 },
+      { x: 8.7, z: -1.95 },
+      { x: 13.1, z: -7.35 },
+      { x: 18.55, z: -8.85 },
+      { x: 23.5, z: -7.55 },
+      { x: 24.65, z: -3.15 },
+      { x: 23.05, z: 0.65 },
+      { x: 20.5, z: 3.85 },
+      { x: 15.15, z: 8.2 },
+      { x: 8.65, z: 10.75 },
+      { x: 1.25, z: 10.7 },
+      { x: -5.25, z: 9.35 },
+      { x: -11.95, z: 5.35 },
+      { x: -15.25, z: 0.35 },
     ], parkMaterial);
     addFlatShape(groundGroup, [
-      { x: -14.2, z: -14.25 },
-      { x: 3.7, z: -14.25 },
-      { x: 3.45, z: -11.25 },
-      { x: 0.1, z: -10.12 },
-      { x: -2.25, z: -10.72 },
-      { x: -3.75, z: -9.35 },
-      { x: -5.9, z: -9.8 },
-      { x: -7.6, z: -8.85 },
-      { x: -9.65, z: -9.55 },
-      { x: -14.2, z: -9.85 },
+      { x: -15.5, z: -15.45 },
+      { x: 4.65, z: -15.45 },
+      { x: 4.35, z: -11.95 },
+      { x: 0.55, z: -10.72 },
+      { x: -2.3, z: -11.34 },
+      { x: -4.05, z: -9.85 },
+      { x: -6.45, z: -10.34 },
+      { x: -8.35, z: -9.28 },
+      { x: -10.7, z: -10.08 },
+      { x: -15.5, z: -10.45 },
     ], harbourMaterial, 0.015);
+    addFlatShape(groundGroup, [
+      { x: sydneyPlaces.harbourBridge.x - 4.9, z: sydneyPlaces.harbourBridge.z - 2.25 },
+      { x: sydneyPlaces.harbourBridge.x + 4.55, z: sydneyPlaces.harbourBridge.z - 2.05 },
+      { x: sydneyPlaces.harbourBridge.x + 4.9, z: sydneyPlaces.harbourBridge.z - 0.55 },
+      { x: sydneyPlaces.harbourBridge.x + 1.55, z: sydneyPlaces.harbourBridge.z + 0.05 },
+      { x: sydneyPlaces.harbourBridge.x - 1.35, z: sydneyPlaces.harbourBridge.z - 0.18 },
+      { x: sydneyPlaces.harbourBridge.x - 4.75, z: sydneyPlaces.harbourBridge.z - 0.85 },
+    ], scrubMaterial, 0.026);
     addFlatShape(groundGroup, [
       { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
       { x: sydneyPlaces.bondiBeach.x + 2.45, z: sydneyPlaces.bondiBeach.z - 1.05 },
@@ -2224,13 +2235,18 @@ function CityScene({
     };
 
     focusProject(initialActiveIdRef.current);
-    const startPosition = new THREE.Vector3(sydneyPlaces.cbd.x + 5.1, PLAYER_BALL_RADIUS, sydneyPlaces.cbd.z + 3.6);
+    const startPosition = new THREE.Vector3(sydneyPlaces.cbd.x + 9.1, PLAYER_BALL_RADIUS, sydneyPlaces.cbd.z + 4.1);
     target.copy(startPosition);
     player.position.copy(startPosition);
 
     const keys = new Set<string>();
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const clickedPoint = new THREE.Vector3();
+    const cameraForward = new THREE.Vector3();
+    const cameraRight = new THREE.Vector3();
+    const cameraLead = new THREE.Vector3();
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -2238,7 +2254,7 @@ function CityScene({
       const height = Math.max(1, Math.floor(rect.height));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.fov = camera.aspect < 0.75 ? 53 : 46;
+      camera.fov = camera.aspect < 0.75 ? 59 : 49;
       camera.updateProjectionMatrix();
     };
 
@@ -2265,7 +2281,18 @@ function CityScene({
       raycaster.setFromCamera(pointer, camera);
       const hit = raycaster.intersectObjects(colliders, true)[0];
       const id = hit?.object.userData.projectId as string | undefined;
-      if (id) onInspectProjectRef.current?.(id);
+      if (id) {
+        onInspectProjectRef.current?.(id);
+        return;
+      }
+      if (raycaster.ray.intersectPlane(groundPlane, clickedPoint)) {
+        playerControlled = true;
+        target.set(
+          THREE.MathUtils.clamp(clickedPoint.x, PLAYER_BOUNDS.minX, PLAYER_BOUNDS.maxX),
+          PLAYER_BALL_RADIUS,
+          THREE.MathUtils.clamp(clickedPoint.z, PLAYER_BOUNDS.minZ, PLAYER_BOUNDS.maxZ),
+        );
+      }
     };
 
     window.addEventListener("resize", resize);
@@ -2284,11 +2311,20 @@ function CityScene({
       const delta = Math.min((now - last) / 1000, 0.05);
       last = now;
 
+      camera.getWorldDirection(cameraForward);
+      cameraForward.y = 0;
+      if (cameraForward.lengthSq() < 0.001) cameraForward.set(0, 0, -1);
+      cameraForward.normalize();
+      cameraRight.setFromMatrixColumn(camera.matrixWorld, 0);
+      cameraRight.y = 0;
+      if (cameraRight.lengthSq() < 0.001) cameraRight.set(1, 0, 0);
+      cameraRight.normalize();
+
       const direction = new THREE.Vector3();
-      if (keys.has("w") || keys.has("arrowup")) direction.z -= 1;
-      if (keys.has("s") || keys.has("arrowdown")) direction.z += 1;
-      if (keys.has("a") || keys.has("arrowleft")) direction.x -= 1;
-      if (keys.has("d") || keys.has("arrowright")) direction.x += 1;
+      if (keys.has("w") || keys.has("arrowup")) direction.add(cameraForward);
+      if (keys.has("s") || keys.has("arrowdown")) direction.sub(cameraForward);
+      if (keys.has("a") || keys.has("arrowleft")) direction.sub(cameraRight);
+      if (keys.has("d") || keys.has("arrowright")) direction.add(cameraRight);
 
       if (direction.lengthSq() > 0) {
         direction.normalize().multiplyScalar(delta * PLAYER_SPEED);
@@ -2304,10 +2340,21 @@ function CityScene({
         if (travel > 0.0001) {
           const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
           player.rotateOnWorldAxis(rollAxis, travel / PLAYER_BALL_RADIUS);
+          cameraLead.lerp(moved.normalize().multiplyScalar(1.5), 0.18);
         }
       } else {
+        const previousPosition = player.position.clone();
         player.position.lerp(target, 0.035);
         player.position.y = PLAYER_BALL_RADIUS;
+        const moved = player.position.clone().sub(previousPosition);
+        const travel = Math.hypot(moved.x, moved.z);
+        if (travel > 0.0001) {
+          const rollAxis = new THREE.Vector3(moved.z, 0, -moved.x).normalize();
+          player.rotateOnWorldAxis(rollAxis, travel / PLAYER_BALL_RADIUS);
+          cameraLead.lerp(moved.normalize().multiplyScalar(1.15), 0.08);
+        } else {
+          cameraLead.multiplyScalar(0.95);
+        }
       }
 
       if (playerControlled) {
@@ -2331,12 +2378,16 @@ function CityScene({
 
       const isNarrowView = camera.aspect < 0.75;
       const cameraTarget = new THREE.Vector3(
-        player.position.x + (isNarrowView ? 15.4 : 12.2),
-        isNarrowView ? 27.5 : 23.5,
-        player.position.z + (isNarrowView ? 24.2 : 20.4),
+        player.position.x + (isNarrowView ? 22.5 : 18.4) + cameraLead.x * 0.28,
+        isNarrowView ? 37.5 : 32.6,
+        player.position.z + (isNarrowView ? 35.5 : 30.4) + cameraLead.z * 0.28,
       );
       camera.position.lerp(cameraTarget, 0.045);
-      camera.lookAt(player.position.x + (isNarrowView ? 3.1 : 2.4), 0.65, player.position.z + (isNarrowView ? 0.2 : -0.15));
+      camera.lookAt(
+        player.position.x + cameraLead.x + (isNarrowView ? 3.8 : 3.1),
+        0.7,
+        player.position.z + cameraLead.z + (isNarrowView ? 0.35 : -0.25),
+      );
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -2350,6 +2401,13 @@ function CityScene({
         const context = renderer.getContext();
         return {
           active: activeIdRef.current,
+          bounds: PLAYER_BOUNDS,
+          camera: {
+            fov: Number(camera.fov.toFixed(2)),
+            x: Number(camera.position.x.toFixed(2)),
+            y: Number(camera.position.y.toFixed(2)),
+            z: Number(camera.position.z.toFixed(2)),
+          },
           objects: scene.children.length,
           pixelReady: Boolean(context && canvas.width > 0 && canvas.height > 0),
         };
@@ -2359,6 +2417,13 @@ function CityScene({
     window.__portfolioCityStatus = () => ({
       active: activeIdRef.current,
       canvas: { width: canvas.width, height: canvas.height },
+      bounds: PLAYER_BOUNDS,
+      camera: {
+        fov: Number(camera.fov.toFixed(2)),
+        x: Number(camera.position.x.toFixed(2)),
+        y: Number(camera.position.y.toFixed(2)),
+        z: Number(camera.position.z.toFixed(2)),
+      },
       nearby: nearbyIdRef.current,
       objects: scene.children.length,
       player: {
@@ -2366,6 +2431,11 @@ function CityScene({
         y: Number(player.position.y.toFixed(2)),
         z: Number(player.position.z.toFixed(2)),
         radius: PLAYER_BALL_RADIUS,
+      },
+      target: {
+        x: Number(target.x.toFixed(2)),
+        y: Number(target.y.toFixed(2)),
+        z: Number(target.z.toFixed(2)),
       },
     });
     canvas.dataset.cityReady = "true";
@@ -2475,8 +2545,11 @@ function addLandscapeDetails(scene: THREE.Scene) {
   scene.add(details);
 
   const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.84 });
+  const wakeMaterial = new THREE.MeshBasicMaterial({ color: "#e9fbff", transparent: true, opacity: 0.54 });
   const wetSandMaterial = modelMaterial("#cfae63", { roughness: 0.92 });
   const rockMaterial = modelMaterial("#a58f66", { roughness: 0.92 });
+  const courtMaterial = modelMaterial("#1f6f51", { roughness: 0.84 });
+  const poolMaterial = modelMaterial("#2fa8c9", { roughness: 0.18, metalness: 0.04 });
   const treeTrunk = modelMaterial("#72563a", { roughness: 0.78 });
   const treeGreen = modelMaterial("#246b3e", { roughness: 0.88 });
   const palmGreen = modelMaterial("#2f8d55", { roughness: 0.82 });
@@ -2517,29 +2590,41 @@ function addLandscapeDetails(scene: THREE.Scene) {
   for (let i = 0; i < 7; i += 1) {
     addBox(
       details,
-      [0.055, 0.035, 2.2 + i * 0.18],
+      [0.055, 0.035, 1.65 + i * 0.14],
       foamMaterial,
-      [sydneyPlaces.bondiBeach.x + 2.25 + i * 0.16, 0.14, sydneyPlaces.bondiBeach.z - 1.22 + i * 0.58],
+      [sydneyPlaces.bondiBeach.x + 2.28 + i * 0.18, 0.14, sydneyPlaces.bondiBeach.z - 1.24 + i * 0.57],
       [0, -0.16, 0],
     );
     addBox(
       details,
       [0.055, 0.028, 1.4 + i * 0.1],
       wetSandMaterial,
-      [sydneyPlaces.bondiBeach.x + 1.55 + i * 0.1, 0.085, sydneyPlaces.bondiBeach.z - 0.8 + i * 0.56],
+      [sydneyPlaces.bondiBeach.x + 1.76 + i * 0.1, 0.085, sydneyPlaces.bondiBeach.z - 0.94 + i * 0.58],
       [0, -0.12, 0],
     );
   }
 
-  for (let i = 0; i < 9; i += 1) {
+  for (let i = 0; i < 12; i += 1) {
     addBox(
       details,
       [0.55 + (i % 3) * 0.16, 0.32 + (i % 4) * 0.11, 0.72],
       rockMaterial,
-      [sydneyPlaces.doverHeights.x - 2.1 + i * 0.42, 0.2 + (i % 4) * 0.045, sydneyPlaces.doverHeights.z + 0.3 + i * 0.34],
+      [sydneyPlaces.doverHeights.x - 2.52 + i * 0.42, 0.2 + (i % 4) * 0.045, sydneyPlaces.doverHeights.z + 0.18 + i * 0.34],
       [0, -0.25 + i * 0.04, 0.04],
     );
   }
+
+  [
+    { x: sydneyPlaces.doverHeights.x - 1.28, z: sydneyPlaces.doverHeights.z + 1.25 },
+    { x: sydneyPlaces.doverHeights.x + 0.36, z: sydneyPlaces.doverHeights.z + 0.82 },
+  ].forEach((point, index) => {
+    addBox(details, [1.08, 0.045, 0.52], poolMaterial, [point.x, 0.18, point.z], [0, 0.22 - index * 0.28, 0]);
+    addBox(details, [1.22, 0.035, 0.66], "#fffdf4", [point.x, 0.14, point.z], [0, 0.22 - index * 0.28, 0]);
+  });
+
+  addBox(details, [2.48, 0.035, 1.42], courtMaterial, [sydneyPlaces.queensPark.x - 0.25, 0.12, sydneyPlaces.queensPark.z + 1.45], [0, 0.08, 0]);
+  addBox(details, [2.48, 0.04, 0.045], "#fffdf4", [sydneyPlaces.queensPark.x - 0.25, 0.16, sydneyPlaces.queensPark.z + 1.45], [0, 0.08, 0]);
+  addBox(details, [0.045, 0.04, 1.42], "#fffdf4", [sydneyPlaces.queensPark.x - 0.25, 0.16, sydneyPlaces.queensPark.z + 1.45], [0, 0.08, 0]);
 
   [
     { x: sydneyPlaces.harbourBridge.x + 2.65, z: sydneyPlaces.harbourBridge.z + 0.95 },
@@ -2548,6 +2633,22 @@ function addLandscapeDetails(scene: THREE.Scene) {
   ].forEach((point, index) => {
     addBox(details, [0.72, 0.16, 0.26], "#fff7d6", [point.x, 0.12, point.z], [0, 0.3 - index * 0.22, 0], { roughness: 0.45 });
     addBox(details, [0.42, 0.09, 0.18], index === 1 ? "#e6533f" : "#2f8ec7", [point.x - 0.04, 0.25, point.z], [0, 0.3 - index * 0.22, 0], { roughness: 0.42 });
+  });
+
+  [
+    [sydneyPlaces.harbourBridge.x - 1.85, sydneyPlaces.harbourBridge.z + 1.12, -0.28],
+    [sydneyPlaces.operaHouse.x + 2.35, sydneyPlaces.operaHouse.z + 0.08, 0.18],
+    [sydneyPlaces.cbd.x - 2.85, sydneyPlaces.cbd.z - 4.2, -0.52],
+  ].forEach(([x, z, rotation], index) => {
+    const ferry = new THREE.Group();
+    ferry.position.set(x, 0, z);
+    ferry.rotation.y = rotation;
+    addBox(ferry, [1.08, 0.16, 0.36], "#fff7d6", [0, 0.16, 0], [0, 0, 0], { roughness: 0.44 });
+    addBox(ferry, [0.72, 0.18, 0.26], index === 2 ? "#f0c36a" : "#2f8ec7", [-0.08, 0.31, 0], [0, 0, 0], { roughness: 0.38 });
+    addBox(ferry, [0.28, 0.06, 0.28], "#151713", [0.44, 0.31, 0]);
+    addBox(ferry, [1.25, 0.028, 0.045], wakeMaterial, [-0.76, 0.09, -0.2], [0, -0.2, 0]);
+    addBox(ferry, [1.25, 0.028, 0.045], wakeMaterial, [-0.76, 0.09, 0.2], [0, 0.2, 0]);
+    details.add(ferry);
   });
 
   details.traverse((object) => {
@@ -2561,6 +2662,7 @@ function addLandscapeDetails(scene: THREE.Scene) {
 function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   const bridge = new THREE.Group();
   bridge.position.set(anchor.x, 0, anchor.z);
+  bridge.rotation.y = -0.08;
   parent.add(bridge);
 
   const steel = modelMaterial("#59686e", { roughness: 0.32, metalness: 0.16 });
@@ -2569,61 +2671,80 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   const deckMaterial = modelMaterial("#464d50", { roughness: 0.52, metalness: 0.08 });
   const laneMaterial = new THREE.MeshBasicMaterial({ color: "#f7f1d1" });
 
-  addBox(bridge, [7.2, 0.16, 0.68], deckMaterial, [0, 0.56, 0]);
-  addBox(bridge, [6.9, 0.03, 0.035], laneMaterial, [0, 0.66, -0.13]);
-  addBox(bridge, [6.9, 0.03, 0.035], laneMaterial, [0, 0.66, 0.13]);
-  addBox(bridge, [7.3, 0.08, 0.08], darkSteel, [0, 0.82, -0.42]);
-  addBox(bridge, [7.3, 0.08, 0.08], darkSteel, [0, 0.82, 0.42]);
+  addBox(bridge, [8.25, 0.12, 0.92], "#d8c494", [0, 0.28, 0], [0, 0, 0], { roughness: 0.76 });
+  addBox(bridge, [7.7, 0.16, 0.72], deckMaterial, [0, 0.58, 0]);
+  addBox(bridge, [7.4, 0.03, 0.035], laneMaterial, [0, 0.68, -0.16]);
+  addBox(bridge, [7.4, 0.03, 0.035], laneMaterial, [0, 0.68, 0.16]);
+  addBox(bridge, [7.78, 0.08, 0.08], darkSteel, [0, 0.86, -0.46]);
+  addBox(bridge, [7.78, 0.08, 0.08], darkSteel, [0, 0.86, 0.46]);
 
-  [-3.72, 3.72].forEach((x) => {
+  [-3.96, 3.96].forEach((x) => {
     [-0.42, 0.42].forEach((z) => {
-      addBox(bridge, [0.44, 1.86, 0.5], pylonMaterial, [x, 0.93, z]);
-      addBox(bridge, [0.58, 0.16, 0.64], pylonMaterial, [x, 1.94, z]);
-      addBox(bridge, [0.32, 0.28, 0.32], pylonMaterial, [x, 2.16, z]);
+      addBox(bridge, [0.5, 1.96, 0.54], pylonMaterial, [x, 0.98, z]);
+      addBox(bridge, [0.66, 0.16, 0.7], pylonMaterial, [x, 2.04, z]);
+      addBox(bridge, [0.34, 0.3, 0.34], pylonMaterial, [x, 2.28, z]);
+      addBox(bridge, [0.13, 0.22, 0.035], "#4f5657", [x, 1.18, z + Math.sign(z) * 0.29]);
+      addBox(bridge, [0.13, 0.22, 0.035], "#4f5657", [x, 1.58, z + Math.sign(z) * 0.29]);
     });
-    addBox(bridge, [0.18, 1.55, 1.22], darkSteel, [x * 0.96, 0.92, 0]);
+    addBox(bridge, [0.2, 1.58, 1.28], darkSteel, [x * 0.96, 0.94, 0]);
   });
 
   const archPoints = [-0.34, 0.34];
   archPoints.forEach((z) => {
     const curve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(-3.52, 0.78, z),
-      new THREE.Vector3(0, 2.92, z),
-      new THREE.Vector3(3.52, 0.78, z),
+      new THREE.Vector3(-3.78, 0.84, z),
+      new THREE.Vector3(0, 3.18, z),
+      new THREE.Vector3(3.78, 0.84, z),
     );
-    const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 36, 0.055, 8, false), steel);
+    const arch = new THREE.Mesh(new THREE.TubeGeometry(curve, 44, 0.06, 8, false), steel);
     arch.castShadow = true;
     bridge.add(arch);
 
-    for (let i = 1; i < 10; i += 1) {
-      const t = i / 10;
+    for (let i = 1; i < 12; i += 1) {
+      const t = i / 12;
       const archPoint = curve.getPoint(t);
-      const deckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.25, 3.25, t), 0.82, z);
+      const deckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, t), 0.86, z);
       addCylinderBetween(bridge, deckPoint, archPoint, 0.018, darkSteel);
       if (i % 2 === 1) {
-        const nextDeckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.25, 3.25, Math.min(0.98, t + 0.085)), 0.83, -z);
+        const nextDeckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, Math.min(0.98, t + 0.075)), 0.87, -z);
         addCylinderBetween(bridge, deckPoint, nextDeckPoint, 0.012, steel);
       }
     }
   });
 
-  for (let i = 0; i < 9; i += 1) {
-    const x = -3.2 + i * 0.8;
-    addBox(bridge, [0.06, 0.06, 0.98], darkSteel, [x, 0.91, 0]);
+  for (let i = 0; i < 11; i += 1) {
+    const x = -3.5 + i * 0.7;
+    addBox(bridge, [0.055, 0.06, 1.06], darkSteel, [x, 0.94, 0]);
+    if (i > 0) {
+      addCylinderBetween(
+        bridge,
+        new THREE.Vector3(x - 0.35, 1.06, -0.46),
+        new THREE.Vector3(x + 0.35, 1.32, 0.46),
+        0.012,
+        steel,
+      );
+      addCylinderBetween(
+        bridge,
+        new THREE.Vector3(x - 0.35, 1.32, 0.46),
+        new THREE.Vector3(x + 0.35, 1.06, -0.46),
+        0.012,
+        steel,
+      );
+    }
   }
 
-  [-2.95, -1.72, -0.5, 0.74, 1.98, 3.02].forEach((x, index) => {
+  [-3.18, -1.86, -0.56, 0.76, 2.1, 3.22].forEach((x, index) => {
     addCylinderBetween(
       bridge,
-      new THREE.Vector3(x, 0.76, -0.42),
-      new THREE.Vector3(x + (index % 2 ? 0.46 : -0.46), 1.22, 0.42),
+      new THREE.Vector3(x, 0.78, -0.46),
+      new THREE.Vector3(x + (index % 2 ? 0.5 : -0.5), 1.24, 0.46),
       0.016,
       steel,
     );
   });
 
-  [-3.18, 3.18].forEach((x) => {
-    addBox(bridge, [0.82, 0.12, 1.12], "#d8c494", [x, 0.2, 0], [0, 0, 0], { roughness: 0.76 });
+  [-3.46, 3.46].forEach((x) => {
+    addBox(bridge, [0.9, 0.14, 1.22], "#d8c494", [x, 0.2, 0], [0, 0, 0], { roughness: 0.76 });
   });
 }
 
@@ -2680,7 +2801,7 @@ function addSydneyLandmarks(
 
   const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.82 });
   for (let i = 0; i < 6; i += 1) {
-    addBox(landmarks, [0.08, 0.035, 3 + i * 0.16], foamMaterial, [bondiBeach.x + 2.35 + i * 0.14, 0.12, bondiBeach.z - 1.72 + i * 0.72], [0, -0.1, 0]);
+    addBox(landmarks, [0.065, 0.035, 1.8 + i * 0.13], foamMaterial, [bondiBeach.x + 2.28 + i * 0.16, 0.12, bondiBeach.z - 1.46 + i * 0.62], [0, -0.14, 0]);
   }
 
   const surfColors = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"];
@@ -2833,7 +2954,14 @@ export default function MuseumPortfolio() {
   useEffect(() => {
     document.body.classList.toggle("is-map-fullscreen", isMapFullscreen);
     const closeFallbackFullscreen = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !document.fullscreenElement) {
+      if (event.key !== "Escape") return;
+      if (document.fullscreenElement === mapShellRef.current) {
+        void document.exitFullscreen().catch(() => {
+          setIsMapFullscreen(false);
+        });
+        return;
+      }
+      if (!document.fullscreenElement) {
         setIsMapFullscreen(false);
       }
     };
@@ -2860,6 +2988,20 @@ export default function MuseumPortfolio() {
     setDismissedZoneId(activeId);
   };
 
+  useEffect(() => {
+    if (!detailsOpen) return undefined;
+
+    const closeDetailsOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !document.fullscreenElement) {
+        setDetailMode("closed");
+        setDismissedZoneId(activeId);
+      }
+    };
+
+    document.addEventListener("keydown", closeDetailsOnEscape);
+    return () => document.removeEventListener("keydown", closeDetailsOnEscape);
+  }, [activeId, detailsOpen]);
+
   const handleNearbyProjectChange = (id: string | null) => {
     if (detailMode === "pinned") return;
 
@@ -2876,7 +3018,22 @@ export default function MuseumPortfolio() {
   };
 
   const toggleMapFullscreen = () => {
-    setIsMapFullscreen((fullscreen) => !fullscreen);
+    const mapShell = mapShellRef.current;
+
+    if (!isMapFullscreen) {
+      setIsMapFullscreen(true);
+      void mapShell?.requestFullscreen?.().catch(() => {
+        setIsMapFullscreen(true);
+      });
+      return;
+    }
+
+    setIsMapFullscreen(false);
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {
+        setIsMapFullscreen(false);
+      });
+    }
   };
 
   const filteredProjects = useMemo(() => {
