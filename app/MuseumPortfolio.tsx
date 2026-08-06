@@ -1512,10 +1512,10 @@ const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] a
 const PLAYER_BALL_RADIUS = 0.36;
 const PLAYER_SPEED = 11.2;
 const PLAYER_BOUNDS = {
-  minX: -19.6 + PLAYER_BALL_RADIUS,
-  maxX: 26.2 - PLAYER_BALL_RADIUS,
+  minX: -23.8 + PLAYER_BALL_RADIUS,
+  maxX: 29.3 - PLAYER_BALL_RADIUS,
   minZ: -26.6 + PLAYER_BALL_RADIUS,
-  maxZ: 12.6 - PLAYER_BALL_RADIUS,
+  maxZ: 17.8 - PLAYER_BALL_RADIUS,
 };
 const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
 type CityRouteKind = "road" | "rail" | "bridge";
@@ -2437,6 +2437,7 @@ function CityScene({
 
     const parkMaterial = new THREE.MeshStandardMaterial({ color: "#4f8d55", map: grass, roughness: 0.84 });
     const scrubMaterial = new THREE.MeshStandardMaterial({ color: "#6f9a55", map: grass, roughness: 0.9 });
+    const inlandMaterial = new THREE.MeshStandardMaterial({ color: "#3f7149", map: grass, roughness: 0.88 });
     const waterMaterial = new THREE.MeshStandardMaterial({ color: "#176b82", map: water, roughness: 0.22, metalness: 0.08 });
     const harbourMaterial = new THREE.MeshStandardMaterial({ color: "#267a90", map: water, roughness: 0.24, metalness: 0.06 });
     const sandMaterial = new THREE.MeshStandardMaterial({ color: "#e4c875", map: sand, roughness: 0.88 });
@@ -2472,6 +2473,22 @@ function CityScene({
       { x: -5.25, z: 9.35 },
       { x: -11.95, z: 5.35 },
       { x: -15.25, z: 0.35 },
+    ];
+    const inlandSuburbsShape = [
+      { x: -22.45, z: 2.95 },
+      { x: -15.45, z: 2.85 },
+      { x: -8.75, z: 5.5 },
+      { x: -1.2, z: 6.95 },
+      { x: 6.85, z: 6.8 },
+      { x: 13.3, z: 5.62 },
+      { x: 20.8, z: 3.65 },
+      { x: 25.55, z: 6.15 },
+      { x: 27.65, z: 10.15 },
+      { x: 24.7, z: 14.9 },
+      { x: 14.4, z: 17.15 },
+      { x: 3.3, z: 17.05 },
+      { x: -9.2, z: 15.05 },
+      { x: -21.95, z: 12.05 },
     ];
     const harbourWaterShape = [
       { x: -15.5, z: -15.45 },
@@ -2561,6 +2578,7 @@ function CityScene({
     });
     const walkableAreas = [
       mainLandShape,
+      inlandSuburbsShape,
       northShoreShape,
       lavenderBayShape,
       kirribilliHeadlandShape,
@@ -2576,6 +2594,7 @@ function CityScene({
 
     addPlane(180, 150, 9, -5, waterMaterial, -0.07);
     addFlatShape(groundGroup, mainLandShape, parkMaterial);
+    addFlatShape(groundGroup, inlandSuburbsShape, inlandMaterial, 0.018);
     addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
     addFlatShape(groundGroup, northShoreShape, scrubMaterial, 0.026);
     addFlatShape(groundGroup, lavenderBayShape, scrubMaterial, 0.03);
@@ -3041,7 +3060,7 @@ function CityScene({
         },
         screenWaterSamples: {
           westHarbour: toWaterSample({ x: -13.2, z: -13.6 }),
-          centreHarbour: toWaterSample({ x: 1.7, z: -13.9 }),
+          centreHarbour: toWaterSample({ x: -6.5, z: -10.3 }),
           eastHarbour: toWaterSample({ x: 8.4, z: -10.6 }),
         },
       };
@@ -3249,6 +3268,9 @@ function addLandscapeDetails(scene: THREE.Scene) {
   const treeTrunk = modelMaterial("#72563a", { roughness: 0.78 });
   const treeGreen = modelMaterial("#246b3e", { roughness: 0.88 });
   const palmGreen = modelMaterial("#2f8d55", { roughness: 0.82 });
+  const suburbWall = modelMaterial("#efe1bf", { roughness: 0.76 });
+  const darkRoad = modelMaterial("#2b2f2b", { roughness: 0.78 });
+  const parkPaint = modelMaterial("#315f40", { roughness: 0.88 });
 
   const addTree = (point: MapPoint, scale = 1) => {
     addCylinder(details, 0.045 * scale, 0.06 * scale, 0.42 * scale, treeTrunk, [point.x, 0.27 * scale, point.z], [0, 0, 0], 10);
@@ -3260,6 +3282,18 @@ function addLandscapeDetails(scene: THREE.Scene) {
     for (let i = 0; i < 5; i += 1) {
       addBox(details, [0.08 * scale, 0.035 * scale, 0.74 * scale], palmGreen, [point.x, 0.86 * scale, point.z], [0.12, rotation + i * 1.25, 0.42]);
     }
+  };
+
+  const addInlandHouse = (point: MapPoint, rotation: number, roofColor: string, scale = 1) => {
+    const house = new THREE.Group();
+    house.position.set(point.x, 0, point.z);
+    house.rotation.y = rotation;
+    addBox(house, [0.72 * scale, 0.32 * scale, 0.55 * scale], suburbWall, [0, 0.22 * scale, 0]);
+    addBox(house, [0.84 * scale, 0.12 * scale, 0.64 * scale], roofColor, [0, 0.48 * scale, 0], [0, 0, 0], { roughness: 0.62 });
+    addBox(house, [0.18 * scale, 0.16 * scale, 0.04 * scale], "#94d8e8", [-0.22 * scale, 0.25 * scale, -0.3 * scale]);
+    addBox(house, [0.18 * scale, 0.16 * scale, 0.04 * scale], "#94d8e8", [0.22 * scale, 0.25 * scale, -0.3 * scale]);
+    addBox(house, [0.16 * scale, 0.2 * scale, 0.04 * scale], "#1c2322", [0, 0.2 * scale, 0.29 * scale]);
+    details.add(house);
   };
 
   [
@@ -3279,6 +3313,37 @@ function addLandscapeDetails(scene: THREE.Scene) {
     { x: sydneyPlaces.queensPark.x + 2.15, z: sydneyPlaces.queensPark.z + 0.85 },
     { x: sydneyPlaces.sportsField.x - 1.55, z: sydneyPlaces.sportsField.z + 2.4 },
   ].forEach((point, index) => addTree(point, 0.82 + (index % 3) * 0.08));
+
+  [
+    { x: -20.6, z: 5.35 },
+    { x: -18.8, z: 11.2 },
+    { x: -12.15, z: 12.9 },
+    { x: -5.5, z: 12.7 },
+    { x: 2.1, z: 13.4 },
+    { x: 9.45, z: 13.65 },
+    { x: 16.7, z: 14.1 },
+    { x: 24.4, z: 12.2 },
+    { x: 25.6, z: 7.35 },
+  ].forEach((point, index) => addTree(point, 0.74 + (index % 3) * 0.1));
+
+  ([
+    [-19.55, 4.6, -0.16, "#c84f3b"],
+    [-18.5, 6.0, 0.2, "#4cbad8"],
+    [-10.3, 12.05, -0.34, "#f0c36a"],
+    [-8.95, 13.0, 0.12, "#c84f3b"],
+    [4.7, 12.25, -0.08, "#4cbad8"],
+    [6.0, 13.15, 0.18, "#f0c36a"],
+    [18.0, 13.1, -0.18, "#c84f3b"],
+    [23.15, 10.85, 0.26, "#4cbad8"],
+  ] as const).forEach(([x, z, rotation, roofColor], index) => {
+    addInlandHouse({ x, z }, rotation, roofColor, 0.86 + (index % 2) * 0.1);
+  });
+
+  addBox(details, [4.7, 0.045, 0.24], darkRoad, [-18.9, 0.11, 7.85], [0, 0.22, 0]);
+  addBox(details, [6.2, 0.045, 0.22], darkRoad, [17.55, 0.11, 11.4], [0, -0.18, 0]);
+  addBox(details, [3.5, 0.04, 1.16], parkPaint, [2.2, 0.105, 15.0], [0, -0.08, 0]);
+  addBox(details, [0.08, 0.045, 1.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
+  addBox(details, [3.4, 0.04, 0.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
 
   for (let i = 0; i < 8; i += 1) {
     addPalm(
