@@ -46,6 +46,7 @@ type Project = {
   source: string;
   image?: string;
   imageAlt?: string;
+  mapKind?: "graveyard" | "learning";
   color: string;
   x: number;
   z: number;
@@ -1239,6 +1240,17 @@ const cityProjectPlots = {
   portfolio: nudgePoint(sydneyPlaces.cbd, -6.25, -1.15),
 };
 
+const archiveDistricts = {
+  graveyard: {
+    center: { x: -15.4, z: 7.35 },
+    entry: { x: -11.65, z: 5.55 },
+  },
+  learningCentre: {
+    center: { x: 20.45, z: 8.2 },
+    entry: { x: 16.55, z: 7.35 },
+  },
+};
+
 const cityItems: Project[] = [
   featuredProject("whatsapp-wrapped", {
     title: "Blackbird / WhatsAppWrapped",
@@ -1390,9 +1402,65 @@ const cityItems: Project[] = [
 ];
 
 const cityItemIds = new Set(cityItems.map((item) => item.id));
+
+function layoutArchiveZoneProjects(
+  items: Project[],
+  center: MapPoint,
+  columns: number,
+  spacingX: number,
+  spacingZ: number,
+  mapKind: "graveyard" | "learning",
+) {
+  const rowCount = Math.max(1, Math.ceil(items.length / columns));
+  return items.map((project, index) => {
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    return {
+      ...project,
+      mapKind,
+      x: center.x + (column - (columns - 1) / 2) * spacingX,
+      z: center.z + (row - (rowCount - 1) / 2) * spacingZ,
+      height: mapKind === "learning" ? 0.95 + (index % 3) * 0.1 : 0.74 + (index % 4) * 0.06,
+    };
+  });
+}
+
+const graveyardProjects = projects.filter((project) => !cityItemIds.has(project.id) && project.tier !== "learning");
+const learningCentreProjects = projects.filter((project) => !cityItemIds.has(project.id) && project.tier === "learning");
+const graveyardMapItems = layoutArchiveZoneProjects(
+  graveyardProjects,
+  archiveDistricts.graveyard.center,
+  5,
+  1.28,
+  1.2,
+  "graveyard",
+);
+const learningCentreMapItems = layoutArchiveZoneProjects(
+  learningCentreProjects,
+  archiveDistricts.learningCentre.center,
+  6,
+  1.18,
+  1.18,
+  "learning",
+);
+const mapItems = [...cityItems, ...graveyardMapItems, ...learningCentreMapItems];
+const mapItemIds = new Set(mapItems.map((item) => item.id));
 const selectableItems = [
-  ...cityItems,
-  ...projects.filter((project) => !cityItemIds.has(project.id)),
+  ...mapItems,
+  ...projects.filter((project) => !mapItemIds.has(project.id)),
+];
+const mapShortcutButtons = [
+  ...landmarkButtons,
+  {
+    id: graveyardMapItems[0]?.id ?? cityItems[0].id,
+    label: "Graveyard",
+    Icon: Landmark,
+  },
+  {
+    id: learningCentreMapItems[0]?.id ?? cityItems[0].id,
+    label: "Learning Centre",
+    Icon: Building2,
+  },
 ];
 
 const experiences = [
@@ -1435,7 +1503,7 @@ const experiences = [
 
 const cityStats = [
   ["18", "public GitHub repos"],
-  [String(cityItems.length), "map stops"],
+  [String(mapItems.length), "map stops"],
   [String(projects.length), "archive items"],
   ["2026", "Moriah College grad"],
 ];
@@ -1488,10 +1556,18 @@ const cityRoutes: CityRoute[] = [
   { start: sydneyPlaces.centralStation, end: cityProjectPlots.degree6, width: 0.28, walkWidth: 1.06, kind: "road" },
   { start: sydneyPlaces.queensPark, end: cityProjectPlots.ideaAid, width: 0.28, walkWidth: 1.06, kind: "road" },
   { start: sydneyPlaces.cbd, end: cityProjectPlots.portfolio, width: 0.3, walkWidth: 1.14, kind: "road" },
+  { start: sydneyPlaces.centralStation, end: archiveDistricts.graveyard.entry, width: 0.26, walkWidth: 1.18, kind: "road" },
+  { start: archiveDistricts.graveyard.entry, end: archiveDistricts.graveyard.center, width: 0.22, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.sportsField, end: archiveDistricts.learningCentre.entry, width: 0.28, walkWidth: 1.2, kind: "road" },
+  { start: archiveDistricts.learningCentre.entry, end: archiveDistricts.learningCentre.center, width: 0.24, walkWidth: 1.12, kind: "road" },
 ];
 
 const cityNavigationNodes = [
   ...Object.values(cityProjectPlots),
+  archiveDistricts.graveyard.entry,
+  archiveDistricts.graveyard.center,
+  archiveDistricts.learningCentre.entry,
+  archiveDistricts.learningCentre.center,
   sydneyPlaces.northSydney,
   sydneyPlaces.milsonsPoint,
   sydneyPlaces.kirribilli,
@@ -1879,6 +1955,8 @@ function addFacadeGrid(
 }
 
 function createProjectModel(project: Project) {
+  if (project.mapKind === "graveyard") return createGraveyardProjectModel(project);
+  if (project.mapKind === "learning") return createLearningProjectModel(project);
   if (project.id === "whatsapp-wrapped") return createWhatsAppWrappedModel(project);
   if (project.id === "jashby") return createJashbyModel(project);
   if (project.id === "quantium-work-experience") return createQuantiumModel(project);
@@ -1892,6 +1970,50 @@ function createProjectModel(project: Project) {
   if (project.id === "bondi-beach") return createBondiModel(project);
   if (project.id === "dover-heights-home") return createDoverHomeModel(project);
   return createGenericProjectTower(project);
+}
+
+function stableProjectNumber(project: Project) {
+  return project.id.split("").reduce((total, character) => total + character.charCodeAt(0), 0);
+}
+
+function createGraveyardProjectModel(project: Project) {
+  const group = new THREE.Group();
+  const seed = stableProjectNumber(project);
+  const stone = modelMaterial(seed % 2 ? "#7d8178" : "#686f68", { roughness: 0.88 });
+  const accent = modelMaterial(project.color, { roughness: 0.62, metalness: 0.04 });
+  const tilt = ((seed % 7) - 3) * 0.025;
+
+  addBox(group, [0.52, project.height, 0.2], stone, [0, project.height / 2, 0], [0, tilt, 0]);
+  addCylinder(group, 0.26, 0.26, 0.21, stone, [0, project.height + 0.02, 0], [Math.PI / 2, 0, tilt], 24);
+  addBox(group, [0.68, 0.08, 0.28], "#30342f", [0, 0.06, 0.02], [0, tilt, 0]);
+  addBox(group, [0.26, 0.035, 0.045], accent, [0, project.height * 0.56, -0.13], [0, tilt, 0]);
+  addBox(group, [0.035, 0.22, 0.045], accent, [0, project.height * 0.56, -0.13], [0, tilt, 0]);
+  addBox(group, [0.42, 0.035, 0.08], "#d8dacb", [0, 0.27, -0.14], [0, tilt, 0]);
+
+  if (seed % 3 === 0) {
+    addBox(group, [0.54, 0.04, 0.62], "#20251f", [0.36, 0.08, 0.36], [0, 0.45, 0]);
+    addBox(group, [0.34, 0.035, 0.44], project.color, [0.36, 0.13, 0.36], [0, 0.45, 0]);
+  }
+  return group;
+}
+
+function createLearningProjectModel(project: Project) {
+  const group = new THREE.Group();
+  const seed = stableProjectNumber(project);
+  const desk = modelMaterial("#d7c49b", { roughness: 0.78 });
+  const screen = modelMaterial("#1b2628", { roughness: 0.44, metalness: 0.08 });
+  const glow = new THREE.MeshBasicMaterial({ color: project.color });
+
+  addBox(group, [0.72, 0.08, 0.5], desk, [0, 0.22, 0]);
+  addBox(group, [0.12, 0.32, 0.08], desk, [-0.26, 0.08, 0.12]);
+  addBox(group, [0.12, 0.32, 0.08], desk, [0.26, 0.08, 0.12]);
+  addBox(group, [0.46, 0.34, 0.06], screen, [0, 0.48, -0.18], [0.18, 0, 0]);
+  addBox(group, [0.34, 0.2, 0.065], glow, [0, 0.49, -0.22], [0.18, 0, 0]);
+  addBox(group, [0.32, 0.035, 0.2], seed % 2 ? "#fffdf4" : "#f7d35f", [-0.38, 0.3, 0.18], [0, -0.24, 0]);
+  addBox(group, [0.28, 0.035, 0.18], seed % 2 ? "#4cbad8" : "#fffdf4", [-0.38, 0.35, 0.2], [0, -0.24, 0]);
+  addSphere(group, 0.11, "#fff8dc", [0.38, 0.48, 0.1], 18);
+  addCone(group, 0.18, 0.12, 4, project.color, [0.38, 0.61, 0.1], [0, Math.PI / 4, 0]);
+  return group;
 }
 
 function createGenericProjectTower(project: Project) {
@@ -2264,8 +2386,8 @@ function CityScene({
     scene.background = new THREE.Color("#b9dbe0");
     scene.fog = new THREE.Fog("#b9dbe0", 46, 104);
 
-    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 190);
-    camera.position.set(11, 20, 18);
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 190);
+    camera.position.set(9.2, 16.5, 14.2);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -2324,6 +2446,8 @@ function CityScene({
     const promenadeMaterial = new THREE.MeshStandardMaterial({ color: "#d5c7a6", roughness: 0.75 });
     const projectPlotMaterial = new THREE.MeshStandardMaterial({ color: "#3c4039", map: road, roughness: 0.78 });
     const landmarkPlotMaterial = new THREE.MeshStandardMaterial({ color: "#cfbd91", roughness: 0.82 });
+    const graveyardMaterial = new THREE.MeshStandardMaterial({ color: "#273027", map: grass, roughness: 0.92 });
+    const learningCampusMaterial = new THREE.MeshStandardMaterial({ color: "#435c58", map: road, roughness: 0.78 });
 
     const mainLandShape = [
       { x: -15.1, z: -9.15 },
@@ -2413,12 +2537,26 @@ function CityScene({
       { x: sydneyPlaces.kirribilli.x + 3.25, z: sydneyPlaces.kirribilli.z + 2.15 },
       { x: sydneyPlaces.milsonsPoint.x - 3.45, z: sydneyPlaces.milsonsPoint.z + 2.0 },
     ];
+    const graveyardShape = [
+      { x: archiveDistricts.graveyard.center.x - 4.9, z: archiveDistricts.graveyard.center.z - 3.35 },
+      { x: archiveDistricts.graveyard.center.x + 4.35, z: archiveDistricts.graveyard.center.z - 3.15 },
+      { x: archiveDistricts.graveyard.center.x + 4.75, z: archiveDistricts.graveyard.center.z + 2.75 },
+      { x: archiveDistricts.graveyard.center.x - 4.55, z: archiveDistricts.graveyard.center.z + 3.05 },
+    ];
+    const learningCentreShape = [
+      { x: archiveDistricts.learningCentre.center.x - 4.55, z: archiveDistricts.learningCentre.center.z - 3.4 },
+      { x: archiveDistricts.learningCentre.center.x + 4.7, z: archiveDistricts.learningCentre.center.z - 3.15 },
+      { x: archiveDistricts.learningCentre.center.x + 4.95, z: archiveDistricts.learningCentre.center.z + 3.05 },
+      { x: archiveDistricts.learningCentre.center.x - 4.3, z: archiveDistricts.learningCentre.center.z + 3.3 },
+    ];
     const cityRouteWalkways = cityRoutes
       .filter((route) => route.kind !== "rail")
       .map((route) => pathPolygon(route.start, route.end, route.walkWidth ?? Math.max(1.04, route.width + PLAYER_BALL_RADIUS * 2.35)));
-    const projectPlotShapes = cityItems.map((project) => {
+    const projectPlotShapes = mapItems.map((project) => {
       const isFlagship = project.tier === "flagship" || project.id === "whatsapp-wrapped" || project.id === "jashby";
       const isLandmark = project.category === "Landmark";
+      if (project.mapKind === "graveyard") return plotPolygon(project, 1.08, 0.88);
+      if (project.mapKind === "learning") return plotPolygon(project, 1.0, 0.96);
       return plotPolygon(project, isFlagship ? 5.15 : isLandmark ? 3.75 : 4.3, isFlagship ? 4.15 : isLandmark ? 3.15 : 3.55);
     });
     const walkableAreas = [
@@ -2430,6 +2568,8 @@ function CityScene({
       milsonsPromenadeShape,
       bondiSandShape,
       operaPromenadeShape,
+      graveyardShape,
+      learningCentreShape,
       ...projectPlotShapes,
       ...cityRouteWalkways,
     ].filter((area) => area.length >= 3);
@@ -2452,12 +2592,14 @@ function CityScene({
       ));
     addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.035);
     addFlatShape(groundGroup, operaPromenadeShape, promenadeMaterial, 0.032);
+    addFlatShape(groundGroup, graveyardShape, graveyardMaterial, 0.04);
+    addFlatShape(groundGroup, learningCentreShape, learningCampusMaterial, 0.042);
     projectPlotShapes.forEach((shape, index) => {
-      const project = cityItems[index];
+      const project = mapItems[index];
       addFlatShape(
         groundGroup,
         shape,
-        project.category === "Landmark" ? landmarkPlotMaterial : projectPlotMaterial,
+        project.category === "Landmark" ? landmarkPlotMaterial : project.mapKind === "graveyard" ? "#2f332f" : projectPlotMaterial,
         0.061 + index * 0.0008,
       );
     });
@@ -2491,6 +2633,7 @@ function CityScene({
 
     addSydneyLandmarks(scene, addTexture);
     addLandscapeDetails(scene);
+    addArchiveDistricts(scene, addTexture);
     addCityPaths(scene);
 
     const colliders: THREE.Object3D[] = [];
@@ -2499,10 +2642,11 @@ function CityScene({
     const projectStops = new Map<string, { position: THREE.Vector3; radius: number }>();
     const loader = new THREE.TextureLoader();
 
-    cityItems.forEach((project) => {
+    mapItems.forEach((project) => {
       const group = new THREE.Group();
       group.position.set(project.x, 0, project.z);
       group.userData.projectId = project.id;
+      const isArchiveZoneItem = project.mapKind === "graveyard" || project.mapKind === "learning";
 
       const model = createProjectModel(project);
       model.traverse((object) => {
@@ -2523,26 +2667,29 @@ function CityScene({
         : addTexture(projectTexture(project));
 
       const imageDecal = new THREE.Mesh(
-        new THREE.PlaneGeometry(project.tier === "flagship" ? 2.45 : 2.05, project.tier === "flagship" ? 1.45 : 1.2),
+        new THREE.PlaneGeometry(
+          isArchiveZoneItem ? 0.82 : project.tier === "flagship" ? 2.45 : 2.05,
+          isArchiveZoneItem ? 0.48 : project.tier === "flagship" ? 1.45 : 1.2,
+        ),
         new THREE.MeshBasicMaterial({ map: imageTexture, side: THREE.DoubleSide }),
       );
       imageDecal.rotation.x = -Math.PI / 2;
-      imageDecal.position.set(0, 0.105, project.tier === "flagship" ? -1.95 : -1.65);
+      imageDecal.position.set(0, 0.105, isArchiveZoneItem ? -0.62 : project.tier === "flagship" ? -1.95 : -1.65);
       imageDecal.userData.projectId = project.id;
       group.add(imageDecal);
       colliders.push(imageDecal);
 
       const label = new THREE.Mesh(
-        new THREE.PlaneGeometry(2.4, 0.8),
+        new THREE.PlaneGeometry(isArchiveZoneItem ? 1.18 : 2.4, isArchiveZoneItem ? 0.42 : 0.8),
         new THREE.MeshBasicMaterial({ map: addTexture(labelTexture(project)), side: THREE.DoubleSide }),
       );
       label.rotation.x = -Math.PI / 2;
-      label.position.set(0, 0.11, 1.38);
+      label.position.set(0, 0.11, isArchiveZoneItem ? 0.62 : 1.38);
       label.userData.projectId = project.id;
       group.add(label);
       colliders.push(label);
 
-      const stopRadius = project.tier === "flagship" ? 1.35 : 1.25;
+      const stopRadius = isArchiveZoneItem ? 0.72 : project.tier === "flagship" ? 1.35 : 1.25;
       const ring = new THREE.Mesh(
         new THREE.TorusGeometry(stopRadius, 0.022, 8, 72),
         new THREE.MeshBasicMaterial({ color: "#d8dacb", transparent: true, opacity: 0.035 }),
@@ -2566,6 +2713,14 @@ function CityScene({
     const activeIdRef = { current: initialActiveIdRef.current };
     const nearbyIdRef = { current: null as string | null };
     let playerControlled = false;
+    const queuedTargets: THREE.Vector3[] = [];
+
+    const setAutoRoute = (route: MapPoint[]) => {
+      queuedTargets.length = 0;
+      const [first, ...rest] = route;
+      rest.forEach((point) => queuedTargets.push(new THREE.Vector3(point.x, PLAYER_BALL_RADIUS, point.z)));
+      if (first) target.set(first.x, PLAYER_BALL_RADIUS, first.z);
+    };
 
     const focusProject = (id: string) => {
       activeIdRef.current = id;
@@ -2574,7 +2729,23 @@ function CityScene({
         ring.material.color.set(projectId === id ? "#fff8dc" : "#d8dacb");
       });
       const group = projectGroups.get(id);
-      if (group && !playerControlled) target.set(group.position.x, PLAYER_BALL_RADIUS, group.position.z + 2.2);
+      const project = mapItems.find((item) => item.id === id);
+      if (group && project && !playerControlled) {
+        const destination = project.mapKind
+          ? { x: group.position.x, z: group.position.z }
+          : { x: group.position.x, z: group.position.z + 2.2 };
+        const route = findWalkableRoute(
+          { x: player.position.x, z: player.position.z },
+          destination,
+          walkableAreas,
+          PLAYER_BALL_RADIUS,
+        );
+        if (route) {
+          setAutoRoute(route);
+        } else {
+          target.set(destination.x, PLAYER_BALL_RADIUS, destination.z);
+        }
+      }
     };
 
     focusProject(initialActiveIdRef.current);
@@ -2589,14 +2760,6 @@ function CityScene({
     const clickedPoint = new THREE.Vector3();
     const cameraForward = new THREE.Vector3();
     const cameraRight = new THREE.Vector3();
-    const queuedTargets: THREE.Vector3[] = [];
-
-    const setAutoRoute = (route: MapPoint[]) => {
-      queuedTargets.length = 0;
-      const [first, ...rest] = route;
-      rest.forEach((point) => queuedTargets.push(new THREE.Vector3(point.x, PLAYER_BALL_RADIUS, point.z)));
-      if (first) target.set(first.x, PLAYER_BALL_RADIUS, first.z);
-    };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -2604,7 +2767,7 @@ function CityScene({
       const height = Math.max(1, Math.floor(rect.height));
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
-      camera.fov = camera.aspect < 0.75 ? 50 : 40;
+      camera.fov = camera.aspect < 0.75 ? 46 : 36;
       camera.updateProjectionMatrix();
     };
 
@@ -2768,15 +2931,15 @@ function CityScene({
 
       const isNarrowView = camera.aspect < 0.75;
       const cameraTarget = new THREE.Vector3(
-        player.position.x + (isNarrowView ? 14.2 : 9.8),
-        isNarrowView ? 23.6 : 18.8,
-        player.position.z + (isNarrowView ? 21.4 : 16.2),
+        player.position.x + (isNarrowView ? 12.6 : 8.1),
+        isNarrowView ? 21.4 : 16.4,
+        player.position.z + (isNarrowView ? 18.6 : 13.7),
       );
-      camera.position.lerp(cameraTarget, 0.085);
+      camera.position.lerp(cameraTarget, 0.095);
       camera.lookAt(
-        player.position.x + (isNarrowView ? 2.1 : 1.25),
-        1.2,
-        player.position.z + (isNarrowView ? -0.35 : -0.95),
+        player.position.x + (isNarrowView ? 1.65 : 0.9),
+        1.05,
+        player.position.z + (isNarrowView ? -0.55 : -1.05),
       );
 
       renderer.render(scene, camera);
@@ -2859,7 +3022,7 @@ function CityScene({
         bridgeCrossingReady:
           segmentInWalkableAreas(sydneyPlaces.operaHouse, sydneyPlaces.harbourBridge, walkableAreas, PLAYER_BALL_RADIUS) &&
           segmentInWalkableAreas(sydneyPlaces.harbourBridge, sydneyPlaces.milsonsPoint, walkableAreas, PLAYER_BALL_RADIUS),
-        reachableProjectCount: cityItems.filter((project) => Boolean(findWalkableRoute(
+        reachableProjectCount: mapItems.filter((project) => Boolean(findWalkableRoute(
           currentPoint,
           project,
           walkableAreas,
@@ -2873,6 +3036,8 @@ function CityScene({
           blackbird: toScreenPoint(cityProjectPlots.whatsappWrapped),
           jashby: toScreenPoint(cityProjectPlots.jashby),
           quantium: toScreenPoint(cityProjectPlots.quantium),
+          graveyard: toScreenPoint(archiveDistricts.graveyard.center),
+          learningCentre: toScreenPoint(archiveDistricts.learningCentre.center),
         },
         screenWaterSamples: {
           westHarbour: toWaterSample({ x: -13.2, z: -13.6 }),
@@ -2978,6 +3143,68 @@ function addPathSegment(
   path.rotation.y = -Math.atan2(dz, dx);
   path.receiveShadow = true;
   scene.add(path);
+}
+
+function addArchiveDistricts(
+  scene: THREE.Scene,
+  addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
+) {
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const graveyard = archiveDistricts.graveyard.center;
+  const learning = archiveDistricts.learningCentre.center;
+  const fenceMaterial = modelMaterial("#1d211d", { roughness: 0.82 });
+  const stoneMaterial = modelMaterial("#6d736c", { roughness: 0.9 });
+  const brassMaterial = modelMaterial("#d8b85f", { roughness: 0.55, metalness: 0.08 });
+  const campusWall = modelMaterial("#dfe9df", { roughness: 0.72 });
+  const glass = modelMaterial("#77cdd1", { roughness: 0.28, metalness: 0.05 });
+  const screen = new THREE.MeshBasicMaterial({ color: "#163135" });
+
+  addBox(group, [5.8, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z - 3.0]);
+  addBox(group, [5.8, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z + 3.0]);
+  addBox(group, [0.14, 0.12, 5.7], fenceMaterial, [graveyard.x - 4.45, 0.18, graveyard.z]);
+  addBox(group, [0.14, 0.12, 5.7], fenceMaterial, [graveyard.x + 4.45, 0.18, graveyard.z]);
+  for (let i = 0; i < 12; i += 1) {
+    const x = graveyard.x - 4.25 + i * 0.78;
+    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z - 3.02]);
+    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z + 3.02]);
+  }
+  [-0.45, 0.45].forEach((x) => {
+    addBox(group, [0.12, 1.2, 0.12], brassMaterial, [graveyard.x + x, 0.68, graveyard.z - 3.18]);
+  });
+  addCylinderBetween(
+    group,
+    new THREE.Vector3(graveyard.x - 0.45, 1.3, graveyard.z - 3.18),
+    new THREE.Vector3(graveyard.x + 0.45, 1.3, graveyard.z - 3.18),
+    0.04,
+    brassMaterial,
+  );
+  addBox(group, [1.55, 0.32, 0.18], stoneMaterial, [graveyard.x + 3.15, 0.34, graveyard.z + 2.3], [0, -0.18, 0]);
+  addBox(group, [0.92, 0.08, 0.64], "#20251f", [graveyard.x + 2.92, 0.12, graveyard.z + 1.75], [0, 0.44, 0]);
+
+  addBox(group, [5.35, 0.18, 2.05], "#d7c49b", [learning.x, 0.18, learning.z - 2.55], [0, 0.04, 0], { roughness: 0.72 });
+  addBox(group, [4.8, 1.1, 1.42], campusWall, [learning.x, 0.82, learning.z - 2.55], [0, 0.04, 0]);
+  addBox(group, [5.1, 0.18, 1.68], "#f7d35f", [learning.x, 1.45, learning.z - 2.55], [0, 0.04, 0], { roughness: 0.48 });
+  [-1.6, -0.8, 0, 0.8, 1.6].forEach((x) => {
+    addBox(group, [0.42, 0.48, 0.07], glass, [learning.x + x, 0.9, learning.z - 3.28], [0, 0.04, 0]);
+  });
+  addBox(group, [2.7, 0.08, 0.92], "#243033", [learning.x, 0.28, learning.z + 2.35], [0, -0.08, 0], { roughness: 0.54 });
+  for (let index = 0; index < 4; index += 1) {
+    const x = learning.x - 1.05 + index * 0.7;
+    addBox(group, [0.44, 0.34, 0.04], screen, [x, 0.56, learning.z + 1.92], [0.12, -0.08, 0]);
+    addBox(group, [0.32, 0.04, 0.045], index % 2 ? "#22d66f" : "#4cbad8", [x, 0.58, learning.z + 1.89], [0.12, -0.08, 0]);
+  }
+
+  addLandmarkSign(scene, addTexture, "Project Graveyard", "old builds and experiments", graveyard.x - 1.25, graveyard.z - 3.55, "#7d8178");
+  addLandmarkSign(scene, addTexture, "Learning Centre", "tutorials and practice", learning.x - 1.25, learning.z - 3.75, "#77cdd1");
+
+  group.traverse((object) => {
+    if (object instanceof THREE.Mesh) {
+      object.castShadow = true;
+      object.receiveShadow = true;
+    }
+  });
 }
 
 function addBridgeCrossingLane(scene: THREE.Scene, start: MapPoint, end: MapPoint) {
@@ -3702,7 +3929,7 @@ export default function MuseumPortfolio() {
 
         <div className="city-controls">
           <div className="interest-strip" aria-label="Personal landmarks">
-            {landmarkButtons.map(({ id, label, Icon }) => (
+            {mapShortcutButtons.map(({ id, label, Icon }) => (
               <button
                 key={id}
                 type="button"
@@ -3720,10 +3947,10 @@ export default function MuseumPortfolio() {
       <section className="archive-section" id="archive" aria-labelledby="archive-title">
         <div className="section-copy">
           <p className="eyebrow">complete archive</p>
-          <h2 id="archive-title">The full trail lives here; the city only keeps the landmarks.</h2>
+          <h2 id="archive-title">The full trail lives here, and the map now has corners for the rest.</h2>
           <p>
-            The 3D map is intentionally curated. This archive keeps the shipped apps, prototypes,
-            learning repos, and local practice folders searchable without crowding the landscape.
+            Main builds sit as landmarks; older experiments gather in the graveyard and learning
+            repos live around the learning centre without crowding the harbour.
           </p>
         </div>
 
