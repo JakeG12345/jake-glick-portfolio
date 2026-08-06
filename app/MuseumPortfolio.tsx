@@ -3641,6 +3641,42 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
   });
 }
 
+function addCentrepointTower(parent: THREE.Object3D, anchor: MapPoint) {
+  const tower = new THREE.Group();
+  tower.position.set(anchor.x, 0, anchor.z);
+  tower.rotation.y = -0.12;
+
+  const shaft = modelMaterial("#d9d0bc", { roughness: 0.58, metalness: 0.06 });
+  const steel = modelMaterial("#48545a", { roughness: 0.48, metalness: 0.12 });
+  const glass = modelMaterial("#7fcbd3", { roughness: 0.26, metalness: 0.08 });
+  const gold = modelMaterial("#d8b85f", { roughness: 0.44, metalness: 0.08 });
+  const glow = new THREE.MeshBasicMaterial({ color: "#fff8dc" });
+
+  addBox(tower, [0.78, 0.11, 0.78], "#343b3c", [0, 0.08, 0], [0, 0, 0], { roughness: 0.68 });
+  addCylinder(tower, 0.095, 0.14, 3.45, shaft, [0, 1.82, 0], [0, 0, 0], 18);
+  addCylinder(tower, 0.32, 0.32, 0.12, steel, [0, 3.25, 0], [0, 0, 0], 32);
+  addCylinder(tower, 0.54, 0.42, 0.34, glass, [0, 3.48, 0], [0, 0, 0], 36);
+  addCylinder(tower, 0.48, 0.55, 0.12, gold, [0, 3.73, 0], [0, 0, 0], 36);
+  const observationRing = new THREE.Mesh(new THREE.TorusGeometry(0.56, 0.035, 8, 64), glow);
+  observationRing.rotation.x = Math.PI / 2;
+  observationRing.position.y = 3.5;
+  tower.add(observationRing);
+
+  for (let i = 0; i < 8; i += 1) {
+    const angle = (i / 8) * Math.PI * 2;
+    const deckPoint = new THREE.Vector3(Math.cos(angle) * 0.42, 3.3, Math.sin(angle) * 0.42);
+    const mastPoint = new THREE.Vector3(0, 2.58, 0);
+    addCylinderBetween(tower, mastPoint, deckPoint, 0.014, steel);
+  }
+
+  addSphere(tower, 0.16, gold, [0, 3.92, 0], 24).scale.set(1.25, 0.42, 1.25);
+  addCylinder(tower, 0.038, 0.055, 1.18, gold, [0, 4.48, 0], [0, 0, 0], 12);
+  addCylinder(tower, 0.016, 0.024, 0.56, glow, [0, 5.32, 0], [0, 0, 0], 10);
+  addSphere(tower, 0.055, glow, [0, 5.63, 0], 12);
+
+  parent.add(tower);
+}
+
 function addSydneyLandmarks(
   scene: THREE.Scene,
   addTexture: (texture?: THREE.Texture) => THREE.Texture | undefined,
@@ -3739,6 +3775,7 @@ function addSydneyLandmarks(
     if (i % 2 === 0) addFacadeGrid(towerGroup, width, height, 0.48, 4, 3, "#bde5dc", 0.44);
     landmarks.add(towerGroup);
   }
+  addCentrepointTower(landmarks, nudgePoint(cbd, 2.35, -0.34));
 
   [-1.25, 0.05, 1.38].forEach((x, index) => {
     addBox(landmarks, [0.52, 0.62 + index * 0.16, 0.42], "#6a7075", [blackbird.x + x, 0.32 + index * 0.08, blackbird.z + 0.78 + index * 0.54]);
