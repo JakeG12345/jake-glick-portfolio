@@ -1104,6 +1104,26 @@ const projects: Project[] = [
 
 const projectById = new Map(projects.map((project) => [project.id, project]));
 
+const projectImageOverrides: Record<string, string> = {
+  "daily-excel": "/projects/daily-excel.png",
+  "daily-challenge-app": "/projects/jashby.png",
+  "old-carstory": "/projects/car-lifestory.png",
+  "jiujitsu-prisma": "/projects/brackets.webp",
+  portfolio: "/projects/portfolio-city.jpg",
+};
+
+function projectImageSrc(project: Project) {
+  return projectImageOverrides[project.id] ?? project.image ?? `/projects/generated/${project.id}.svg`;
+}
+
+function projectImageAlt(project: Project) {
+  return project.imageAlt ?? `${project.title} project image`;
+}
+
+function isSvgImage(src: string) {
+  return src.endsWith(".svg");
+}
+
 function featuredProject(id: string, overrides: Partial<Project>): Project {
   const project = projectById.get(id);
   if (!project) throw new Error(`Missing featured project: ${id}`);
@@ -1226,28 +1246,28 @@ const sydneyPlaces = {
 };
 
 const cityProjectPlots = {
-  whatsappWrapped: nudgePoint(sydneyPlaces.blackbird, 6.25, -3.6),
-  jashby: nudgePoint(sydneyPlaces.bondiJunction, 3.75, -2.85),
-  quantium: nudgePoint(sydneyPlaces.eveleigh, -4.35, -0.75),
-  doverHome: nudgePoint(sydneyPlaces.doverHeights, 1.25, -1.15),
-  bondiBeach: nudgePoint(sydneyPlaces.bondiBeach, -0.2, 1.15),
-  sydneyHarbour: nudgePoint(sydneyPlaces.operaHouse, 2.2, -1.9),
-  carLifestory: nudgePoint(sydneyPlaces.doverHeights, -4.95, 3.75),
-  whatThePuck: nudgePoint(sydneyPlaces.sportsField, 3.65, 2.05),
-  moriahJiuJitsu: nudgePoint(sydneyPlaces.queensPark, 0.15, -2.75),
-  degree6: nudgePoint(sydneyPlaces.centralStation, -4.35, 3.55),
-  ideaAid: nudgePoint(sydneyPlaces.queensPark, -4.9, 4.2),
-  portfolio: nudgePoint(sydneyPlaces.cbd, -6.25, -1.15),
+  whatsappWrapped: nudgePoint(sydneyPlaces.blackbird, 5.8, 2.8),
+  jashby: nudgePoint(sydneyPlaces.bondiJunction, 5.9, -3.85),
+  quantium: nudgePoint(sydneyPlaces.eveleigh, -5.85, 3.4),
+  doverHome: nudgePoint(sydneyPlaces.doverHeights, 2.45, -2.45),
+  bondiBeach: nudgePoint(sydneyPlaces.bondiBeach, -1.15, 3.05),
+  sydneyHarbour: nudgePoint(sydneyPlaces.operaHouse, 3.45, -2.25),
+  carLifestory: nudgePoint(sydneyPlaces.doverHeights, 5.1, 1.0),
+  whatThePuck: nudgePoint(sydneyPlaces.sportsField, 6.05, 3.6),
+  moriahJiuJitsu: nudgePoint(sydneyPlaces.queensPark, -2.7, -4.25),
+  degree6: nudgePoint(sydneyPlaces.centralStation, -7.25, -2.85),
+  ideaAid: nudgePoint(sydneyPlaces.queensPark, -6.75, 5.15),
+  portfolio: nudgePoint(sydneyPlaces.cbd, -8.4, -3.55),
 };
 
 const archiveDistricts = {
   graveyard: {
-    center: { x: -15.4, z: 7.35 },
-    entry: { x: -11.65, z: 5.55 },
+    center: nudgePoint(sydneyPlaces.northSydney, -9.8, 3.2),
+    entry: nudgePoint(sydneyPlaces.northSydney, -4.25, 1.15),
   },
   learningCentre: {
-    center: { x: 18.75, z: 14.0 },
-    entry: { x: 17.05, z: 12.9 },
+    center: { x: 25.2, z: 18.9 },
+    entry: { x: 20.35, z: 14.85 },
   },
 };
 
@@ -1430,17 +1450,17 @@ const learningCentreProjects = projects.filter((project) => !cityItemIds.has(pro
 const graveyardMapItems = layoutArchiveZoneProjects(
   graveyardProjects,
   archiveDistricts.graveyard.center,
-  5,
-  1.28,
-  1.2,
+  4,
+  2.15,
+  1.72,
   "graveyard",
 );
 const learningCentreMapItems = layoutArchiveZoneProjects(
   learningCentreProjects,
   archiveDistricts.learningCentre.center,
-  6,
-  1.18,
-  1.18,
+  5,
+  1.72,
+  1.58,
   "learning",
 );
 const mapItems = [...cityItems, ...graveyardMapItems, ...learningCentreMapItems];
@@ -1512,10 +1532,10 @@ const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] a
 const PLAYER_BALL_RADIUS = 0.36;
 const PLAYER_SPEED = 11.2;
 const PLAYER_BOUNDS = {
-  minX: -23.8 + PLAYER_BALL_RADIUS,
-  maxX: 29.3 - PLAYER_BALL_RADIUS,
+  minX: -27.2 + PLAYER_BALL_RADIUS,
+  maxX: 33.0 - PLAYER_BALL_RADIUS,
   minZ: -26.6 + PLAYER_BALL_RADIUS,
-  maxZ: 17.8 - PLAYER_BALL_RADIUS,
+  maxZ: 24.9 - PLAYER_BALL_RADIUS,
 };
 const MOVEMENT_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", "w", "a", "s", "d"];
 type CityRouteKind = "road" | "rail" | "bridge";
@@ -1556,8 +1576,8 @@ const cityRoutes: CityRoute[] = [
   { start: sydneyPlaces.centralStation, end: cityProjectPlots.degree6, width: 0.28, walkWidth: 1.06, kind: "road" },
   { start: sydneyPlaces.queensPark, end: cityProjectPlots.ideaAid, width: 0.28, walkWidth: 1.06, kind: "road" },
   { start: sydneyPlaces.cbd, end: cityProjectPlots.portfolio, width: 0.3, walkWidth: 1.14, kind: "road" },
-  { start: sydneyPlaces.centralStation, end: archiveDistricts.graveyard.entry, width: 0.26, walkWidth: 1.18, kind: "road" },
-  { start: archiveDistricts.graveyard.entry, end: archiveDistricts.graveyard.center, width: 0.22, walkWidth: 1.08, kind: "road" },
+  { start: sydneyPlaces.northSydney, end: archiveDistricts.graveyard.entry, width: 0.28, walkWidth: 1.24, kind: "road" },
+  { start: archiveDistricts.graveyard.entry, end: archiveDistricts.graveyard.center, width: 0.24, walkWidth: 1.16, kind: "road" },
   { start: sydneyPlaces.sportsField, end: archiveDistricts.learningCentre.entry, width: 0.28, walkWidth: 1.2, kind: "road" },
   { start: archiveDistricts.learningCentre.entry, end: archiveDistricts.learningCentre.center, width: 0.24, walkWidth: 1.12, kind: "road" },
 ];
@@ -1662,41 +1682,6 @@ function createCanvasTexture(
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   return texture;
-}
-
-function projectTexture(project: Project) {
-  return createCanvasTexture(1024, 640, (ctx) => {
-    ctx.fillStyle = "#101611";
-    ctx.fillRect(0, 0, 1024, 640);
-    ctx.fillStyle = project.color;
-    ctx.fillRect(0, 0, 1024, 18);
-    ctx.fillRect(0, 590, 1024, 50);
-
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
-    ctx.lineWidth = 2;
-    for (let x = 0; x < 1024; x += 72) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, 640);
-      ctx.stroke();
-    }
-    for (let y = 0; y < 640; y += 72) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(1024, y);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = "#fff7df";
-    ctx.font = "900 74px Arial";
-    wrapCanvasText(ctx, project.shortTitle, 80, 230, 860, 78);
-    ctx.font = "700 34px Arial";
-    ctx.fillStyle = project.color;
-    ctx.fillText(project.category.toUpperCase(), 82, 104);
-    ctx.font = "600 28px Arial";
-    ctx.fillStyle = "#d8d2bd";
-    wrapCanvasText(ctx, project.summary, 84, 342, 820, 38);
-  });
 }
 
 function labelTexture(project: Project) {
@@ -2547,10 +2532,10 @@ function CityScene({
       { x: 8.7, z: -1.95 },
       { x: 13.1, z: -7.35 },
       { x: 18.55, z: -8.85 },
-      { x: 23.5, z: -7.55 },
-      { x: 24.65, z: -3.15 },
-      { x: 23.05, z: 0.65 },
-      { x: 20.5, z: 3.85 },
+      { x: 25.8, z: -7.85 },
+      { x: 29.45, z: -5.25 },
+      { x: 28.15, z: -0.2 },
+      { x: 23.05, z: 4.9 },
       { x: 15.15, z: 8.2 },
       { x: 8.65, z: 10.75 },
       { x: 1.25, z: 10.7 },
@@ -2565,12 +2550,13 @@ function CityScene({
       { x: -1.2, z: 6.95 },
       { x: 6.85, z: 6.8 },
       { x: 13.3, z: 5.62 },
-      { x: 20.8, z: 3.65 },
-      { x: 25.55, z: 6.15 },
-      { x: 27.65, z: 10.15 },
-      { x: 24.7, z: 14.9 },
-      { x: 14.4, z: 17.15 },
-      { x: 3.3, z: 17.05 },
+      { x: 21.4, z: 3.85 },
+      { x: 27.2, z: 6.15 },
+      { x: 31.7, z: 10.8 },
+      { x: 32.55, z: 18.8 },
+      { x: 27.75, z: 24.0 },
+      { x: 14.0, z: 23.2 },
+      { x: 2.3, z: 20.8 },
       { x: -9.2, z: 15.05 },
       { x: -21.95, z: 12.05 },
     ];
@@ -2598,6 +2584,15 @@ function CityScene({
       { x: sydneyPlaces.harbourBridge.x - 2.55, z: sydneyPlaces.harbourBridge.z + 0.38 },
       { x: sydneyPlaces.milsonsPoint.x - 5.75, z: sydneyPlaces.milsonsPoint.z + 1.62 },
       { x: sydneyPlaces.northSydney.x - 10.25, z: sydneyPlaces.northSydney.z - 0.45 },
+    ];
+    const northArchiveHeadlandShape = [
+      { x: archiveDistricts.graveyard.center.x - 7.1, z: archiveDistricts.graveyard.center.z - 4.55 },
+      { x: archiveDistricts.graveyard.center.x - 1.6, z: archiveDistricts.graveyard.center.z - 6.15 },
+      { x: sydneyPlaces.northSydney.x - 2.4, z: sydneyPlaces.northSydney.z - 2.4 },
+      { x: sydneyPlaces.northSydney.x + 0.6, z: sydneyPlaces.northSydney.z + 0.3 },
+      { x: archiveDistricts.graveyard.entry.x + 1.8, z: archiveDistricts.graveyard.entry.z + 2.15 },
+      { x: archiveDistricts.graveyard.center.x + 6.4, z: archiveDistricts.graveyard.center.z + 4.55 },
+      { x: archiveDistricts.graveyard.center.x - 7.1, z: archiveDistricts.graveyard.center.z + 4.95 },
     ];
     const lavenderBayShape = [
       { x: sydneyPlaces.milsonsPoint.x - 5.45, z: sydneyPlaces.milsonsPoint.z + 1.58 },
@@ -2639,16 +2634,16 @@ function CityScene({
       { x: sydneyPlaces.milsonsPoint.x - 3.45, z: sydneyPlaces.milsonsPoint.z + 2.0 },
     ];
     const graveyardShape = [
-      { x: archiveDistricts.graveyard.center.x - 4.9, z: archiveDistricts.graveyard.center.z - 3.35 },
-      { x: archiveDistricts.graveyard.center.x + 4.35, z: archiveDistricts.graveyard.center.z - 3.15 },
-      { x: archiveDistricts.graveyard.center.x + 4.75, z: archiveDistricts.graveyard.center.z + 2.75 },
-      { x: archiveDistricts.graveyard.center.x - 4.55, z: archiveDistricts.graveyard.center.z + 3.05 },
+      { x: archiveDistricts.graveyard.center.x - 6.2, z: archiveDistricts.graveyard.center.z - 4.55 },
+      { x: archiveDistricts.graveyard.center.x + 5.65, z: archiveDistricts.graveyard.center.z - 4.35 },
+      { x: archiveDistricts.graveyard.center.x + 5.95, z: archiveDistricts.graveyard.center.z + 4.15 },
+      { x: archiveDistricts.graveyard.center.x - 6.05, z: archiveDistricts.graveyard.center.z + 4.55 },
     ];
     const learningCentreShape = [
-      { x: archiveDistricts.learningCentre.center.x - 4.55, z: archiveDistricts.learningCentre.center.z - 3.4 },
-      { x: archiveDistricts.learningCentre.center.x + 4.7, z: archiveDistricts.learningCentre.center.z - 3.15 },
-      { x: archiveDistricts.learningCentre.center.x + 4.95, z: archiveDistricts.learningCentre.center.z + 3.05 },
-      { x: archiveDistricts.learningCentre.center.x - 4.3, z: archiveDistricts.learningCentre.center.z + 3.3 },
+      { x: archiveDistricts.learningCentre.center.x - 5.8, z: archiveDistricts.learningCentre.center.z - 4.75 },
+      { x: archiveDistricts.learningCentre.center.x + 5.95, z: archiveDistricts.learningCentre.center.z - 4.35 },
+      { x: archiveDistricts.learningCentre.center.x + 6.15, z: archiveDistricts.learningCentre.center.z + 4.45 },
+      { x: archiveDistricts.learningCentre.center.x - 5.55, z: archiveDistricts.learningCentre.center.z + 4.7 },
     ];
     const cityRouteWalkways = cityRoutes
       .filter((route) => route.kind !== "rail")
@@ -2656,14 +2651,15 @@ function CityScene({
     const projectPlotShapes = mapItems.map((project) => {
       const isFlagship = project.tier === "flagship" || project.id === "whatsapp-wrapped" || project.id === "jashby";
       const isLandmark = project.category === "Landmark";
-      if (project.mapKind === "graveyard") return plotPolygon(project, 1.08, 0.88);
-      if (project.mapKind === "learning") return plotPolygon(project, 1.0, 0.96);
+      if (project.mapKind === "graveyard") return plotPolygon(project, 1.24, 1.02);
+      if (project.mapKind === "learning") return plotPolygon(project, 1.12, 1.04);
       return plotPolygon(project, isFlagship ? 5.15 : isLandmark ? 3.75 : 4.3, isFlagship ? 4.15 : isLandmark ? 3.15 : 3.55);
     });
     const walkableAreas = [
       mainLandShape,
       inlandSuburbsShape,
       northShoreShape,
+      northArchiveHeadlandShape,
       lavenderBayShape,
       kirribilliHeadlandShape,
       northSydneyDistrictShape,
@@ -2681,6 +2677,7 @@ function CityScene({
     addFlatShape(groundGroup, inlandSuburbsShape, inlandMaterial, 0.018);
     addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
     addFlatShape(groundGroup, northShoreShape, scrubMaterial, 0.026);
+    addFlatShape(groundGroup, northArchiveHeadlandShape, scrubMaterial, 0.027);
     addFlatShape(groundGroup, lavenderBayShape, scrubMaterial, 0.03);
     addFlatShape(groundGroup, kirribilliHeadlandShape, scrubMaterial, 0.031);
     addFlatShape(groundGroup, northSydneyDistrictShape, districtMaterial, 0.049);
@@ -2762,12 +2759,10 @@ function CityScene({
       });
       group.add(model);
 
-      const imageTexture = project.image
-        ? addTexture(loader.load(project.image, (texture) => {
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-          }))
-        : addTexture(projectTexture(project));
+      const imageTexture = addTexture(loader.load(projectImageSrc(project), (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      }));
 
       const imageDecal = new THREE.Mesh(
         new THREE.PlaneGeometry(
@@ -3216,11 +3211,15 @@ function addCityPaths(scene: THREE.Scene) {
     sydneyPlaces.harbourBridge,
     sydneyPlaces.operaHouse,
     sydneyPlaces.cbd,
+    sydneyPlaces.centralStation,
     sydneyPlaces.blackbird,
     sydneyPlaces.eveleigh,
     sydneyPlaces.bondiJunction,
     sydneyPlaces.queensPark,
+    sydneyPlaces.sportsField,
     sydneyPlaces.doverHeights,
+    archiveDistricts.graveyard.entry,
+    archiveDistricts.learningCentre.entry,
   ].forEach((point) => {
     const node = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.035, 28), roadMaterial);
     node.position.set(point.x, 0.095, point.z);
@@ -3263,28 +3262,32 @@ function addArchiveDistricts(
   const campusWall = modelMaterial("#dfe9df", { roughness: 0.72 });
   const glass = modelMaterial("#77cdd1", { roughness: 0.28, metalness: 0.05 });
   const screen = new THREE.MeshBasicMaterial({ color: "#163135" });
+  const graveyardFenceWidth = 11.15;
+  const graveyardFenceDepth = 8.05;
+  const graveyardHalfWidth = graveyardFenceWidth / 2;
+  const graveyardHalfDepth = graveyardFenceDepth / 2;
 
-  addBox(group, [5.8, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z - 3.0]);
-  addBox(group, [5.8, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z + 3.0]);
-  addBox(group, [0.14, 0.12, 5.7], fenceMaterial, [graveyard.x - 4.45, 0.18, graveyard.z]);
-  addBox(group, [0.14, 0.12, 5.7], fenceMaterial, [graveyard.x + 4.45, 0.18, graveyard.z]);
-  for (let i = 0; i < 12; i += 1) {
-    const x = graveyard.x - 4.25 + i * 0.78;
-    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z - 3.02]);
-    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z + 3.02]);
+  addBox(group, [graveyardFenceWidth, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z - graveyardHalfDepth]);
+  addBox(group, [graveyardFenceWidth, 0.12, 0.14], fenceMaterial, [graveyard.x, 0.18, graveyard.z + graveyardHalfDepth]);
+  addBox(group, [0.14, 0.12, graveyardFenceDepth], fenceMaterial, [graveyard.x - graveyardHalfWidth, 0.18, graveyard.z]);
+  addBox(group, [0.14, 0.12, graveyardFenceDepth], fenceMaterial, [graveyard.x + graveyardHalfWidth, 0.18, graveyard.z]);
+  for (let i = 0; i < 16; i += 1) {
+    const x = graveyard.x - 5.18 + i * 0.69;
+    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z - graveyardHalfDepth - 0.02]);
+    addBox(group, [0.08, 0.5, 0.08], fenceMaterial, [x, 0.36, graveyard.z + graveyardHalfDepth + 0.02]);
   }
   [-0.45, 0.45].forEach((x) => {
-    addBox(group, [0.12, 1.2, 0.12], brassMaterial, [graveyard.x + x, 0.68, graveyard.z - 3.18]);
+    addBox(group, [0.12, 1.2, 0.12], brassMaterial, [graveyard.x + x, 0.68, graveyard.z - graveyardHalfDepth - 0.18]);
   });
   addCylinderBetween(
     group,
-    new THREE.Vector3(graveyard.x - 0.45, 1.3, graveyard.z - 3.18),
-    new THREE.Vector3(graveyard.x + 0.45, 1.3, graveyard.z - 3.18),
+    new THREE.Vector3(graveyard.x - 0.45, 1.3, graveyard.z - graveyardHalfDepth - 0.18),
+    new THREE.Vector3(graveyard.x + 0.45, 1.3, graveyard.z - graveyardHalfDepth - 0.18),
     0.04,
     brassMaterial,
   );
-  addBox(group, [1.55, 0.32, 0.18], stoneMaterial, [graveyard.x + 3.15, 0.34, graveyard.z + 2.3], [0, -0.18, 0]);
-  addBox(group, [0.92, 0.08, 0.64], "#20251f", [graveyard.x + 2.92, 0.12, graveyard.z + 1.75], [0, 0.44, 0]);
+  addBox(group, [1.55, 0.32, 0.18], stoneMaterial, [graveyard.x + 4.25, 0.34, graveyard.z + 3.1], [0, -0.18, 0]);
+  addBox(group, [0.92, 0.08, 0.64], "#20251f", [graveyard.x + 3.98, 0.12, graveyard.z + 2.55], [0, 0.44, 0]);
 
   addBox(group, [5.35, 0.18, 2.05], "#d7c49b", [learning.x, 0.18, learning.z - 2.55], [0, 0.04, 0], { roughness: 0.72 });
   addBox(group, [4.8, 1.1, 1.42], campusWall, [learning.x, 0.82, learning.z - 2.55], [0, 0.04, 0]);
@@ -3299,8 +3302,8 @@ function addArchiveDistricts(
     addBox(group, [0.32, 0.04, 0.045], index % 2 ? "#22d66f" : "#4cbad8", [x, 0.58, learning.z + 1.89], [0.12, -0.08, 0]);
   }
 
-  addLandmarkSign(scene, addTexture, "Project Graveyard", "old builds and experiments", graveyard.x - 1.25, graveyard.z - 3.55, "#7d8178");
-  addLandmarkSign(scene, addTexture, "Learning Centre", "tutorials and practice", learning.x - 1.25, learning.z - 3.75, "#77cdd1");
+  addLandmarkSign(scene, addTexture, "Project Graveyard", "north shore old builds", graveyard.x - 1.25, graveyard.z - 4.85, "#7d8178");
+  addLandmarkSign(scene, addTexture, "Learning Centre", "tutorials and practice", learning.x - 1.25, learning.z - 5.15, "#77cdd1");
 
   group.traverse((object) => {
     if (object instanceof THREE.Mesh) {
@@ -3391,6 +3394,10 @@ function addLandscapeDetails(scene: THREE.Scene) {
     { x: sydneyPlaces.northSydney.x - 4.35, z: sydneyPlaces.northSydney.z - 3.7 },
     { x: sydneyPlaces.northSydney.x + 0.85, z: sydneyPlaces.northSydney.z - 4.35 },
     { x: sydneyPlaces.northSydney.x + 5.1, z: sydneyPlaces.northSydney.z - 2.65 },
+    { x: archiveDistricts.graveyard.center.x - 5.75, z: archiveDistricts.graveyard.center.z - 2.85 },
+    { x: archiveDistricts.graveyard.center.x - 5.15, z: archiveDistricts.graveyard.center.z + 3.35 },
+    { x: archiveDistricts.graveyard.center.x + 4.9, z: archiveDistricts.graveyard.center.z + 3.55 },
+    { x: archiveDistricts.graveyard.entry.x + 1.35, z: archiveDistricts.graveyard.entry.z + 1.65 },
     { x: sydneyPlaces.milsonsPoint.x - 2.4, z: sydneyPlaces.milsonsPoint.z + 0.92 },
     { x: sydneyPlaces.kirribilli.x + 2.35, z: sydneyPlaces.kirribilli.z + 1.1 },
     { x: sydneyPlaces.queensPark.x - 2.6, z: sydneyPlaces.queensPark.z - 0.7 },
@@ -3405,8 +3412,11 @@ function addLandscapeDetails(scene: THREE.Scene) {
     { x: -5.5, z: 12.7 },
     { x: 2.1, z: 13.4 },
     { x: 9.45, z: 13.65 },
-    { x: 16.7, z: 14.1 },
-    { x: 24.4, z: 12.2 },
+    { x: 16.7, z: 15.1 },
+    { x: 24.4, z: 13.2 },
+    { x: 28.65, z: 16.25 },
+    { x: 29.2, z: 21.5 },
+    { x: 20.55, z: 21.9 },
     { x: 25.6, z: 7.35 },
   ].forEach((point, index) => addTree(point, 0.74 + (index % 3) * 0.1));
 
@@ -3417,14 +3427,16 @@ function addLandscapeDetails(scene: THREE.Scene) {
     [-8.95, 13.0, 0.12, "#c84f3b"],
     [4.7, 12.25, -0.08, "#4cbad8"],
     [6.0, 13.15, 0.18, "#f0c36a"],
-    [18.0, 13.1, -0.18, "#c84f3b"],
-    [23.15, 10.85, 0.26, "#4cbad8"],
+    [18.0, 16.1, -0.18, "#c84f3b"],
+    [22.65, 16.85, 0.26, "#4cbad8"],
+    [27.85, 14.65, -0.2, "#f0c36a"],
+    [29.4, 20.35, 0.16, "#c84f3b"],
   ] as const).forEach(([x, z, rotation, roofColor], index) => {
     addInlandHouse({ x, z }, rotation, roofColor, 0.86 + (index % 2) * 0.1);
   });
 
-  addBox(details, [4.7, 0.045, 0.24], darkRoad, [-18.9, 0.11, 7.85], [0, 0.22, 0]);
-  addBox(details, [6.2, 0.045, 0.22], darkRoad, [17.55, 0.11, 11.4], [0, -0.18, 0]);
+  addBox(details, [5.9, 0.045, 0.24], darkRoad, [archiveDistricts.graveyard.center.x - 3.45, 0.11, archiveDistricts.graveyard.center.z + 3.35], [0, 0.18, 0]);
+  addBox(details, [7.4, 0.045, 0.22], darkRoad, [23.4, 0.11, 15.95], [0, -0.4, 0]);
   addBox(details, [3.5, 0.04, 1.16], parkPaint, [2.2, 0.105, 15.0], [0, -0.08, 0]);
   addBox(details, [0.08, 0.045, 1.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
   addBox(details, [3.4, 0.04, 0.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
@@ -4186,20 +4198,34 @@ export default function MuseumPortfolio() {
         </div>
 
         <div className="archive-grid">
-          {filteredProjects.map((project) => (
-            <button
-              className={`archive-card ${project.id === activeId ? "is-active" : ""}`}
-              key={project.id}
-              type="button"
-              onClick={() => openProjectDetails(project.id, true)}
-              style={{ "--project-color": project.color } as CSSProperties}
-            >
-              <span>{project.year}</span>
-              <strong>{project.title}</strong>
-              <small>{project.category} / {tierLabel(project.tier)}</small>
-              <p>{project.summary}</p>
-            </button>
-          ))}
+          {filteredProjects.map((project) => {
+            const imageSrc = projectImageSrc(project);
+
+            return (
+              <button
+                className={`archive-card ${project.id === activeId ? "is-active" : ""}`}
+                key={project.id}
+                type="button"
+                onClick={() => openProjectDetails(project.id, true)}
+                style={{ "--project-color": project.color } as CSSProperties}
+              >
+                <span className="archive-thumb" aria-hidden="true">
+                  <Image
+                    src={imageSrc}
+                    alt=""
+                    width={480}
+                    height={270}
+                    sizes="(max-width: 760px) 92vw, (max-width: 1180px) 45vw, 280px"
+                    unoptimized={isSvgImage(imageSrc)}
+                  />
+                </span>
+                <span className="archive-year">{project.year}</span>
+                <strong>{project.title}</strong>
+                <small>{project.category} / {tierLabel(project.tier)}</small>
+                <p>{project.summary}</p>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -4250,6 +4276,8 @@ export default function MuseumPortfolio() {
 }
 
 function ProjectInspector({ project, onClose }: { project: Project; onClose: () => void }) {
+  const imageSrc = projectImageSrc(project);
+
   return (
     <aside className="project-inspector" style={{ "--project-color": project.color } as CSSProperties}>
       <div className="inspector-header">
@@ -4263,21 +4291,15 @@ function ProjectInspector({ project, onClose }: { project: Project; onClose: () 
         </button>
       </div>
       <div className="inspector-media">
-        {project.image ? (
-          <Image
-            src={project.image}
-            alt={project.imageAlt ?? `${project.title} screenshot`}
-            width={720}
-            height={430}
-            sizes="(max-width: 760px) 88vw, 360px"
-            loading="eager"
-          />
-        ) : (
-          <div className="generated-mark" aria-hidden="true">
-            <Building2 size={44} />
-            <span>{project.shortTitle}</span>
-          </div>
-        )}
+        <Image
+          src={imageSrc}
+          alt={projectImageAlt(project)}
+          width={720}
+          height={430}
+          sizes="(max-width: 760px) 88vw, 360px"
+          loading="eager"
+          unoptimized={isSvgImage(imageSrc)}
+        />
       </div>
       <p>{project.detail}</p>
       <div className="chip-list" aria-label={`${project.title} stack`}>

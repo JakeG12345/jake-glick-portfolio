@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="OLD Carstory project image">
+  <rect width="1200" height="760" fill="#101611"/>
+  <path d="M0 0h1200v760H0z" fill="url(#grid)" opacity="0.52"/>
+  <path d="M0 0h1200v760H0z" fill="url(#waves)" opacity="0.18"/>
+  <rect x="38" y="38" width="1124" height="684" fill="none" stroke="#74d7ed" stroke-width="18"/>
+  <rect x="76" y="74" width="238" height="42" fill="#74d7ed"/>
+  <text x="96" y="103" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#101611">2026</text>
+  <text x="76" y="158" font-family="Courier New, monospace" font-size="24" font-weight="900" fill="#74d7ed">PROTOTYPE / ARTIFACT</text>
+  <text x="76" y="210" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#fffdf4">OLD Carstory</text>
+  <text x="78" y="514" font-family="Courier New, monospace" font-size="24" font-weight="800" fill="#d5f2f2">GARAGE PIER</text>
+  <text x="78" y="558" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#d8d2bd">Earlier Expo prototype</text>
+  <rect x="76" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="94" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Expo</text><rect x="218" y="608" width="124" height="34" rx="0" fill="#d5f2f2" opacity="0.96"/><text x="236" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">React Native</text><rect x="360" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="378" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Zustand</text><rect x="502" y="608" width="124" height="34" rx="0" fill="#d5f2f2" opacity="0.96"/><text x="520" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Async Storage</text>
+  <circle cx="1112" cy="94" r="52" fill="#74d7ed" opacity="0.92"/>
+  <text x="1112" y="107" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#101611">JG</text>
+  <g transform="translate(674 228)"><rect x="6" y="118" width="360" height="92" rx="26" fill="#74d7ed"/><path d="M66 118l58-76h126l70 76z" fill="#c0ecf1"/><rect x="132" y="62" width="70" height="44" fill="#dff7fb"/><rect x="214" y="62" width="62" height="44" fill="#dff7fb"/><circle cx="94" cy="216" r="37" fill="#101611"/><circle cx="286" cy="216" r="37" fill="#101611"/><circle cx="94" cy="216" r="17" fill="#fffdf4"/><circle cx="286" cy="216" r="17" fill="#fffdf4"/><path d="M36 246h308" stroke="#fffdf4" stroke-width="8" stroke-linecap="round"/></g>
+  <defs>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0v64" fill="none" stroke="#fffdf4" stroke-width="1" opacity="0.28"/></pattern>
+    <pattern id="waves" width="164" height="74" patternUnits="userSpaceOnUse"><path d="M0 38c32-24 62-24 94 0s62 24 94 0" fill="none" stroke="#42777f" stroke-width="8" stroke-linecap="round"/></pattern>
+  </defs>
+</svg>

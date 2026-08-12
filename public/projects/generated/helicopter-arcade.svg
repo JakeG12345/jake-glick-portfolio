@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Helicopter Arcade Game project image">
+  <rect width="1200" height="760" fill="#101611"/>
+  <path d="M0 0h1200v760H0z" fill="url(#grid)" opacity="0.52"/>
+  <path d="M0 0h1200v760H0z" fill="url(#waves)" opacity="0.18"/>
+  <rect x="38" y="38" width="1124" height="684" fill="none" stroke="#8cbf3f" stroke-width="18"/>
+  <rect x="76" y="74" width="238" height="42" fill="#8cbf3f"/>
+  <text x="96" y="103" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#101611">2021</text>
+  <text x="76" y="158" font-family="Courier New, monospace" font-size="24" font-weight="900" fill="#8cbf3f">GAME / LEARNING</text>
+  <text x="76" y="210" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#fffdf4">Helicopter Arcade</text><text x="76" y="294" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#fffdf4">Game</text>
+  <text x="78" y="514" font-family="Courier New, monospace" font-size="24" font-weight="800" fill="#ddeabe">SWIFT ARCADE</text>
+  <text x="78" y="558" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#d8d2bd">Public Swift repo</text>
+  <rect x="76" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="94" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Swift</text><rect x="218" y="608" width="124" height="34" rx="0" fill="#ddeabe" opacity="0.96"/><text x="236" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Xcode</text><rect x="360" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="378" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">iOS</text>
+  <circle cx="1112" cy="94" r="52" fill="#8cbf3f" opacity="0.92"/>
+  <text x="1112" y="107" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#101611">JG</text>
+  <g transform="translate(684 180)"><path d="M58 114h220c42 0 72 24 72 56H120c-52 0-86-22-102-56z" fill="#8cbf3f" stroke="#101611" stroke-width="8"/><rect x="138" y="66" width="84" height="52" rx="12" fill="#cbe1a3" stroke="#101611" stroke-width="8"/><path d="M90 66h180M180 24v42M130 24h100" stroke="#101611" stroke-width="12" stroke-linecap="round"/><path d="M284 130l82-52v78z" fill="#fffdf4" stroke="#101611" stroke-width="8"/><path d="M126 198h154" stroke="#101611" stroke-width="12" stroke-linecap="round"/></g>
+  <defs>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0v64" fill="none" stroke="#fffdf4" stroke-width="1" opacity="0.28"/></pattern>
+    <pattern id="waves" width="164" height="74" patternUnits="userSpaceOnUse"><path d="M0 38c32-24 62-24 94 0s62 24 94 0" fill="none" stroke="#4e6b28" stroke-width="8" stroke-linecap="round"/></pattern>
+  </defs>
+</svg>

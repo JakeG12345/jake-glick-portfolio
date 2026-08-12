@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Message App project image">
+  <rect width="1200" height="760" fill="#101611"/>
+  <path d="M0 0h1200v760H0z" fill="url(#grid)" opacity="0.52"/>
+  <path d="M0 0h1200v760H0z" fill="url(#waves)" opacity="0.18"/>
+  <rect x="38" y="38" width="1124" height="684" fill="none" stroke="#2fc18b" stroke-width="18"/>
+  <rect x="76" y="74" width="238" height="42" fill="#2fc18b"/>
+  <text x="96" y="103" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#101611">2024</text>
+  <text x="76" y="158" font-family="Courier New, monospace" font-size="24" font-weight="900" fill="#2fc18b">TUTORIAL / LEARNING</text>
+  <text x="76" y="210" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#fffdf4">Message App</text>
+  <text x="78" y="514" font-family="Courier New, monospace" font-size="24" font-weight="800" fill="#c1ebd5">FLUTTER ROW</text>
+  <text x="78" y="558" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#d8d2bd">Flutter local app</text>
+  <rect x="76" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="94" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Flutter</text><rect x="218" y="608" width="124" height="34" rx="0" fill="#c1ebd5" opacity="0.96"/><text x="236" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Dart</text>
+  <circle cx="1112" cy="94" r="52" fill="#2fc18b" opacity="0.92"/>
+  <text x="1112" y="107" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#101611">JG</text>
+  <g transform="translate(688 168)"><rect width="230" height="112" rx="30" fill="#2fc18b"/><rect x="86" y="126" width="252" height="116" rx="30" fill="#fffdf4" stroke="#101611" stroke-width="8"/><path d="M64 108l-34 54 74-34M300 230l34 52-72-34" fill="#fffdf4"/><path d="M132 164h150M132 204h94" stroke="#101611" stroke-width="12" stroke-linecap="round"/></g>
+  <defs>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0v64" fill="none" stroke="#fffdf4" stroke-width="1" opacity="0.28"/></pattern>
+    <pattern id="waves" width="164" height="74" patternUnits="userSpaceOnUse"><path d="M0 38c32-24 62-24 94 0s62 24 94 0" fill="none" stroke="#206c4e" stroke-width="8" stroke-linecap="round"/></pattern>
+  </defs>
+</svg>

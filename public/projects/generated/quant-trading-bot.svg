@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-label="Quant Trading Bot project image">
+  <rect width="1200" height="760" fill="#101611"/>
+  <path d="M0 0h1200v760H0z" fill="url(#grid)" opacity="0.52"/>
+  <path d="M0 0h1200v760H0z" fill="url(#waves)" opacity="0.18"/>
+  <rect x="38" y="38" width="1124" height="684" fill="none" stroke="#62c2a8" stroke-width="18"/>
+  <rect x="76" y="74" width="238" height="42" fill="#62c2a8"/>
+  <text x="96" y="103" font-family="Courier New, monospace" font-size="20" font-weight="900" fill="#101611">2026</text>
+  <text x="76" y="158" font-family="Courier New, monospace" font-size="24" font-weight="900" fill="#62c2a8">DATA STORY / ARTIFACT</text>
+  <text x="76" y="210" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#fffdf4">Quant Trading Bot</text>
+  <text x="78" y="514" font-family="Courier New, monospace" font-size="24" font-weight="800" fill="#d0ebdd">DATA PIER</text>
+  <text x="78" y="558" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#d8d2bd">Local finance experiment</text>
+  <rect x="76" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="94" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Python</text><rect x="218" y="608" width="124" height="34" rx="0" fill="#d0ebdd" opacity="0.96"/><text x="236" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">CSV</text><rect x="360" y="608" width="124" height="34" rx="0" fill="#fffdf4" opacity="0.96"/><text x="378" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">Trading logic</text><rect x="502" y="608" width="124" height="34" rx="0" fill="#d0ebdd" opacity="0.96"/><text x="520" y="631" font-family="Courier New, monospace" font-size="16" font-weight="700" fill="#101611">SMA</text>
+  <circle cx="1112" cy="94" r="52" fill="#62c2a8" opacity="0.92"/>
+  <text x="1112" y="107" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#101611">JG</text>
+  <g transform="translate(664 146)"><rect width="404" height="278" rx="18" fill="#101611"/><rect x="22" y="22" width="360" height="42" fill="#62c2a8"/><g stroke="#fffdf4" stroke-width="5" opacity="0.22"><path d="M42 98h300"/><path d="M42 126h300"/><path d="M42 154h300"/><path d="M42 182h300"/><path d="M42 210h300"/><path d="M42 238h300"/></g><path d="M48 228l50-58 48 20 62-82 54 42 74-94" stroke="#b8e2d2" stroke-width="14" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="336" cy="56" r="22" fill="#62c2a8"/></g>
+  <defs>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M64 0H0v64" fill="none" stroke="#fffdf4" stroke-width="1" opacity="0.28"/></pattern>
+    <pattern id="waves" width="164" height="74" patternUnits="userSpaceOnUse"><path d="M0 38c32-24 62-24 94 0s62 24 94 0" fill="none" stroke="#396c5d" stroke-width="8" stroke-linecap="round"/></pattern>
+  </defs>
+</svg>
