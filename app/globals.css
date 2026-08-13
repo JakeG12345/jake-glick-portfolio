@@ -349,7 +349,7 @@ canvas {
   min-height: 680px;
   height: min(80svh, 920px);
   overflow: hidden;
-  background: #b9dbe0;
+  background: linear-gradient(180deg, #bfe9ff 0%, #e6f6fa 55%);
   z-index: 2;
 }
 
@@ -376,12 +376,12 @@ canvas {
   max-height: min(74svh, 820px);
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border: 2px solid var(--line);
-  padding: 16px;
-  background: rgba(255, 253, 244, 0.96);
+  gap: 12px;
+  border: 1px solid rgba(20,24,20,0.12);
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.92);
   color: var(--ink);
-  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 30px rgba(16,22,17,0.18);
   overflow: auto;
 }
 

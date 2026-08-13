@@ -21,38 +21,15 @@ import {
   Waves,
   X,
 } from "lucide-react";
-
-type ProjectLink = {
-  label: string;
-  href: string;
-  kind: "repo" | "live" | "video" | "store";
-};
-
-type ProjectTier = "flagship" | "built" | "artifact" | "learning";
-
-type Project = {
-  id: string;
-  title: string;
-  shortTitle: string;
-  year: string;
-  zone: string;
-  category: string;
-  tier: ProjectTier;
-  status: string;
-  summary: string;
-  detail: string;
-  stack: string[];
-  proof: string[];
-  source: string;
-  image?: string;
-  imageAlt?: string;
-  mapKind?: "graveyard" | "learning";
-  color: string;
-  x: number;
-  z: number;
-  height: number;
-  links: ProjectLink[];
-};
+import {
+  Project,
+  projects,
+  projectById,
+  projectImageSrc,
+  projectImageAlt,
+  isSvgImage,
+  featuredProject,
+} from "./data/projects";
 
 declare global {
   interface Window {
@@ -124,201 +101,8 @@ const landmarkButtons = [
   },
 ];
 
-const projects: Project[] = [
-  {
-    id: "whatsapp-wrapped",
-    title: "WhatsAppWrapped",
-    shortTitle: "Wrapped",
-    year: "2026",
-    zone: "Archive district",
-    category: "Data story",
-    tier: "flagship",
-    status: "Blackbird camp build",
-    summary:
-      "A local-first WhatsApp export analyzer that turns messy chat history into a recap deck and a walkable museum.",
-    detail:
-      "The browser parses .txt and .zip exports locally, calculates stats, builds shareable cards, and avoids storing raw messages. It is the project that set the tone for this portfolio city.",
-    stack: ["Next 16", "React 19", "TypeScript", "Anthropic", "Drizzle", "Better Auth"],
-    proof: ["Public GitHub repo", "Local README privacy model", "Safe cover asset used"],
-    source: "GitHub API and local README",
-    image: "/projects/whatsapp-wrapped-cover.png",
-    imageAlt: "WhatsAppWrapped recap cover screen",
-    color: "#22d66f",
-    x: -2,
-    z: -7,
-    height: 3.6,
-    links: [
-      { label: "GitHub", href: "https://github.com/JakeG12345/WhatsAppWrapped", kind: "repo" },
-    ],
-  },
-  {
-    id: "jashby",
-    title: "Jashby",
-    shortTitle: "Jashby",
-    year: "2024-2026",
-    zone: "Spreadsheet quarter",
-    category: "Product",
-    tier: "flagship",
-    status: "Co-founder and CEO thread",
-    summary:
-      "A spreadsheet learning platform that turns Excel and Google Sheets skills into levels and daily challenges.",
-    detail:
-      "The local project stack includes the public Jashby app, Firebase-backed user flows, Univer Sheets workbooks, onboarding, subscriptions, analytics, and the Daily Excel challenge family.",
-    stack: ["Next", "Firebase", "Univer Sheets", "TypeScript", "Vercel"],
-    proof: ["jashby.com live", "Local Jashby folders", "Attached DOCX founder narrative"],
-    source: "Attached DOCX, live site, local project folders",
-    image: "/projects/jashby-product.png",
-    imageAlt: "Jashby product artwork showing spreadsheet learning",
-    color: "#18b96f",
-    x: 4,
-    z: -7,
-    height: 4.2,
-    links: [{ label: "Live site", href: "https://jashby.com", kind: "live" }],
-  },
-  {
-    id: "daily-excel",
-    title: "The Daily Excel",
-    shortTitle: "Daily Excel",
-    year: "2025",
-    zone: "Spreadsheet quarter",
-    category: "Puzzle",
-    tier: "built",
-    status: "Local product experiment",
-    summary:
-      "A Wordle-style daily spreadsheet puzzle with Sydney-time rotation, validation, and Univer workbook state.",
-    detail:
-      "The app defines puzzle scenarios, validates formulas and answers, and keeps the structure ready for streaks, history, analytics, and more levels.",
-    stack: ["Next 14", "React 18", "TypeScript", "Univer Sheets"],
-    proof: ["Local README", "Local thedailyexcel project"],
-    source: "Local README and package metadata",
-    image: "/projects/live-jashby.png",
-    imageAlt: "Jashby live site screenshot used as spreadsheet-family branding",
-    color: "#74c365",
-    x: 7,
-    z: -4,
-    height: 2.4,
-    links: [],
-  },
-  {
-    id: "daily-challenge-app",
-    title: "Daily Challenge App",
-    shortTitle: "Daily App",
-    year: "2025",
-    zone: "Spreadsheet quarter",
-    category: "Prototype",
-    tier: "artifact",
-    status: "Jashby local prototype",
-    summary:
-      "A separate Next/Univer daily challenge branch from the spreadsheet learning experiments.",
-    detail:
-      "This sits beside The Daily Excel and Jashby as a narrower test bed for challenge delivery and spreadsheet interaction.",
-    stack: ["Next 15", "React 18", "Univer Sheets"],
-    proof: ["Local package metadata", "Jashby folder scan"],
-    source: "Local package metadata",
-    color: "#9fd46d",
-    x: 9.5,
-    z: -1.5,
-    height: 1.7,
-    links: [],
-  },
-  {
-    id: "car-lifestory-web",
-    title: "Car Lifestory Web",
-    shortTitle: "Car Web",
-    year: "2026",
-    zone: "Garage pier",
-    category: "Product",
-    tier: "flagship",
-    status: "Live web app",
-    summary:
-      "A vehicle records app for ownership timelines, service history, costs, exports, and AI-assisted scan-to-form entry.",
-    detail:
-      "Built from a real need after getting Ps and digging through a 2002 Audi TT's paperwork. The web app handles auth, marketing, dashboard flows, pricing, and the extraction API.",
-    stack: ["Next", "Supabase", "OpenAI API", "TypeScript", "Cloudflare path"],
-    proof: ["carlifestory.vercel.app live", "Local web app README", "Attached DOCX motivation"],
-    source: "Attached DOCX, live site, local project folder",
-    image: "/projects/live-car-lifestory.png",
-    imageAlt: "Car Lifestory live landing page screenshot",
-    color: "#17bddd",
-    x: 12,
-    z: 2,
-    height: 3.4,
-    links: [{ label: "Live site", href: "https://carlifestory.vercel.app", kind: "live" }],
-  },
-  {
-    id: "car-lifestory-mobile",
-    title: "Car Lifestory Mobile",
-    shortTitle: "Car App",
-    year: "2026",
-    zone: "Garage pier",
-    category: "Mobile",
-    tier: "built",
-    status: "Expo app",
-    summary:
-      "The mobile companion for vehicle records, local persistence, Supabase groundwork, exports, and scan workflows.",
-    detail:
-      "The app side manages records, attachments, PDF and CSV export plumbing, deep links, and auth setup for the same car-history product.",
-    stack: ["Expo", "React Native", "Supabase", "TypeScript"],
-    proof: ["Local Expo project", "Local package metadata"],
-    source: "Local app folder",
-    image: "/projects/car-lifestory-timeline.png",
-    imageAlt: "Car Lifestory app timeline screenshot",
-    color: "#56c7e9",
-    x: 15,
-    z: 4.5,
-    height: 2.3,
-    links: [],
-  },
-  {
-    id: "old-carstory",
-    title: "OLD Carstory",
-    shortTitle: "Old Car",
-    year: "2026",
-    zone: "Garage pier",
-    category: "Prototype",
-    tier: "artifact",
-    status: "Earlier Expo prototype",
-    summary:
-      "An earlier car-records app branch with document picking, image picking, navigation, Zustand, and local storage.",
-    detail:
-      "This looks like the ancestor of Car Lifestory, useful because it shows the iteration path rather than just the polished version.",
-    stack: ["Expo", "React Native", "Zustand", "Async Storage"],
-    proof: ["Local package metadata", "OLD-carstory folder"],
-    source: "Local package metadata",
-    color: "#74d7ed",
-    x: 15.5,
-    z: 8,
-    height: 1.6,
-    links: [],
-  },
-  {
-    id: "what-the-puck",
-    title: "What The Puck",
-    shortTitle: "Puck",
-    year: "2022-2024",
-    zone: "Stadium block",
-    category: "Game",
-    tier: "flagship",
-    status: "Public mobile launch",
-    summary:
-      "A Unity mobile game crossing golf and ice hockey, launched on iOS and Android with AIgile.",
-    detail:
-      "Jake worked as lead developer across gameplay, frontend, and backend pieces. The App Store listing and live website make it the first big public launch in the archive.",
-    stack: ["Unity", "C#", "iOS", "Android", "Mobile game systems"],
-    proof: ["Live website screenshot", "App Store listing", "Attached DOCX launch story"],
-    source: "Attached DOCX, live site, App Store link",
-    image: "/projects/live-whatthepuck.png",
-    imageAlt: "What The Puck live website screenshot",
-    color: "#2787f0",
-    x: -7,
-    z: 8,
-    height: 3.1,
-    links: [
-      { label: "Live site", href: "https://www.whatthepuck.app", kind: "live" },
-      { label: "App Store", href: "https://apps.apple.com/us/app/what-the-puck/id6504596162", kind: "store" },
-    ],
-  },
-  {
+// Projects are imported from ./data/projects to keep the scene component small
+// and maintainable. See app/data/projects.ts for the full data set.
     id: "moriah-jiu-jitsu",
     title: "Moriah Jiu-Jitsu",
     shortTitle: "Jiu-Jitsu",
@@ -1101,34 +885,6 @@ const projects: Project[] = [
     links: [],
   },
 ];
-
-const projectById = new Map(projects.map((project) => [project.id, project]));
-
-const projectImageOverrides: Record<string, string> = {
-  "daily-excel": "/projects/daily-excel.png",
-  "daily-challenge-app": "/projects/jashby.png",
-  "old-carstory": "/projects/car-lifestory.png",
-  "jiujitsu-prisma": "/projects/brackets.webp",
-  portfolio: "/projects/portfolio-city.jpg",
-};
-
-function projectImageSrc(project: Project) {
-  return projectImageOverrides[project.id] ?? project.image ?? `/projects/generated/${project.id}.svg`;
-}
-
-function projectImageAlt(project: Project) {
-  return project.imageAlt ?? `${project.title} project image`;
-}
-
-function isSvgImage(src: string) {
-  return src.endsWith(".svg");
-}
-
-function featuredProject(id: string, overrides: Partial<Project>): Project {
-  const project = projectById.get(id);
-  if (!project) throw new Error(`Missing featured project: ${id}`);
-  return { ...project, ...overrides };
-}
 
 type MapPoint = { x: number; z: number };
 
@@ -2271,12 +2027,12 @@ function createHarbourModel(project: Project) {
 
 function createBondiModel(project: Project) {
   const group = new THREE.Group();
-  const sandMaterial = modelMaterial("#e7c873", { roughness: 0.9 });
-  const wetSandMaterial = modelMaterial("#cfae63", { roughness: 0.88 });
-  const waterMaterial = modelMaterial("#35b7c9", { roughness: 0.18, metalness: 0.04 });
-  const promenadeMaterial = modelMaterial("#d8c494", { roughness: 0.76 });
-  const poolWater = modelMaterial("#74d7e8", { roughness: 0.16, metalness: 0.03 });
-  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.9 });
+  const sandMaterial = modelMaterial("#f0d79a", { roughness: 0.92 });
+  const wetSandMaterial = modelMaterial("#d1b27a", { roughness: 0.9 });
+  const waterMaterial = modelMaterial("#39a9bf", { roughness: 0.16, metalness: 0.05 });
+  const promenadeMaterial = modelMaterial("#d8c494", { roughness: 0.72 });
+  const poolWater = modelMaterial("#68d1e0", { roughness: 0.12, metalness: 0.06 });
+  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.95 });
   const red = modelMaterial("#e6533f", { roughness: 0.52 });
   const yellow = modelMaterial("#f7d35f", { roughness: 0.52 });
 
@@ -2331,16 +2087,24 @@ function createBondiModel(project: Project) {
   });
   addBox(group, [1.74, 0.045, 0.08], project.color, [-1.12, 1.02, -0.95]);
 
+  // Replace box pool with a round "Icebergs"-style pool: outer rim + inner water
   const pool = new THREE.Group();
   pool.position.set(1.18, 0, 0.72);
   pool.rotation.y = -0.34;
-  addBox(pool, [0.96, 0.055, 0.72], "#fffdf4", [0, 0.14, 0]);
-  addBox(pool, [0.78, 0.045, 0.54], poolWater, [0, 0.18, 0]);
-  [-0.18, 0.0, 0.18].forEach((z) => {
-    addBox(pool, [0.74, 0.018, 0.018], foam, [0, 0.215, z]);
-  });
-  addBox(pool, [0.08, 0.2, 0.68], "#d8c494", [-0.55, 0.24, 0]);
-  addBox(pool, [0.36, 0.05, 0.5], "#e8d9b6", [-0.78, 0.16, 0.24], [0, 0.16, 0]);
+  // outer rim (white concrete)
+  addCylinder(pool, 0.54, 0.58, 0.06, "#fffdf4", [0, 0.14, 0], [Math.PI / 2, 0, 0], 32);
+  // inner water (slightly inset)
+  addCylinder(pool, 0.46, 0.48, 0.04, poolWater, [0, 0.18, 0], [Math.PI / 2, 0, 0], 32);
+  // small foam lines along inner edge (decor)
+  for (let f = 0; f < 6; f += 1) {
+    const angle = (f / 6) * Math.PI * 2;
+    const fx = Math.cos(angle) * 0.44;
+    const fz = Math.sin(angle) * 0.44;
+    addBox(pool, [0.08, 0.008, 0.02], foam, [fx, 0.215, fz], [0, angle + 0.2, 0]);
+  }
+  // bench / step detail
+  addBox(pool, [0.14, 0.03, 0.46], "#d8c494", [-0.55, 0.24, 0]);
+  addBox(pool, [0.24, 0.045, 0.28], "#e8d9b6", [-0.78, 0.16, 0.24], [0, 0.16, 0]);
   group.add(pool);
 
   for (let step = 0; step < 4; step += 1) {
@@ -2452,11 +2216,13 @@ function CityScene({
     renderer.shadowMap.type = THREE.PCFShadowMap;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#b9dbe0");
-    scene.fog = new THREE.Fog("#b9dbe0", 46, 104);
+    // Slightly brighter sky-blue background and extended fog for depth
+    scene.background = new THREE.Color("#bfe9ff");
+    scene.fog = new THREE.Fog("#bfe9ff", 46, 120);
 
-    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 190);
-    camera.position.set(9.2, 16.5, 14.2);
+    // Wider field of view for a more panoramic city feel
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 190);
+    camera.position.set(10.0, 14.0, 16.0);
 
     const ambient = new THREE.HemisphereLight("#fff8df", "#1f5e5a", 2.2);
     scene.add(ambient);
@@ -3606,10 +3372,10 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
     for (let i = 1; i < 12; i += 1) {
       const t = i / 12;
       const archPoint = curve.getPoint(t);
-      const deckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, t), 0.86, z);
-      addCylinderBetween(bridge, deckPoint, archPoint, 0.018, darkSteel);
-      if (i % 2 === 1) {
-        const nextDeckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, Math.min(0.98, t + 0.075)), 0.87, -z);
+        [1.08 - i * 0.045, 0.03, 0.052],
+        foam,
+        [0.52 + i * 0.22, 0.12 + i * 0.004, -1.0 + i * 0.33],
+        [0, -0.36 + i * 0.06, 0],
         addCylinderBetween(bridge, deckPoint, nextDeckPoint, 0.012, steel);
       }
     }
@@ -3620,6 +3386,12 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
     addBox(bridge, [0.055, 0.06, 1.06], darkSteel, [x, 0.94, 0]);
     addCylinder(bridge, 0.025, 0.025, 0.42, darkSteel, [x, 0.94, -0.62], [0, 0, 0], 8);
     addCylinder(bridge, 0.055, 0.055, 0.04, lampMaterial, [x, 1.18, -0.62], [0, 0, 0], 12);
+    // add a couple of beach umbrellas for visual cue
+    const umbrellaColors = ["#ff5b2e", "#ffdd57", "#2f8ec7"];
+    umbrellaColors.forEach((c, i) => {
+      addCylinder(group, 0.02, 0.02, 0.86, "#151713", [-0.9 + i * 0.7, 0.36, 0.2 + i * -0.18], [0, 0, 0], 12);
+      addCone(group, 0.36, 0.12, 20, c, [-0.9 + i * 0.7, 0.86, 0.2 + i * -0.18], [Math.PI, i * 0.4, 0]);
+    });
     if (i > 0) {
       addCylinderBetween(
         bridge,
