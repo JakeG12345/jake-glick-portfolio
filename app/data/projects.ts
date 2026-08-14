@@ -1,10 +1,10 @@
-type ProjectLink = {
+export type ProjectLink = {
   label: string;
   href: string;
   kind: "repo" | "live" | "video" | "store";
 };
 
-type ProjectTier = "flagship" | "built" | "artifact" | "learning";
+export type ProjectTier = "flagship" | "built" | "artifact" | "learning";
 
 export type Project = {
   id: string;
@@ -26,6 +26,8 @@ export type Project = {
   color: string;
   x: number;
   z: number;
+  /** Y rotation in radians for the 3D model, e.g. to align a stop with the coast. */
+  heading?: number;
   height: number;
   links: ProjectLink[];
 };

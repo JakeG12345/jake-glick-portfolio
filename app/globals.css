@@ -804,6 +804,56 @@ canvas {
   outline-offset: 3px;
 }
 
+/* Archive cards open here, in place, rather than scrolling back to the map. */
+body.has-project-modal {
+  overflow: hidden;
+}
+
+.project-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.project-modal-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(9, 13, 10, 0.62);
+  cursor: pointer;
+  animation: project-modal-fade 160ms ease-out;
+}
+
+.project-modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(460px, 100%);
+  animation: project-modal-rise 180ms ease-out;
+}
+
+.project-modal-card .project-inspector {
+  max-height: min(86svh, 900px);
+  border: 2px solid var(--line);
+  box-shadow: 0 24px 60px rgba(9, 13, 10, 0.42);
+}
+
+@keyframes project-modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes project-modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
 @media (hover: hover) {
   .contact-links a:hover,
   .project-links a:hover,

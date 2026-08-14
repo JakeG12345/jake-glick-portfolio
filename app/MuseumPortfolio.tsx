@@ -23,8 +23,9 @@ import {
 } from "lucide-react";
 import {
   Project,
+  ProjectLink,
+  ProjectTier,
   projects,
-  projectById,
   projectImageSrc,
   projectImageAlt,
   isSvgImage,
@@ -103,788 +104,6 @@ const landmarkButtons = [
 
 // Projects are imported from ./data/projects to keep the scene component small
 // and maintainable. See app/data/projects.ts for the full data set.
-    id: "moriah-jiu-jitsu",
-    title: "Moriah Jiu-Jitsu",
-    shortTitle: "Jiu-Jitsu",
-    year: "2025",
-    zone: "School tools",
-    category: "Ops tool",
-    tier: "flagship",
-    status: "Live school competition tool",
-    summary:
-      "A Firebase-backed site for athletes, divisions, competitions, scoring, and leaderboards.",
-    detail:
-      "Built for the coordinator of the Moriah Jiu-Jitsu program so live competition workflows could happen in one dedicated web app.",
-    stack: ["Next 15", "React 19", "Firebase", "Tailwind", "Vercel"],
-    proof: ["moriah-jiujitsu.vercel.app live", "Local project folder", "Attached DOCX link"],
-    source: "Attached DOCX, live site, local folders",
-    image: "/projects/live-moriah-jiujitsu.png",
-    imageAlt: "Moriah Jiu-Jitsu live site screenshot",
-    color: "#ff5b2e",
-    x: -7,
-    z: 1,
-    height: 2.9,
-    links: [{ label: "Live site", href: "https://moriah-jiujitsu.vercel.app/", kind: "live" }],
-  },
-  {
-    id: "jiujitsu-prisma",
-    title: "Jiu-Jitsu Prisma Prototype",
-    shortTitle: "JJ Prisma",
-    year: "2025",
-    zone: "School tools",
-    category: "Prototype",
-    tier: "artifact",
-    status: "Earlier local Next app",
-    summary:
-      "A separate Moriah Jiu-Jitsu branch with Prisma and Postgres setup before the Firebase version took shape.",
-    detail:
-      "Kept as an artifact because the stack shift tells the product story: data modelling first, then a simpler live workflow for school use.",
-    stack: ["Next 15", "Prisma", "Postgres", "React 19"],
-    proof: ["Local package metadata", "Local folder"],
-    source: "Local package metadata",
-    color: "#ff8b5e",
-    x: -10,
-    z: 3.5,
-    height: 1.7,
-    links: [],
-  },
-  {
-    id: "degree6",
-    title: "Degree6",
-    shortTitle: "Degree6",
-    year: "2025",
-    zone: "Network lane",
-    category: "Data viz",
-    tier: "flagship",
-    status: "Locally run for screenshot",
-    summary:
-      "A D3-powered LinkedIn network explorer for degrees of separation, search, filtering, and graph navigation.",
-    detail:
-      "The local app runs a Vite React client and Express backend. It was started locally for a real screenshot of the graph interface.",
-    stack: ["React", "D3", "Vite", "Express", "TypeScript"],
-    proof: ["Local server run", "Screenshot captured from localhost", "Public repo found"],
-    source: "Local README, local run, GitHub API",
-    image: "/projects/degree6-live.png",
-    imageAlt: "Degree6 network graph screenshot",
-    color: "#7c5cff",
-    x: 2,
-    z: 8.5,
-    height: 3.2,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/degree6", kind: "repo" }],
-  },
-  {
-    id: "hsc-mc-maker",
-    title: "HSC MC Maker",
-    shortTitle: "HSC MC",
-    year: "2025",
-    zone: "School tools",
-    category: "Study app",
-    tier: "built",
-    status: "Expo study app",
-    summary:
-      "A React Native app for making and practising HSC multiple-choice questions with fast entry and answer-key fixes.",
-    detail:
-      "The current local Expo project has config and README but no bundled screenshots, so the city uses a custom study-lab sign instead of a fake capture.",
-    stack: ["Expo SDK 54", "React Native", "TypeScript"],
-    proof: ["Local README", "Expo app config", "Collaborator repo link"],
-    source: "Local README and app config",
-    color: "#f2b84b",
-    x: -12,
-    z: 0,
-    height: 2,
-    links: [{ label: "GitHub", href: "https://github.com/Josephmosh/hsc-mc-maker", kind: "repo" }],
-  },
-  {
-    id: "idea-aid",
-    title: "Idea Aid",
-    shortTitle: "Idea Aid",
-    year: "2023",
-    zone: "AI workshop",
-    category: "AI app",
-    tier: "built",
-    status: "CS50 final project",
-    summary:
-      "A Flask idea generator built with friends for CS50, using SQL, Bootstrap, and the OpenAI API.",
-    detail:
-      "This is the early AI-app marker: a practical app, a course final, and one of the first bridges from web dev into LLM-powered software.",
-    stack: ["Flask", "Python", "SQL", "Bootstrap", "OpenAI API"],
-    proof: ["Public repo", "Submission video", "Attached DOCX"],
-    source: "GitHub API, attached DOCX, YouTube link",
-    color: "#b86dff",
-    x: 0,
-    z: 3.5,
-    height: 2.1,
-    links: [
-      { label: "GitHub", href: "https://github.com/JakeG12345/idea-aid", kind: "repo" },
-      { label: "Submission video", href: "https://www.youtube.com/watch?v=BXPvE4tj9BQ", kind: "video" },
-    ],
-  },
-  {
-    id: "decentralised-twitter",
-    title: "Decentralised Twitter",
-    shortTitle: "Web3 Twitter",
-    year: "2022",
-    zone: "Web3 arcade",
-    category: "Hackathon",
-    tier: "artifact",
-    status: "Polygon BUIDL IT entry",
-    summary:
-      "A Twitter-like app where data lived on Polygon, built during the 2022 Web3/NFT/Crypto phase.",
-    detail:
-      "The video submission is the evidence trail. It belongs in the city as the blockchain experiment that happened before the later product work.",
-    stack: ["React", "Polygon", "Moralis", "Smart contracts"],
-    proof: ["Attached DOCX", "Submission video"],
-    source: "Attached DOCX and YouTube link",
-    color: "#8247e5",
-    x: -3.8,
-    z: 4.5,
-    height: 1.8,
-    links: [{ label: "Submission video", href: "https://www.youtube.com/watch?v=-SOcDpY46Us", kind: "video" }],
-  },
-  {
-    id: "pragma",
-    title: "Pragma",
-    shortTitle: "Pragma",
-    year: "2022",
-    zone: "Web strip",
-    category: "Website",
-    tier: "artifact",
-    status: "Live early web build",
-    summary:
-      "An early HTML-era public site under Pragmatic Minds / NexGen styling.",
-    detail:
-      "Not the flagship anymore, but a useful timestamp from the phase where HTML, CSS, JavaScript, and React started becoming serious tools.",
-    stack: ["HTML", "CSS", "JavaScript"],
-    proof: ["Public repo", "Live Vercel site"],
-    source: "GitHub API and live site capture",
-    image: "/projects/live-pragma.png",
-    imageAlt: "Pragma live site screenshot",
-    color: "#e1b543",
-    x: -13,
-    z: -5,
-    height: 1.9,
-    links: [
-      { label: "Live site", href: "https://pragma-three.vercel.app", kind: "live" },
-      { label: "GitHub", href: "https://github.com/JakeG12345/pragma", kind: "repo" },
-    ],
-  },
-  {
-    id: "the-internet",
-    title: "The Internet",
-    shortTitle: "Internet",
-    year: "2023",
-    zone: "Web strip",
-    category: "Website",
-    tier: "artifact",
-    status: "Public GitHub repo",
-    summary:
-      "A public HTML repo from the web learning phase.",
-    detail:
-      "The repo sits between the first public web experiments and the later Next/Firebase product projects.",
-    stack: ["HTML", "CSS"],
-    proof: ["Public GitHub repo"],
-    source: "GitHub API",
-    color: "#c95037",
-    x: -15,
-    z: -2.5,
-    height: 1.5,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/The-Internet", kind: "repo" }],
-  },
-  {
-    id: "portfolio",
-    title: "Jake Glick Portfolio",
-    shortTitle: "Portfolio",
-    year: "2026",
-    zone: "City hall",
-    category: "Portfolio",
-    tier: "built",
-    status: "This site",
-    summary:
-      "The portfolio itself, now a 3D city with project branding, contact access, and a complete archive.",
-    detail:
-      "Built from the attached DOCX, public GitHub metadata, live captures, and local folders, with private chat content deliberately kept out.",
-    stack: ["Next 16", "React 19", "Three.js", "TypeScript"],
-    proof: ["Local branch", "Production build verified"],
-    source: "Local repository",
-    color: "#f7d35f",
-    x: 2,
-    z: -1,
-    height: 2.5,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/jake-glick-portfolio", kind: "repo" }],
-  },
-  {
-    id: "simplesheets",
-    title: "SimpleSheets",
-    shortTitle: "SimpleSheets",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Mobile",
-    tier: "artifact",
-    status: "Flutter local project",
-    summary:
-      "A Flutter spreadsheet-adjacent project using shared preferences and conversion utilities.",
-    detail:
-      "A smaller mobile experiment that connects naturally to the later spreadsheet-learning theme.",
-    stack: ["Flutter", "Dart", "Shared Preferences"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#3fb6ff",
-    x: 7,
-    z: 4.5,
-    height: 1.5,
-    links: [],
-  },
-  {
-    id: "dungeon-game",
-    title: "Dungeon Game",
-    shortTitle: "Dungeon",
-    year: "2025",
-    zone: "Game cave",
-    category: "Game",
-    tier: "built",
-    status: "Python/Pygame school project",
-    summary:
-      "A 2D dungeon exploration game with character classes, enemies, traps, chests, portals, tests, and procedural levels.",
-    detail:
-      "The README shows a real object-oriented Pygame codebase with core, character, object, UI, utils, assets, and tests packages.",
-    stack: ["Python", "Pygame", "NumPy", "OOP", "Tests"],
-    proof: ["Local README", "TKS Software Y11 folder"],
-    source: "Local README",
-    color: "#6d5235",
-    x: -4,
-    z: 11.5,
-    height: 2,
-    links: [],
-  },
-  {
-    id: "deaf-emergency-app",
-    title: "Deaf Emergency App",
-    shortTitle: "Emergency",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Mobile",
-    tier: "artifact",
-    status: "Flutter school app",
-    summary:
-      "A Flutter app from the IST 2024 folder with HTTP, internationalisation, and loading states.",
-    detail:
-      "The name and dependencies point to an emergency-oriented mobile build from the school Flutter phase.",
-    stack: ["Flutter", "Dart", "HTTP", "Intl"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#ff715b",
-    x: 9.5,
-    z: 7,
-    height: 1.6,
-    links: [],
-  },
-  {
-    id: "world-time",
-    title: "World Time",
-    shortTitle: "World Time",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Flutter tutorial app",
-    summary:
-      "A Flutter world time app using HTTP, internationalisation, and loading indicators.",
-    detail:
-      "A clean timestamp from the mobile learning phase, visible locally and mirrored by the public tutorial-style repo set.",
-    stack: ["Flutter", "Dart", "HTTP", "Intl"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#4f8bd8",
-    x: 11.5,
-    z: 9,
-    height: 1.2,
-    links: [],
-  },
-  {
-    id: "tip-calculator",
-    title: "Tip Calculator",
-    shortTitle: "Tips",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Flutter utility",
-    summary:
-      "A small Flutter calculator using intl, likely from the IST mobile app run.",
-    detail:
-      "A simple utility build that belongs in the archive as part of the repetition that made later app work easier.",
-    stack: ["Flutter", "Dart", "Intl"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#5dbb88",
-    x: 13.5,
-    z: 10.8,
-    height: 1.2,
-    links: [],
-  },
-  {
-    id: "quotes",
-    title: "Quotes",
-    shortTitle: "Quotes",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Public Flutter tutorial repo",
-    summary:
-      "A Flutter quote app from a tutorial series.",
-    detail:
-      "The repo description links directly to the tutorial playlist, making it useful as an honest learning artifact.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Public GitHub repo", "Local Flutter folder"],
-    source: "GitHub API and local pubspec",
-    color: "#7bbf50",
-    x: 6.5,
-    z: 9.5,
-    height: 1.15,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/quotes", kind: "repo" }],
-  },
-  {
-    id: "ninja-id",
-    title: "Ninja ID",
-    shortTitle: "Ninja ID",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Public Flutter tutorial repo",
-    summary:
-      "A small Flutter identity-card app from the mobile tutorial period.",
-    detail:
-      "Another small, visible build from the Flutter learning streak.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Public GitHub repo", "Local Flutter folder"],
-    source: "GitHub API and local pubspec",
-    color: "#6262d9",
-    x: 4.5,
-    z: 11.5,
-    height: 1.1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/ninja_id", kind: "repo" }],
-  },
-  {
-    id: "flutter-tutorial-p1",
-    title: "Flutter Tutorial P1",
-    shortTitle: "Flutter P1",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Public Flutter tutorial repo",
-    summary:
-      "The public starting point from the Flutter tutorial sequence.",
-    detail:
-      "Small by itself, but useful in the full archive because it marks the move from web and Swift into Flutter.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Public GitHub repo", "Local Flutter folder"],
-    source: "GitHub API and local pubspec",
-    color: "#3b98f0",
-    x: 2.5,
-    z: 13,
-    height: 1.1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/flutter-tutorial-p1", kind: "repo" }],
-  },
-  {
-    id: "dice-app",
-    title: "Dice App",
-    shortTitle: "Dice",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Flutter local app",
-    summary:
-      "A small Flutter dice app from the IST 2024 folder.",
-    detail:
-      "A classic tutorial-scale mobile build, included because the archive should show the full run of practice projects.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#d8634b",
-    x: 0,
-    z: 13.5,
-    height: 1,
-    links: [],
-  },
-  {
-    id: "message-app",
-    title: "Message App",
-    shortTitle: "Message",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Flutter local app",
-    summary:
-      "A small Flutter messaging-style app from the IST 2024 folder.",
-    detail:
-      "Another artifact from the mobile UI learning period.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#2fc18b",
-    x: -2.5,
-    z: 13,
-    height: 1,
-    links: [],
-  },
-  {
-    id: "tic-tac-toe",
-    title: "Tic Tac Toe",
-    shortTitle: "TicTacToe",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Game",
-    tier: "learning",
-    status: "Flutter local game",
-    summary:
-      "A small Flutter tic-tac-toe game from the IST 2024 folder.",
-    detail:
-      "A compact game-logic artifact from the same mobile learning block.",
-    stack: ["Flutter", "Dart", "Game logic"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#f4a340",
-    x: -5,
-    z: 13,
-    height: 1,
-    links: [],
-  },
-  {
-    id: "quiz-3",
-    title: "Quiz 3",
-    shortTitle: "Quiz",
-    year: "2024",
-    zone: "Flutter row",
-    category: "Tutorial",
-    tier: "learning",
-    status: "Flutter local quiz app",
-    summary:
-      "A small Flutter quiz app from the IST 2024 folder.",
-    detail:
-      "Paired with the later 3RD SENSE quiz-app work as a small learning artifact.",
-    stack: ["Flutter", "Dart"],
-    proof: ["Local pubspec metadata"],
-    source: "Local Flutter folder",
-    color: "#c86dd7",
-    x: -7.5,
-    z: 12,
-    height: 1,
-    links: [],
-  },
-  {
-    id: "atari-breakout",
-    title: "Atari Breakout",
-    shortTitle: "Breakout",
-    year: "2021",
-    zone: "Swift arcade",
-    category: "Game",
-    tier: "learning",
-    status: "Public Swift repo",
-    summary:
-      "An early Swift/Xcode arcade game from the iOS learning phase.",
-    detail:
-      "Part of the 2021 game trio that came after Arduino and before web development.",
-    stack: ["Swift", "Xcode", "iOS"],
-    proof: ["Public GitHub repo", "Attached DOCX early project list"],
-    source: "GitHub API and attached DOCX",
-    color: "#f06c64",
-    x: -14,
-    z: 8.5,
-    height: 1.25,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/Atari-Breakout", kind: "repo" }],
-  },
-  {
-    id: "space-invaders",
-    title: "Space Invaders",
-    shortTitle: "Invaders",
-    year: "2021",
-    zone: "Swift arcade",
-    category: "Game",
-    tier: "learning",
-    status: "Public Swift repo",
-    summary:
-      "An early Swift/Xcode Space Invaders build.",
-    detail:
-      "Another direct marker of the first iOS game-dev phase.",
-    stack: ["Swift", "Xcode", "iOS"],
-    proof: ["Public GitHub repo", "Attached DOCX early project list"],
-    source: "GitHub API and attached DOCX",
-    color: "#4ba3ff",
-    x: -16,
-    z: 6,
-    height: 1.25,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/Space-Invaders", kind: "repo" }],
-  },
-  {
-    id: "helicopter-arcade",
-    title: "Helicopter Arcade Game",
-    shortTitle: "Helicopter",
-    year: "2021",
-    zone: "Swift arcade",
-    category: "Game",
-    tier: "learning",
-    status: "Public Swift repo",
-    summary:
-      "An early Swift/Xcode helicopter arcade game.",
-    detail:
-      "Completes the 2021 arcade trio, included as a smaller sign on the old arcade side of the city.",
-    stack: ["Swift", "Xcode", "iOS"],
-    proof: ["Public GitHub repo", "Attached DOCX early project list"],
-    source: "GitHub API and attached DOCX",
-    color: "#8cbf3f",
-    x: -17,
-    z: 3.3,
-    height: 1.2,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/Helicopter-arcade-game", kind: "repo" }],
-  },
-  {
-    id: "learning-gh",
-    title: "LearningGH",
-    shortTitle: "LearningGH",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public Swift repo",
-    summary:
-      "A CodeWithChris foundation course repo from the first GitHub learning period.",
-    detail:
-      "Included because it is literally the root of the public GitHub trail.",
-    stack: ["GitHub", "Swift"],
-    proof: ["Public GitHub repo created April 4, 2021"],
-    source: "GitHub API",
-    color: "#878d96",
-    x: -17,
-    z: -0.5,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/LearningGH", kind: "repo" }],
-  },
-  {
-    id: "learning-gh-dash",
-    title: "Learning-GH",
-    shortTitle: "Learning-GH",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public GitHub repo",
-    summary:
-      "A second CodeWithChris GitHub-learning repo from the same day.",
-    detail:
-      "A small foundation artifact, intentionally treated as a plaque rather than a flagship.",
-    stack: ["GitHub"],
-    proof: ["Public GitHub repo created April 4, 2021"],
-    source: "GitHub API",
-    color: "#767b84",
-    x: -15.8,
-    z: -7,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/Learning-GH", kind: "repo" }],
-  },
-  {
-    id: "learning-gh-attempt2",
-    title: "Learning GH Attempt2",
-    shortTitle: "GH Attempt2",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public Swift repo",
-    summary:
-      "Another CodeWithChris Git/GitHub learning repo.",
-    detail:
-      "A small signpost from the public repo timeline.",
-    stack: ["GitHub", "Swift"],
-    proof: ["Public GitHub repo"],
-    source: "GitHub API",
-    color: "#989da5",
-    x: -13.2,
-    z: -8.8,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/Learning-GH-Attempt2", kind: "repo" }],
-  },
-  {
-    id: "swiftui-foundations-data",
-    title: "SwiftUI Foundations Data",
-    shortTitle: "SwiftUI Data",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public GitHub repo",
-    summary:
-      "A SwiftUI foundations wrap-up data repo from the CodeWithChris learning track.",
-    detail:
-      "Kept as part of the complete public GitHub inventory.",
-    stack: ["SwiftUI", "Data"],
-    proof: ["Public GitHub repo"],
-    source: "GitHub API",
-    color: "#aab0b8",
-    x: -10.5,
-    z: -10,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/data-for-swiftui-foundations-m5-wrapup", kind: "repo" }],
-  },
-  {
-    id: "learningapp-data",
-    title: "learningapp-data",
-    shortTitle: "Learn Data",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public GitHub repo",
-    summary:
-      "A data repo from the early Swift learning app material.",
-    detail:
-      "A small repository, but part of the all-project trail.",
-    stack: ["Swift learning", "Data"],
-    proof: ["Public GitHub repo"],
-    source: "GitHub API",
-    color: "#bfc4cb",
-    x: -8,
-    z: -10.7,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/learningapp-data", kind: "repo" }],
-  },
-  {
-    id: "m5l6-challenge",
-    title: "M5L6 Challenge Video",
-    shortTitle: "M5L6",
-    year: "2021",
-    zone: "Git foundations",
-    category: "Learning",
-    tier: "learning",
-    status: "Public GitHub repo",
-    summary:
-      "A CodeWithChris module challenge artifact from the 2021 Swift/GitHub run.",
-    detail:
-      "Another small plaque from the first public code trail.",
-    stack: ["Swift learning"],
-    proof: ["Public GitHub repo"],
-    source: "GitHub API",
-    color: "#d0d4da",
-    x: -5.2,
-    z: -10.5,
-    height: 1,
-    links: [{ label: "GitHub", href: "https://github.com/JakeG12345/M5L6challengevideo", kind: "repo" }],
-  },
-  {
-    id: "competitive-programming-archive",
-    title: "Competitive Programming Archive",
-    shortTitle: "ProgComp",
-    year: "2024-2026",
-    zone: "Algorithm training ground",
-    category: "Learning",
-    tier: "learning",
-    status: "Local practice archive",
-    summary:
-      "A local archive of programming competition attempts, input/output files, templates, and finals practice.",
-    detail:
-      "The folder covers ProgComp practice across older finals, 2024/2025 material, and 2026 preparation. It belongs in the city as the problem-solving gym behind the product work.",
-    stack: ["Python", "Algorithms", "I/O files", "Templates"],
-    proof: ["Local ProgComp folders", "2026 practice scripts", "Finals material"],
-    source: "Local folder scan",
-    color: "#4c8ecf",
-    x: -18.5,
-    z: -4.2,
-    height: 1.25,
-    links: [],
-  },
-  {
-    id: "cpp-aio-prep",
-    title: "C++ and AIO Prep",
-    shortTitle: "C++ AIO",
-    year: "2025-2026",
-    zone: "Algorithm training ground",
-    category: "Learning",
-    tier: "learning",
-    status: "Local study archive",
-    summary:
-      "A C++ preparation folder with competitive programming references, tutorial exercises, templates, and AIO material.",
-    detail:
-      "This is less a polished app and more a serious practice trail: C++ templates, sample programs, programming contest books, and Australian Informatics Olympiad preparation material.",
-    stack: ["C++", "AIO", "Competitive programming"],
-    proof: ["Local C++ & AIO Prep folder", "Template and tutorial files"],
-    source: "Local folder scan",
-    color: "#d6b53e",
-    x: -20.2,
-    z: -6.4,
-    height: 1.15,
-    links: [],
-  },
-  {
-    id: "python-ist-practice",
-    title: "Python and IST Practice",
-    shortTitle: "Python IST",
-    year: "2024",
-    zone: "School code lane",
-    category: "Learning",
-    tier: "learning",
-    status: "Local classwork archive",
-    summary:
-      "Python practice and IST 2024 exercises from the school coding trail.",
-    detail:
-      "Small files, but useful context: this is where simple Python exercises, class challenges, and competition-adjacent practice sit beside the larger builds.",
-    stack: ["Python", "School projects"],
-    proof: ["Local Python folder", "IST 2024 challenge file"],
-    source: "Local folder scan",
-    color: "#8ab6d8",
-    x: -18.8,
-    z: -8.6,
-    height: 1.05,
-    links: [],
-  },
-  {
-    id: "quant-trading-bot",
-    title: "Quant Trading Bot",
-    shortTitle: "Quant Bot",
-    year: "2026",
-    zone: "Data pier",
-    category: "Data story",
-    tier: "artifact",
-    status: "Local finance experiment",
-    summary:
-      "A local Python finance experiment with AAPL equity data, generated trades, and simple moving-average trading bot scripts.",
-    detail:
-      "This is a compact local project rather than a product, but it adds an important interest signal: data, markets, automation, and turning raw CSVs into decisions.",
-    stack: ["Python", "CSV", "Trading logic", "SMA"],
-    proof: ["Local quant folder", "AAPL equity and trades CSVs"],
-    source: "Local folder scan",
-    color: "#62c2a8",
-    x: -16.5,
-    z: -10.6,
-    height: 1.35,
-    links: [],
-  },
-  {
-    id: "room-accessory",
-    title: "Room Accessory",
-    shortTitle: "Room",
-    year: "2025",
-    zone: "Scratch block",
-    category: "Prototype",
-    tier: "learning",
-    status: "Next starter repo",
-    summary:
-      "A local Next app that still appears to be at starter-template stage.",
-    detail:
-      "Included as a small scratch-block plaque because it exists locally, but it is not oversold as a shipped project.",
-    stack: ["Next 15", "React 19"],
-    proof: ["Local README", "Local page source"],
-    source: "Local folder",
-    color: "#c7a56a",
-    x: 12.5,
-    z: -7,
-    height: 1,
-    links: [],
-  },
-];
 
 type MapPoint = { x: number; z: number };
 
@@ -1001,16 +220,20 @@ const sydneyPlaces = {
   bondiBeach: mapSydney(151.2743, -33.8915, { x: -0.4, z: 0.15 }),
 };
 
+// Plots are spaced so that no two models (or their placards) overlap when seen
+// from the fixed camera: every pair clears the sum of their footprint radii
+// plus room for a placard.
 const cityProjectPlots = {
-  whatsappWrapped: nudgePoint(sydneyPlaces.blackbird, 5.8, 2.8),
+  whatsappWrapped: nudgePoint(sydneyPlaces.blackbird, 4.76, 1.99),
   jashby: nudgePoint(sydneyPlaces.bondiJunction, 5.9, -3.85),
   quantium: nudgePoint(sydneyPlaces.eveleigh, -5.85, 3.4),
   doverHome: nudgePoint(sydneyPlaces.doverHeights, 2.45, -2.45),
-  bondiBeach: nudgePoint(sydneyPlaces.bondiBeach, -1.15, 3.05),
+  // On the shoreline itself: the stop now carries the whole beach.
+  bondiBeach: nudgePoint(sydneyPlaces.bondiBeach, 0.72, 1.73),
   sydneyHarbour: nudgePoint(sydneyPlaces.operaHouse, 3.45, -2.25),
-  carLifestory: nudgePoint(sydneyPlaces.doverHeights, 5.1, 1.0),
+  carLifestory: nudgePoint(sydneyPlaces.doverHeights, 6.24, 2.05),
   whatThePuck: nudgePoint(sydneyPlaces.sportsField, 6.05, 3.6),
-  moriahJiuJitsu: nudgePoint(sydneyPlaces.queensPark, -2.7, -4.25),
+  moriahJiuJitsu: nudgePoint(sydneyPlaces.queensPark, -1.54, -3.27),
   degree6: nudgePoint(sydneyPlaces.centralStation, -7.25, -2.85),
   ideaAid: nudgePoint(sydneyPlaces.queensPark, -6.75, 5.15),
   portfolio: nudgePoint(sydneyPlaces.cbd, -8.4, -3.55),
@@ -1107,6 +330,8 @@ const cityItems: Project[] = [
     source: "User request",
     color: "#4cbad8",
     ...cityProjectPlots.bondiBeach,
+    // Turned so the surf faces the open water rather than the suburbs.
+    heading: -1.175,
     height: 1.2,
     links: [],
   },
@@ -1207,16 +432,16 @@ const graveyardMapItems = layoutArchiveZoneProjects(
   graveyardProjects,
   archiveDistricts.graveyard.center,
   4,
-  2.15,
-  1.72,
+  2.4,
+  2.1,
   "graveyard",
 );
 const learningCentreMapItems = layoutArchiveZoneProjects(
   learningCentreProjects,
   archiveDistricts.learningCentre.center,
   5,
-  1.72,
-  1.58,
+  2.0,
+  1.9,
   "learning",
 );
 const mapItems = [...cityItems, ...graveyardMapItems, ...learningCentreMapItems];
@@ -1287,6 +512,18 @@ const cityStats = [
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
 const PLAYER_BALL_RADIUS = 0.36;
 const PLAYER_SPEED = 11.2;
+
+// The camera keeps a fixed offset from the player, so the bearing it looks from
+// never changes. Plaques are built facing that bearing instead of turning to
+// chase the player every frame.
+const CAMERA_VIEWS = {
+  wide: { offset: { x: 8.1, y: 16.4, z: 13.7 }, look: { x: 0.9, y: 1.05, z: -1.05 } },
+  narrow: { offset: { x: 12.6, y: 21.4, z: 18.6 }, look: { x: 1.65, y: 1.05, z: -0.55 } },
+} as const;
+const cameraYaw = (view: (typeof CAMERA_VIEWS)[keyof typeof CAMERA_VIEWS]) =>
+  Math.atan2(view.offset.x, view.offset.z);
+// Tilt the plaque face up toward the raised camera so it reads flat on screen.
+const PLAQUE_TILT = -0.42;
 const PLAYER_BOUNDS = {
   minX: -27.2 + PLAYER_BALL_RADIUS,
   maxX: 33.0 - PLAYER_BALL_RADIUS,
@@ -1805,31 +1042,45 @@ function createWhatsAppWrappedModel(project: Project) {
 function createJashbyModel(project: Project) {
   const group = new THREE.Group();
   const greenGlass = modelMaterial("#18b96f", { roughness: 0.24, metalness: 0.12 });
-  addBox(group, [2.35, project.height, 1.42], greenGlass, [0, project.height / 2, 0]);
-  addBox(group, [2.62, 0.16, 1.62], "#f6fff2", [0, project.height + 0.08, 0]);
-  addFacadeGrid(group, 2.35, project.height, 1.42, 8, 5, "#dffff0", 0.68);
-  for (let i = 0; i < 4; i += 1) {
-    addBox(group, [2.38, 0.055, 1.28], i % 2 ? "#e8f8ed" : "#fffdf4", [0.1 - i * 0.07, 0.09 + i * 0.07, 0.82 + i * 0.05], [0, i * 0.08, 0]);
-  }
+  const paleGlass = modelMaterial("#63dda4", { roughness: 0.26, metalness: 0.1 });
+  const trim = modelMaterial("#f6fff2", { roughness: 0.5 });
+  const total = project.height;
+
+  // The tower steps back like a column chart, so the silhouette says
+  // "spreadsheet" before any facade detail is readable.
+  ([
+    [2.3, 1.4, total * 0.46, 0, greenGlass],
+    [1.78, 1.12, total * 0.31, total * 0.46, paleGlass],
+    [1.24, 0.86, total * 0.23, total * 0.77, greenGlass],
+  ] as const).forEach(([width, depth, height, y, material]) => {
+    addBox(group, [width, height, depth], material, [0, y + height / 2, 0]);
+    addBox(group, [width + 0.15, 0.09, depth + 0.15], trim, [0, y + height, 0]);
+  });
+  addFacadeGrid(group, 2.3, total * 0.46, 1.4, 3, 4, "#dffff0", 0.55);
+
+  // The cell cursor: Jashby's one unmistakable mark.
+  const cursor = new THREE.Group();
+  cursor.position.set(0.26, total * 0.6, 0.58);
+  addBox(cursor, [0.62, 0.4, 0.05], "#f7d35f", [0, 0, 0], [0, 0, 0], { roughness: 0.42 });
+  addBox(cursor, [0.5, 0.28, 0.06], "#123d2a", [0, 0, 0.015]);
+  addBox(cursor, [0.12, 0.12, 0.05], "#f7d35f", [0.34, -0.22, 0.01]);
+  group.add(cursor);
+
+  // A sheet of cells laid out on the plot in front of the tower.
   const lineMaterial = new THREE.MeshBasicMaterial({ color: "#219760" });
   const cellMaterial = new THREE.MeshBasicMaterial({ color: "#dffff0" });
-  for (let col = 0; col < 6; col += 1) {
-    addBox(group, [0.022, 0.03, 1.24], lineMaterial, [-0.9 + col * 0.34, 0.39, 0.95]);
-  }
-  for (let row = 0; row < 4; row += 1) {
-    addBox(group, [2.18, 0.028, 0.026], lineMaterial, [0, 0.28 + row * 0.16, 0.32]);
+  addBox(group, [2.32, 0.05, 1.24], "#fffdf4", [0.06, 0.05, 1.14]);
+  for (let col = 0; col < 5; col += 1) {
+    addBox(group, [0.02, 0.03, 1.18], lineMaterial, [-0.78 + col * 0.39, 0.08, 1.14]);
   }
   for (let row = 0; row < 3; row += 1) {
-    for (let col = 0; col < 5; col += 1) {
-      if ((row + col) % 2 === 0) {
-        addBox(group, [0.22, 0.024, 0.16], cellMaterial, [-0.74 + col * 0.36, 0.5 + row * 0.18, 0.68], [0, 0, 0]);
-      }
-    }
+    addBox(group, [2.26, 0.03, 0.02], lineMaterial, [0.06, 0.08, 0.7 + row * 0.42]);
   }
-  addCylinder(group, 0.32, 0.32, 0.1, "#f7d35f", [-1.22, 1.02, -0.68], [Math.PI / 2, 0, 0], 32);
-  addBox(group, [0.56, 0.06, 0.12], "#fffdf4", [-1.22, 1.03, -0.68], [0, 0, 0.25]);
-  addBox(group, [0.12, 0.06, 0.56], "#fffdf4", [-1.22, 1.03, -0.68], [0, 0, 0.25]);
-  addBox(group, [0.16, 0.82, 0.12], "#f7d35f", [0.72, project.height + 0.56, 0.02]);
+  ([[-0.58, 0.9], [0.2, 1.32], [0.98, 0.9]] as const).forEach(([x, z]) => {
+    addBox(group, [0.3, 0.025, 0.3], cellMaterial, [x, 0.085, z]);
+  });
+
+  addBox(group, [0.14, 0.72, 0.12], "#f7d35f", [0.66, total + 0.36, 0]);
   return group;
 }
 
@@ -1841,23 +1092,20 @@ function createQuantiumModel(project: Project) {
   addBox(group, [0.22, project.height * 0.9, 1.76], "#17476c", [-0.96, project.height * 0.45, 0]);
   addBox(group, [1.08, 0.08, 1.35], "#101a22", [1.08, 0.42, -0.18], [0, 0.22, 0], { roughness: 0.4, metalness: 0.12 });
   const dotMaterial = new THREE.MeshBasicMaterial({ color: "#aee7ff" });
-  for (let row = 0; row < 8; row += 1) {
-    for (let col = 0; col < 4; col += 1) {
+  for (let row = 0; row < 5; row += 1) {
+    for (let col = 0; col < 3; col += 1) {
       const active = (row + col) % 3 !== 0;
       [-0.86, 0.86].forEach((z) => {
-        addBox(group, [0.11, 0.11, 0.028], active ? dotMaterial : "#0c3654", [-0.54 + col * 0.36, 0.78 + row * 0.34, z]);
+        addBox(group, [0.14, 0.14, 0.028], active ? dotMaterial : "#0c3654", [-0.42 + col * 0.42, 0.86 + row * 0.52, z]);
       });
     }
   }
-  for (let row = 0; row < 5; row += 1) {
-    for (let col = 0; col < 4; col += 1) {
-      const color = ["#17476c", "#2f8ec7", "#aee7ff", "#f7d35f"][(row + col) % 4];
-      addBox(group, [0.16, 0.035, 0.12], color, [0.7 + col * 0.24, 0.5, -0.68 + row * 0.22], [0, 0.22, 0]);
-    }
-  }
-  [0.42, 0.74, 1.08].forEach((height, index) => {
-    addBox(group, [0.22, height, 0.22], project.color, [0.38 + index * 0.28, project.height + height / 2 + 0.18, -0.38]);
+  // A chart reading off the roof: the tallest, most legible cue at map scale.
+  ([0.34, 0.78, 0.5, 1.15, 0.66] as const).forEach((height, index) => {
+    const barColor = index === 3 ? "#f7d35f" : project.color;
+    addBox(group, [0.24, height, 0.24], barColor, [-0.62 + index * 0.31, project.height + height / 2 + 0.18, -0.3]);
   });
+  addBox(group, [1.72, 0.05, 0.05], "#d9eff7", [0, project.height + 0.2, -0.3]);
   const dataOrbit = new THREE.Mesh(
     new THREE.TorusGeometry(1.26, 0.022, 8, 72),
     new THREE.MeshBasicMaterial({ color: "#aee7ff", transparent: true, opacity: 0.68 }),
@@ -1942,21 +1190,42 @@ function createPuckModel(project: Project) {
 
 function createDojoModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [2.55, 0.12, 1.92], "#252825", [0, 0.06, 0.15]);
-  addBox(group, [2.28, 0.92, 0.84], "#f5ead0", [0, 0.52, -0.54]);
-  addBox(group, [2.48, 0.16, 0.98], project.color, [0, 1.06, -0.54], [0, 0, 0], { roughness: 0.45 });
-  [-0.72, -0.24, 0.24, 0.72].forEach((x) => {
-    addBox(group, [0.24, 0.28, 0.04], "#94d8e8", [x, 0.64, -0.98]);
+  const timber = modelMaterial("#7a4a2b", { roughness: 0.86 });
+  const wall = modelMaterial("#f5ead0", { roughness: 0.72 });
+  const roof = modelMaterial(project.color, { roughness: 0.45 });
+
+  addBox(group, [2.62, 0.12, 2.0], "#252825", [0, 0.06, 0.12]);
+  addBox(group, [2.24, 0.86, 1.0], wall, [0, 0.49, -0.5]);
+
+  // Pitched dojo roof with deep eaves: the shape that carries at map scale.
+  ([
+    [2.66, 0.14, 1.34, 0.99],
+    [2.24, 0.13, 1.02, 1.11],
+    [1.72, 0.12, 0.7, 1.22],
+  ] as const).forEach(([width, height, depth, y]) => {
+    addBox(group, [width, height, depth], roof, [0, y, -0.5]);
   });
-  addBox(group, [1.03, 0.045, 1.3], "#2f68c8", [-0.52, 0.18, 0.52]);
-  addBox(group, [1.03, 0.045, 1.3], project.color, [0.52, 0.18, 0.52]);
-  addBox(group, [1.62, 0.7, 0.12], "#fffdf4", [0, 0.64, 1.28]);
-  addBox(group, [0.56, 0.3, 0.14], "#151713", [-0.42, 0.7, 1.36]);
-  addBox(group, [0.56, 0.3, 0.14], "#151713", [0.42, 0.7, 1.36]);
-  addBox(group, [0.38, 0.065, 0.16], "#2f68c8", [-0.42, 0.74, 1.44]);
-  addBox(group, [0.38, 0.065, 0.16], project.color, [0.42, 0.74, 1.44]);
-  addBox(group, [0.08, 0.78, 0.08], "#1d201d", [-1.16, 0.5, 1.18]);
-  addBox(group, [0.08, 0.78, 0.08], "#1d201d", [1.16, 0.5, 1.18]);
+  addBox(group, [1.9, 0.07, 0.09], "#fffdf4", [0, 1.31, -0.5]);
+  [-0.66, -0.22, 0.22, 0.66].forEach((x) => {
+    addBox(group, [0.22, 0.26, 0.04], "#94d8e8", [x, 0.6, -0.99]);
+  });
+  addBox(group, [0.5, 0.56, 0.05], "#2b1d12", [0, 0.4, -0.02]);
+
+  // Torii-style gate at the front of the mat.
+  [-0.86, 0.86].forEach((x) => {
+    addCylinder(group, 0.07, 0.085, 1.12, timber, [x, 0.62, 1.22], [0, 0, 0], 10);
+  });
+  addBox(group, [2.16, 0.1, 0.16], timber, [0, 1.22, 1.22]);
+  addBox(group, [1.86, 0.08, 0.13], timber, [0, 1.04, 1.22]);
+  addBox(group, [2.4, 0.09, 0.2], "#151713", [0, 1.32, 1.22]);
+
+  // Competition mats, ringed in belt colours.
+  addBox(group, [2.14, 0.05, 1.3], "#2f68c8", [0, 0.15, 0.5]);
+  addBox(group, [1.66, 0.055, 0.96], project.color, [0, 0.17, 0.5]);
+  addBox(group, [0.5, 0.06, 0.5], "#fffdf4", [0, 0.19, 0.5], [0, 0.78, 0]);
+  ([["#151713", -0.78], ["#7a4a2b", -0.26], ["#2f68c8", 0.26], ["#e6533f", 0.78]] as const).forEach(([color, x]) => {
+    addBox(group, [0.34, 0.04, 0.1], color, [x, 0.2, 1.06]);
+  });
   return group;
 }
 
@@ -2027,122 +1296,310 @@ function createHarbourModel(project: Project) {
 
 function createBondiModel(project: Project) {
   const group = new THREE.Group();
-  const sandMaterial = modelMaterial("#f0d79a", { roughness: 0.92 });
-  const wetSandMaterial = modelMaterial("#d1b27a", { roughness: 0.9 });
-  const waterMaterial = modelMaterial("#39a9bf", { roughness: 0.16, metalness: 0.05 });
-  const promenadeMaterial = modelMaterial("#d8c494", { roughness: 0.72 });
-  const poolWater = modelMaterial("#68d1e0", { roughness: 0.12, metalness: 0.06 });
-  const foam = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.95 });
+
+  // A diorama plinth keeps the coast slice from fighting the city terrain for
+  // the same y, the way the harbour model does.
+  const TOP = 0.16;
+  const level = {
+    water: TOP + 0.004,
+    deep: TOP + 0.008,
+    wet: TOP + 0.018,
+    sand: TOP + 0.03,
+    grass: TOP + 0.026,
+    road: TOP + 0.016,
+    block: TOP + 0.012,
+    promenade: TOP + 0.046,
+    foam: TOP + 0.034,
+  };
+
+  const sandMaterial = modelMaterial("#f4e0ad", { roughness: 0.94 });
+  const wetSandMaterial = modelMaterial("#d8bd88", { roughness: 0.82 });
+  const shallowMaterial = modelMaterial("#4ec3d6", { roughness: 0.18, metalness: 0.06 });
+  const deepMaterial = modelMaterial("#1f7d99", { roughness: 0.24, metalness: 0.08 });
+  const promenadeMaterial = modelMaterial("#e7ddc3", { roughness: 0.78 });
+  const grassMaterial = modelMaterial("#42804a", { roughness: 0.92 });
+  const roadMaterial = modelMaterial("#3a3d38", { roughness: 0.86 });
+  const blockMaterial = modelMaterial("#4b4e47", { roughness: 0.82 });
+  const rockMaterial = modelMaterial("#a8977a", { roughness: 0.96 });
+  const darkRockMaterial = modelMaterial("#8a7b62", { roughness: 0.96 });
+  const wallMaterial = modelMaterial("#e4d8ba", { roughness: 0.8 });
+  const creamMaterial = modelMaterial("#f6ecd2", { roughness: 0.66 });
+  const roofMaterial = modelMaterial("#c4653f", { roughness: 0.74 });
+  const poolWater = modelMaterial("#3fb6da", { roughness: 0.12, metalness: 0.08 });
+  const white = modelMaterial("#fffdf4", { roughness: 0.58 });
   const red = modelMaterial("#e6533f", { roughness: 0.52 });
   const yellow = modelMaterial("#f7d35f", { roughness: 0.52 });
+  const pineMaterial = modelMaterial("#2f5d3a", { roughness: 0.9 });
+  const trunkMaterial = modelMaterial("#6a4c32", { roughness: 0.88 });
+  const skinMaterial = modelMaterial("#e2ab7f", { roughness: 0.82 });
+  const darkMaterial = modelMaterial("#1c2322", { roughness: 0.6 });
+  const swash = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.55 });
 
-  addFlatShape(group, [
-    { x: -1.95, z: -1.15 },
-    { x: -0.74, z: -1.48 },
-    { x: 0.68, z: -1.36 },
-    { x: 1.6, z: -0.86 },
-    { x: 1.86, z: 0.22 },
-    { x: 1.35, z: 1.23 },
-    { x: 0.04, z: 1.56 },
-    { x: -1.24, z: 1.22 },
-    { x: -2.1, z: 0.34 },
-  ], sandMaterial, 0.042);
-  addFlatShape(group, [
-    { x: 0.42, z: -1.42 },
-    { x: 1.82, z: -1.08 },
-    { x: 2.08, z: -0.18 },
-    { x: 1.72, z: 0.74 },
-    { x: 0.92, z: 1.14 },
-    { x: 0.46, z: 0.6 },
-    { x: 0.74, z: -0.24 },
-  ], waterMaterial, 0.065);
-  addFlatShape(group, [
-    { x: 0.1, z: -1.26 },
-    { x: 0.78, z: -1.16 },
-    { x: 1.16, z: -0.72 },
-    { x: 1.06, z: 0.08 },
-    { x: 0.56, z: 0.76 },
-    { x: 0.2, z: 0.5 },
-    { x: 0.46, z: -0.22 },
-  ], wetSandMaterial, 0.072);
-  for (let i = 0; i < 7; i += 1) {
-    addBox(
-      group,
-      [1.08 - i * 0.045, 0.03, 0.052],
-      foam,
-      [0.52 + i * 0.22, 0.13 + i * 0.004, -1.0 + i * 0.33],
-      [0, -0.56 + i * 0.09, 0],
-    );
-  }
+  addBox(group, [3.44, TOP, 2.94], "#c8b68b", [-0.25, TOP / 2, 0], [0, 0, 0], { roughness: 0.94 });
 
-  addBox(group, [2.2, 0.1, 0.44], promenadeMaterial, [-1.0, 0.12, -0.96], [0, 0.1, 0]);
-  addBox(group, [0.08, 0.32, 1.48], promenadeMaterial, [-1.82, 0.24, 0.06], [0, -0.18, 0]);
-
-  addBox(group, [1.48, 0.58, 0.62], "#fff7df", [-1.12, 0.48, -0.58]);
-  addBox(group, [1.66, 0.14, 0.74], "#4cbad8", [-1.12, 0.86, -0.58], [0, 0, 0], { roughness: 0.48 });
-  addBox(group, [0.34, 0.44, 0.07], "#1c2322", [-1.12, 0.46, -0.94]);
-  [-1.56, -0.72].forEach((x) => {
-    addCylinder(group, 0.055, 0.055, 0.5, "#d9d0bc", [x, 0.48, -0.95], [0, 0, 0], 16);
-    addBox(group, [0.19, 0.22, 0.075], "#94d8e8", [x, 0.58, -0.96]);
-  });
-  addBox(group, [1.74, 0.045, 0.08], project.color, [-1.12, 1.02, -0.95]);
-
-  // Replace box pool with a round "Icebergs"-style pool: outer rim + inner water
-  const pool = new THREE.Group();
-  pool.position.set(1.18, 0, 0.72);
-  pool.rotation.y = -0.34;
-  // outer rim (white concrete)
-  addCylinder(pool, 0.54, 0.58, 0.06, "#fffdf4", [0, 0.14, 0], [Math.PI / 2, 0, 0], 32);
-  // inner water (slightly inset)
-  addCylinder(pool, 0.46, 0.48, 0.04, poolWater, [0, 0.18, 0], [Math.PI / 2, 0, 0], 32);
-  // small foam lines along inner edge (decor)
-  for (let f = 0; f < 6; f += 1) {
-    const angle = (f / 6) * Math.PI * 2;
-    const fx = Math.cos(angle) * 0.44;
-    const fz = Math.sin(angle) * 0.44;
-    addBox(pool, [0.08, 0.008, 0.02], foam, [fx, 0.215, fz], [0, angle + 0.2, 0]);
-  }
-  // bench / step detail
-  addBox(pool, [0.14, 0.03, 0.46], "#d8c494", [-0.55, 0.24, 0]);
-  addBox(pool, [0.24, 0.045, 0.28], "#e8d9b6", [-0.78, 0.16, 0.24], [0, 0.16, 0]);
-  group.add(pool);
-
-  for (let step = 0; step < 4; step += 1) {
-    addBox(group, [0.68 + step * 0.22, 0.055, 0.12], "#bda474", [1.38, 0.14 + step * 0.035, 1.12 + step * 0.16], [0, -0.32, 0]);
-  }
-
-  addBox(group, [0.56, 0.44, 0.46], "#fff4bd", [-1.4, 0.42, 0.62]);
-  addBox(group, [0.68, 0.12, 0.54], red, [-1.4, 0.7, 0.62]);
-  addBox(group, [0.11, 0.76, 0.1], red, [-1.66, 0.48, 0.62]);
-  addBox(group, [0.11, 0.76, 0.1], red, [-1.14, 0.48, 0.62]);
-  addBox(group, [0.5, 0.055, 0.08], yellow, [-1.4, 0.96, 0.62]);
-
-  ([
-    [-0.42, 0.16, "#f7d35f"],
-    [0.1, 0.58, "#e6533f"],
-    [-0.34, 0.94, "#2f8ec7"],
-  ] as const).forEach(([x, z, color], index) => {
-    addCylinder(group, 0.028, 0.028, 0.58, "#654b2f", [x, 0.4, z], [0, 0, 0], 12);
-    addCone(group, 0.28, 0.18, 20, color, [x, 0.74, z], [0, index * 0.52, 0]);
-  });
-  ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"].forEach((color, index) => {
-    addBox(
-      group,
-      [0.22, 0.045, 0.82],
-      color,
-      [-0.72 + index * 0.31, 0.13, 0.94 - (index % 2) * 0.24],
-      [0, -0.72 + index * 0.22, 0],
-      { roughness: 0.54 },
-    );
-  });
-  const patrolFlags: Array<[number, number, THREE.Material]> = [
-    [-0.92, -0.18, red],
-    [-0.18, -0.2, yellow],
+  // Bondi is a bay, so the shoreline, promenade, park and parade all bend on
+  // the same parabola: x = offset + CURVE * (z / SPAN)^2.
+  const CURVE = 0.4;
+  const SPAN = 1.45;
+  const EDGE = 1.44;
+  const OUT = 1.42;
+  const curveX = (z: number, offset: number) => offset + CURVE * (z / SPAN) ** 2;
+  const curveAngle = (z: number) => Math.atan((2 * CURVE * z) / SPAN ** 2);
+  const curveBand = (offset: number, zMin = -EDGE, zMax = EDGE, steps = 20) => {
+    const points: MapPoint[] = [];
+    for (let i = 0; i <= steps; i += 1) {
+      const z = zMin + ((zMax - zMin) * i) / steps;
+      points.push({ x: curveX(z, offset), z });
+    }
+    return points;
+  };
+  const bandShape = (inner: number, outer: number, zMin = -EDGE, zMax = EDGE) => [
+    ...curveBand(inner, zMin, zMax),
+    ...curveBand(outer, zMin, zMax).reverse(),
   ];
-  patrolFlags.forEach(([x, z, material], index) => {
-    addCylinder(group, 0.025, 0.025, 0.66, "#151713", [x, 0.44, z], [0, 0, 0], 10);
-    addBox(group, [0.26, 0.18, 0.035], material, [x, 0.72, z], [0, 0.24 + index * 0.2, 0]);
+  const toSea = (offset: number) => [...curveBand(offset), { x: OUT, z: EDGE }, { x: OUT, z: -EDGE }];
+
+  // Ground plan: ocean to the east, Campbell Parade to the west.
+  addFlatShape(group, toSea(0.14), shallowMaterial, level.water);
+  addFlatShape(group, toSea(0.72), deepMaterial, level.deep);
+  addFlatShape(group, bandShape(0.02, 0.26), wetSandMaterial, level.wet);
+  addFlatShape(group, bandShape(-0.7, 0.06), sandMaterial, level.sand);
+  addFlatShape(group, bandShape(-0.86, -0.7), promenadeMaterial, level.promenade);
+  addFlatShape(group, bandShape(-1.4, -0.86), grassMaterial, level.grass);
+  addFlatShape(group, bandShape(-1.7, -1.42), roadMaterial, level.road);
+  addFlatShape(group, [{ x: -1.94, z: -EDGE }, ...curveBand(-1.7), { x: -1.94, z: EDGE }], blockMaterial, level.block);
+
+  // Swash line where the water runs up the sand.
+  addFlatShape(group, bandShape(0.03, 0.09), swash, level.foam - 0.002);
+
+  // Sets rolling in: foam lines that travel shoreward and fade as they break.
+  const foamLines = [0.34, 0.62, 0.94].map((offset, index) => {
+    const material = new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.5 });
+    const mesh = addFlatShape(group, bandShape(offset, offset + 0.045), material, level.foam);
+    return { material, mesh, phase: index / 3 };
   });
+
+  // Sandstone shelves at each end: Ben Buckler north, Mackenzies Point south.
+  const addRock = (
+    x: number,
+    z: number,
+    width: number,
+    depth: number,
+    height: number,
+    material: THREE.Material,
+  ) => {
+    addBox(group, [width, height, depth], material, [x, TOP + height / 2, z], [0, curveAngle(z) * 0.6 + x, 0]);
+  };
+  const shelfChunks: Array<[number, number, number, number, number]> = [
+    [0.32, 0.0, 0.44, 0.32, 0.045],
+    [0.62, 0.09, 0.42, 0.28, 0.075],
+    [0.88, 0.02, 0.34, 0.3, 0.105],
+    [0.7, 0.21, 0.3, 0.2, 0.125],
+    [1.14, 0.08, 0.22, 0.18, 0.055],
+  ];
+  const addShelf = (baseZ: number, direction: number) => {
+    shelfChunks.forEach(([x, dz, width, depth, height], index) => {
+      addRock(
+        x,
+        baseZ + direction * dz,
+        width,
+        depth,
+        height,
+        index % 2 ? rockMaterial : darkRockMaterial,
+      );
+    });
+  };
+  addShelf(1.08, 1);
+  addShelf(-1.06, -1);
+
+  // Bondi Icebergs: the lap pool cut into the southern rock shelf.
+  const icebergs = new THREE.Group();
+  icebergs.position.set(0.72, TOP + 0.075, 1.0);
+  icebergs.rotation.y = -0.2;
+  addBox(icebergs, [0.46, 0.04, 0.62], white, [0, 0.02, 0]);
+  addBox(icebergs, [0.34, 0.035, 0.5], poolWater, [0.01, 0.032, 0], [0, 0, 0], { roughness: 0.12 });
+  [-0.1, 0.01, 0.12].forEach((x) => {
+    addBox(icebergs, [0.008, 0.006, 0.48], white, [x, 0.05, 0]);
+  });
+  addBox(icebergs, [0.18, 0.03, 0.14], poolWater, [0.0, 0.03, -0.36], [0, 0, 0], { roughness: 0.12 });
+  addBox(icebergs, [0.06, 0.08, 0.64], creamMaterial, [-0.24, 0.05, 0]);
+  addBox(icebergs, [0.22, 0.11, 0.28], creamMaterial, [-0.34, 0.06, -0.34]);
+  addBox(icebergs, [0.26, 0.025, 0.32], red, [-0.34, 0.13, -0.34]);
+  group.add(icebergs);
+
+  // Bondi Pavilion: cream block, terracotta roof, arched colonnade.
+  const pavilion = new THREE.Group();
+  pavilion.position.set(curveX(0.04, -1.08), TOP + 0.024, 0.04);
+  addBox(pavilion, [0.38, 0.26, 1.05], creamMaterial, [0, 0.13, 0]);
+  addBox(pavilion, [0.46, 0.04, 1.13], roofMaterial, [0, 0.28, 0]);
+  addBox(pavilion, [0.28, 0.12, 0.32], creamMaterial, [0, 0.36, 0]);
+  addBox(pavilion, [0.34, 0.03, 0.38], roofMaterial, [0, 0.435, 0]);
+  addCylinder(pavilion, 0.07, 0.085, 0.09, creamMaterial, [0, 0.49, 0], [0, 0, 0], 16);
+  addSphere(pavilion, 0.07, roofMaterial, [0, 0.545, 0], 16).scale.set(1, 0.68, 1);
+  addBox(pavilion, [0.04, 0.14, 1.0], darkMaterial, [0.18, 0.13, 0]);
+  for (let i = 0; i < 6; i += 1) {
+    addCylinder(pavilion, 0.022, 0.022, 0.2, creamMaterial, [0.21, 0.1, -0.4 + i * 0.16], [0, 0, 0], 8);
+  }
+  addBox(pavilion, [0.05, 0.04, 1.05], creamMaterial, [0.21, 0.22, 0]);
+  addBox(pavilion, [0.4, 0.025, 0.08], project.color, [0, 0.285, -0.54]);
+  group.add(pavilion);
+
+  // North Bondi surf life saving club.
+  const surfClub = new THREE.Group();
+  surfClub.position.set(curveX(-1.1, -1.06), TOP + 0.024, -1.1);
+  surfClub.rotation.y = 0.34;
+  addBox(surfClub, [0.32, 0.18, 0.44], white, [0, 0.09, 0]);
+  addBox(surfClub, [0.38, 0.03, 0.5], red, [0, 0.195, 0]);
+  addBox(surfClub, [0.22, 0.08, 0.34], white, [0, 0.25, 0]);
+  addBox(surfClub, [0.26, 0.025, 0.4], red, [0, 0.3, 0]);
+  addBox(surfClub, [0.05, 0.07, 0.3], darkMaterial, [0.17, 0.12, 0]);
+  addCylinder(surfClub, 0.01, 0.01, 0.32, white, [-0.14, 0.32, 0.18], [0, 0, 0], 8);
+  addBox(surfClub, [0.015, 0.08, 0.12], yellow, [-0.14, 0.44, 0.24]);
+  group.add(surfClub);
+
+  // Campbell Parade shopfronts across the road.
+  ([
+    [-0.62, 0.24, "#e8dcc0"],
+    [-0.04, 0.28, "#dfcfae"],
+    [0.54, 0.22, "#eadfc4"],
+  ] as const).forEach(([z, height, colour], index) => {
+    const x = curveX(z, -1.82);
+    addBox(group, [0.22, height, 0.42], colour, [x, TOP + height / 2, z], [0, curveAngle(z), 0]);
+    addBox(group, [0.26, 0.03, 0.46], index % 2 ? red : project.color, [x, TOP + height + 0.015, z], [0, curveAngle(z), 0]);
+    addBox(group, [0.015, 0.08, 0.3], "#94d8e8", [x + 0.12, TOP + height * 0.55, z], [0, curveAngle(z), 0]);
+  });
+
+  // Norfolk Island pines along the park.
+  ([-0.98, -0.5, 0.0, 0.52, 1.0] as const).forEach((z, index) => {
+    const x = curveX(z, -1.3) + (index % 2) * 0.05;
+    addCylinder(group, 0.018, 0.024, 0.22, trunkMaterial, [x, TOP + 0.11, z], [0, 0, 0], 6);
+    addCone(group, 0.14, 0.3, 10, pineMaterial, [x, TOP + 0.32, z]);
+    addCone(group, 0.095, 0.28, 10, pineMaterial, [x, TOP + 0.54, z]);
+  });
+
+  // Sea wall between promenade and sand, with a run of graffiti panels.
+  const graffiti = ["#e6533f", "#f7d35f", "#22d66f", "#2f8ec7", "#d87ad0"];
+  const wallEnd = EDGE - 0.16;
+  for (let i = 0; i < 10; i += 1) {
+    const z = -wallEnd + (i * (wallEnd * 2)) / 9;
+    const x = curveX(z, -0.71);
+    addBox(group, [0.04, 0.08, 0.32], wallMaterial, [x, TOP + 0.04, z], [0, curveAngle(z), 0]);
+    if (i % 3 === 1) {
+      addBox(group, [0.01, 0.05, 0.22], graffiti[i % graffiti.length], [x + 0.025, TOP + 0.04, z], [0, curveAngle(z), 0]);
+    }
+  }
+  // Steps down to the sand at two breaks in the wall.
+  [-0.5, 0.64].forEach((z) => {
+    for (let step = 0; step < 3; step += 1) {
+      addBox(
+        group,
+        [0.05, 0.025, 0.22],
+        promenadeMaterial,
+        [curveX(z, -0.69) + step * 0.045, TOP + 0.06 - step * 0.018, z],
+        [0, curveAngle(z), 0],
+      );
+    }
+  });
+
+  // The skate bowl at the south end of the park.
+  const bowlZ = 1.1;
+  const bowlX = curveX(bowlZ, -1.06);
+  addCylinder(group, 0.19, 0.19, 0.025, "#9a9c93", [bowlX, TOP + 0.035, bowlZ], [0, 0, 0], 26);
+  addCylinder(group, 0.14, 0.13, 0.025, "#7d8078", [bowlX, TOP + 0.043, bowlZ], [0, 0, 0], 26);
+
+  // Lifeguard tower on the sand.
+  const tower = new THREE.Group();
+  tower.position.set(curveX(-0.42, -0.48), TOP + 0.028, -0.42);
+  tower.rotation.y = 0.24;
+  ([[-0.08, -0.08], [0.08, -0.08], [-0.08, 0.08], [0.08, 0.08]] as const).forEach(([x, z]) => {
+    addCylinder(tower, 0.012, 0.012, 0.18, darkMaterial, [x, 0.09, z], [0, 0, 0], 6);
+  });
+  addBox(tower, [0.22, 0.13, 0.2], creamMaterial, [0, 0.245, 0]);
+  addBox(tower, [0.23, 0.05, 0.21], yellow, [0.005, 0.3, 0]);
+  addBox(tower, [0.015, 0.07, 0.15], "#94d8e8", [0.11, 0.25, 0]);
+  addBox(tower, [0.24, 0.018, 0.04], red, [0, 0.335, 0]);
+  addCylinder(tower, 0.007, 0.007, 0.16, darkMaterial, [-0.09, 0.4, 0.08], [0, 0, 0], 6);
+  group.add(tower);
+
+  // Red-and-yellow patrol flags marking the swim zone.
+  const flags: THREE.Mesh[] = [];
+  ([-0.6, 0.38] as const).forEach((z) => {
+    const x = curveX(z, -0.12);
+    addCylinder(group, 0.008, 0.008, 0.24, darkMaterial, [x, TOP + 0.15, z], [0, 0, 0], 8);
+    const flagAngle = curveAngle(z) + 0.4;
+    flags.push(addBox(group, [0.012, 0.055, 0.13], red, [x + 0.025, TOP + 0.25, z + 0.05], [0, flagAngle, 0]));
+    flags.push(addBox(group, [0.012, 0.055, 0.13], yellow, [x + 0.025, TOP + 0.195, z + 0.05], [0, flagAngle, 0]));
+  });
+
+  // Umbrellas, towels and boards on the dry sand.
+  ([
+    [-0.56, -0.88, "#e6533f"],
+    [-0.42, -0.12, "#f7d35f"],
+    [-0.52, 0.56, "#2f8ec7"],
+    [-0.36, 1.0, "#22d66f"],
+  ] as const).forEach(([offset, z, colour], index) => {
+    const x = curveX(z, offset);
+    addCylinder(group, 0.007, 0.007, 0.16, "#efe6cf", [x, TOP + 0.11, z], [0, 0, 0], 6);
+    addCone(group, 0.13, 0.08, 12, colour, [x, TOP + 0.22, z], [Math.PI, index * 0.5, 0]);
+  });
+  ([
+    [-0.62, -0.7, "#f2f0e4"],
+    [-0.46, -0.34, "#e6533f"],
+    [-0.58, 0.28, "#2f8ec7"],
+    [-0.44, 1.1, "#d87ad0"],
+  ] as const).forEach(([offset, z, colour]) => {
+    const x = curveX(z, offset);
+    addBox(group, [0.13, 0.007, 0.19], colour, [x, TOP + 0.033, z], [0, curveAngle(z) + 0.3, 0]);
+  });
+  const boardColours = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f"];
+  ([-0.68, -0.02, 0.66] as const).forEach((z, index) => {
+    const x = curveX(z, -0.26);
+    addBox(group, [0.085, 0.015, 0.36], boardColours[index], [x, TOP + 0.038, z], [0, curveAngle(z) + 0.5 - index * 0.3, 0], {
+      roughness: 0.5,
+    });
+  });
+  // A couple of boards stood up in the sand.
+  ([[-0.64, -0.24], [-0.66, 0.86]] as const).forEach(([offset, z], index) => {
+    const x = curveX(z, offset);
+    addBox(group, [0.07, 0.28, 0.018], boardColours[index + 1], [x, TOP + 0.16, z], [0, 0.5, index ? 0.18 : -0.16], {
+      roughness: 0.5,
+    });
+  });
+
+  // People: a couple on the sand, a couple in the shallows.
+  const addPerson = (x: number, z: number, colour: string, height = 0.12) => {
+    addCylinder(group, 0.021, 0.025, height, colour, [x, TOP + 0.028 + height / 2, z], [0, 0, 0], 6);
+    addSphere(group, 0.026, skinMaterial, [x, TOP + 0.04 + height, z], 8);
+  };
+  ([
+    [-0.46, -0.54, "#e6533f"],
+    [-0.32, 0.08, "#f2f0e4"],
+    [-0.24, 0.9, "#f7d35f"],
+  ] as const).forEach(([offset, z, colour]) => {
+    addPerson(curveX(z, offset), z, colour);
+  });
+  addPerson(curveX(-0.3, 0.14), -0.3, "#f2f0e4", 0.08);
+
+  const surfer = new THREE.Group();
+  surfer.position.set(curveX(0.7, 0.5), TOP + 0.028, 0.7);
+  surfer.rotation.y = curveAngle(0.7) + 0.6;
+  addBox(surfer, [0.08, 0.013, 0.34], "#fff4bd", [0, 0.01, 0], [0, 0, 0], { roughness: 0.5 });
+  addCylinder(surfer, 0.019, 0.023, 0.1, "#151713", [0, 0.065, 0], [0.1, 0, 0], 8);
+  addSphere(surfer, 0.022, skinMaterial, [0, 0.13, 0.01], 10);
+  group.add(surfer);
+
+  group.userData.tick = (time: number) => {
+    foamLines.forEach(({ material, mesh, phase }) => {
+      const progress = (time * 0.16 + phase) % 1;
+      mesh.position.x = -progress * 0.78;
+      material.opacity = 0.55 * Math.sin(progress * Math.PI) ** 0.7;
+    });
+    flags.forEach((flag, index) => {
+      flag.rotation.y = curveAngle(flag.position.z) + 0.4 + Math.sin(time * 1.6 + index) * 0.12;
+    });
+    surfer.position.y = TOP + 0.028 + Math.sin(time * 1.9) * 0.007;
+  };
+
   return group;
 }
 
@@ -2374,12 +1831,15 @@ function CityScene({
       { x: sydneyPlaces.kirribilli.x + 2.1, z: sydneyPlaces.kirribilli.z + 2.95 },
       { x: sydneyPlaces.kirribilli.x - 0.85, z: sydneyPlaces.kirribilli.z + 1.9 },
     ];
+    // Sand apron the Bondi stop sits on, running from the parade down to the
+    // shoreline. Kept inside the coast polygon so it never spills into the sea.
     const bondiSandShape = [
-      { x: sydneyPlaces.bondiBeach.x - 1.75, z: sydneyPlaces.bondiBeach.z - 1.85 },
-      { x: sydneyPlaces.bondiBeach.x + 2.45, z: sydneyPlaces.bondiBeach.z - 1.05 },
-      { x: sydneyPlaces.bondiBeach.x + 2.15, z: sydneyPlaces.bondiBeach.z + 2.8 },
-      { x: sydneyPlaces.bondiBeach.x - 1.35, z: sydneyPlaces.bondiBeach.z + 2.65 },
-      { x: sydneyPlaces.bondiBeach.x - 2.1, z: sydneyPlaces.bondiBeach.z + 0.85 },
+      { x: sydneyPlaces.bondiBeach.x - 2.2, z: sydneyPlaces.bondiBeach.z - 0.9 },
+      { x: sydneyPlaces.bondiBeach.x + 0.4, z: sydneyPlaces.bondiBeach.z - 2.0 },
+      { x: sydneyPlaces.bondiBeach.x + 3.0, z: sydneyPlaces.bondiBeach.z + 0.6 },
+      { x: sydneyPlaces.bondiBeach.x + 2.1, z: sydneyPlaces.bondiBeach.z + 2.6 },
+      { x: sydneyPlaces.bondiBeach.x - 0.3, z: sydneyPlaces.bondiBeach.z + 3.6 },
+      { x: sydneyPlaces.bondiBeach.x - 2.5, z: sydneyPlaces.bondiBeach.z + 1.7 },
     ];
     const operaPromenadeShape = [
       { x: sydneyPlaces.operaHouse.x - 3.45, z: sydneyPlaces.operaHouse.z + 0.15 },
@@ -2438,7 +1898,9 @@ function CityScene({
       ...cityRouteWalkways,
     ].filter((area) => area.length >= 3);
 
-    addPlane(180, 150, 9, -5, waterMaterial, -0.07);
+    // Water plane slightly lower than sand base to avoid z-fighting; we'll animate its material UVs
+    const waterY = -0.12;
+    addPlane(180, 150, 9, -5, waterMaterial, waterY);
     addFlatShape(groundGroup, mainLandShape, parkMaterial);
     addFlatShape(groundGroup, inlandSuburbsShape, inlandMaterial, 0.018);
     addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
@@ -2456,7 +1918,9 @@ function CityScene({
         promenadeMaterial,
         0.058,
       ));
-    addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.035);
+    // The Bondi stop carries its own beach, so this polygon is only the strip of
+    // sand the diorama sits on (and the walkable area that reaches it).
+    addFlatShape(groundGroup, bondiSandShape, sandMaterial, 0.02);
     addFlatShape(groundGroup, operaPromenadeShape, promenadeMaterial, 0.032);
     addFlatShape(groundGroup, graveyardShape, graveyardMaterial, 0.04);
     addFlatShape(groundGroup, learningCentreShape, learningCampusMaterial, 0.042);
@@ -2503,6 +1967,9 @@ function CityScene({
     addCityPaths(scene);
 
     const colliders: THREE.Object3D[] = [];
+    const placards: THREE.Group[] = [];
+    // Models can expose userData.tick to animate themselves each frame.
+    const modelTicks: Array<(time: number) => void> = [];
     const projectGroups = new Map<string, THREE.Group>();
     const rings = new Map<string, THREE.Mesh<THREE.TorusGeometry, THREE.MeshBasicMaterial>>();
     const projectStops = new Map<string, { position: THREE.Vector3; radius: number }>();
@@ -2515,6 +1982,7 @@ function CityScene({
       const isArchiveZoneItem = project.mapKind === "graveyard" || project.mapKind === "learning";
 
       const model = createProjectModel(project);
+      model.rotation.y = project.heading ?? 0;
       model.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.castShadow = true;
@@ -2524,36 +1992,81 @@ function CityScene({
         }
       });
       group.add(model);
+      if (typeof model.userData.tick === "function") {
+        modelTicks.push(model.userData.tick as (time: number) => void);
+      }
 
       const imageTexture = addTexture(loader.load(projectImageSrc(project), (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
       }));
 
-      const imageDecal = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-          isArchiveZoneItem ? 0.82 : project.tier === "flagship" ? 2.45 : 2.05,
-          isArchiveZoneItem ? 0.48 : project.tier === "flagship" ? 1.45 : 1.2,
-        ),
-        new THREE.MeshBasicMaterial({ map: imageTexture, side: THREE.DoubleSide }),
-      );
-      imageDecal.rotation.x = -Math.PI / 2;
-      imageDecal.position.set(0, 0.105, isArchiveZoneItem ? -0.62 : project.tier === "flagship" ? -1.95 : -1.65);
-      imageDecal.userData.projectId = project.id;
-      group.add(imageDecal);
-      colliders.push(imageDecal);
+      const stopRadius = isArchiveZoneItem ? 0.72 : project.tier === "flagship" ? 1.35 : 1.25;
 
-      const label = new THREE.Mesh(
-        new THREE.PlaneGeometry(isArchiveZoneItem ? 1.18 : 2.4, isArchiveZoneItem ? 0.42 : 0.8),
-        new THREE.MeshBasicMaterial({ map: addTexture(labelTexture(project)), side: THREE.DoubleSide }),
+      // One placard per stop: screenshot over name board, standing on the side
+      // the camera looks from so the model never hides it.
+      const cardScale = isArchiveZoneItem ? 0.36 : project.tier === "flagship" ? 0.85 : 0.72;
+      const imageWidth = 2.3 * cardScale;
+      const imageHeight = imageWidth / 1.7;
+      const labelWidth = imageWidth;
+      const labelBoardHeight = labelWidth / 3;
+      const frameInset = 0.05 * cardScale;
+
+      const placard = new THREE.Group();
+      const postHeight = 0.26 * cardScale;
+      const frame = addBox(
+        placard,
+        [imageWidth + frameInset * 2, imageHeight + labelBoardHeight + frameInset * 3, 0.045],
+        "#fffdf4",
+        [0, postHeight + (imageHeight + labelBoardHeight + frameInset * 3) / 2, 0],
+        [0, 0, 0],
+        { roughness: 0.66 },
       );
-      label.rotation.x = -Math.PI / 2;
-      label.position.set(0, 0.11, isArchiveZoneItem ? 0.62 : 1.38);
+      frame.userData.projectId = project.id;
+      colliders.push(frame);
+
+      const cardBottom = postHeight + frameInset;
+      const label = new THREE.Mesh(
+        new THREE.PlaneGeometry(labelWidth, labelBoardHeight),
+        new THREE.MeshBasicMaterial({ map: addTexture(labelTexture(project)), transparent: true }),
+      );
+      label.position.set(0, cardBottom + labelBoardHeight / 2, 0.03);
       label.userData.projectId = project.id;
-      group.add(label);
+      placard.add(label);
       colliders.push(label);
 
-      const stopRadius = isArchiveZoneItem ? 0.72 : project.tier === "flagship" ? 1.35 : 1.25;
+      const imageDecal = new THREE.Mesh(
+        new THREE.PlaneGeometry(imageWidth, imageHeight),
+        new THREE.MeshBasicMaterial({ map: imageTexture }),
+      );
+      imageDecal.position.set(0, cardBottom + labelBoardHeight + frameInset + imageHeight / 2, 0.03);
+      imageDecal.userData.projectId = project.id;
+      placard.add(imageDecal);
+      colliders.push(imageDecal);
+
+      [-1, 1].forEach((side) => {
+        addBox(
+          placard,
+          [0.06 * cardScale, postHeight + 0.08, 0.06 * cardScale],
+          "#5d6157",
+          [side * (imageWidth / 2 - 0.12 * cardScale), (postHeight + 0.08) / 2, 0],
+        );
+      });
+
+      // Stand it just outside the stop ring, off to the near side of the plot.
+      const yaw = cameraYaw(CAMERA_VIEWS.wide);
+      const forward = { x: Math.sin(yaw), z: Math.cos(yaw) };
+      const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+      const forwardDistance = stopRadius + (isArchiveZoneItem ? 0.22 : 0.5);
+      const lateralDistance = isArchiveZoneItem ? 0.08 : stopRadius * 0.5;
+      placard.position.set(
+        forward.x * forwardDistance + right.x * lateralDistance,
+        0.07,
+        forward.z * forwardDistance + right.z * lateralDistance,
+      );
+      placard.rotation.set(PLAQUE_TILT, yaw, 0);
+      group.add(placard);
+      placards.push(placard);
       const ring = new THREE.Mesh(
         new THREE.TorusGeometry(stopRadius, 0.022, 8, 72),
         new THREE.MeshBasicMaterial({ color: "#d8dacb", transparent: true, opacity: 0.035 }),
@@ -2691,6 +2204,7 @@ function CityScene({
 
     let animationFrame = 0;
     let last = performance.now();
+    let placardView: (typeof CAMERA_VIEWS)[keyof typeof CAMERA_VIEWS] = CAMERA_VIEWS.wide;
 
     const animate = (now: number) => {
       const delta = Math.min((now - last) / 1000, 0.05);
@@ -2793,18 +2307,35 @@ function CityScene({
         }
       }
 
-      const isNarrowView = camera.aspect < 0.75;
+      const view = camera.aspect < 0.75 ? CAMERA_VIEWS.narrow : CAMERA_VIEWS.wide;
       const cameraTarget = new THREE.Vector3(
-        player.position.x + (isNarrowView ? 12.6 : 8.1),
-        isNarrowView ? 21.4 : 16.4,
-        player.position.z + (isNarrowView ? 18.6 : 13.7),
+        player.position.x + view.offset.x,
+        view.offset.y,
+        player.position.z + view.offset.z,
       );
       camera.position.lerp(cameraTarget, 0.095);
       camera.lookAt(
-        player.position.x + (isNarrowView ? 1.65 : 0.9),
-        1.05,
-        player.position.z + (isNarrowView ? -0.55 : -1.05),
+        player.position.x + view.look.x,
+        view.look.y,
+        player.position.z + view.look.z,
       );
+
+      // Placards are built for the wide bearing; on a narrow viewport the camera
+      // sits at a slightly different angle, so nudge them once when it changes.
+      if (view !== placardView) {
+        placardView = view;
+        const yaw = cameraYaw(view);
+        placards.forEach((placard) => placard.rotation.set(PLAQUE_TILT, yaw, 0));
+      }
+
+      if (water && water.offset) {
+        // scroll texture slowly
+        water.offset.x += delta * 0.02;
+        water.offset.y += delta * 0.01;
+      }
+
+      // Let self-animating models (Bondi surf, flags) advance.
+      modelTicks.forEach((tick) => tick(now / 1000));
 
       renderer.render(scene, camera);
       animationFrame = requestAnimationFrame(animate);
@@ -3112,15 +2643,12 @@ function addLandscapeDetails(scene: THREE.Scene) {
   const details = new THREE.Group();
   scene.add(details);
 
-  const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.84 });
   const wakeMaterial = new THREE.MeshBasicMaterial({ color: "#e9fbff", transparent: true, opacity: 0.54 });
-  const wetSandMaterial = modelMaterial("#cfae63", { roughness: 0.92 });
   const rockMaterial = modelMaterial("#a58f66", { roughness: 0.92 });
   const courtMaterial = modelMaterial("#1f6f51", { roughness: 0.84 });
   const poolMaterial = modelMaterial("#2fa8c9", { roughness: 0.18, metalness: 0.04 });
   const treeTrunk = modelMaterial("#72563a", { roughness: 0.78 });
   const treeGreen = modelMaterial("#246b3e", { roughness: 0.88 });
-  const palmGreen = modelMaterial("#2f8d55", { roughness: 0.82 });
   const suburbWall = modelMaterial("#efe1bf", { roughness: 0.76 });
   const darkRoad = modelMaterial("#2b2f2b", { roughness: 0.78 });
   const parkPaint = modelMaterial("#315f40", { roughness: 0.88 });
@@ -3128,13 +2656,6 @@ function addLandscapeDetails(scene: THREE.Scene) {
   const addTree = (point: MapPoint, scale = 1) => {
     addCylinder(details, 0.045 * scale, 0.06 * scale, 0.42 * scale, treeTrunk, [point.x, 0.27 * scale, point.z], [0, 0, 0], 10);
     addCone(details, 0.28 * scale, 0.62 * scale, 7, treeGreen, [point.x, 0.78 * scale, point.z]);
-  };
-
-  const addPalm = (point: MapPoint, rotation = 0, scale = 1) => {
-    addCylinder(details, 0.04 * scale, 0.065 * scale, 0.78 * scale, treeTrunk, [point.x, 0.42 * scale, point.z], [0.18, 0, -0.08], 10);
-    for (let i = 0; i < 5; i += 1) {
-      addBox(details, [0.08 * scale, 0.035 * scale, 0.74 * scale], palmGreen, [point.x, 0.86 * scale, point.z], [0.12, rotation + i * 1.25, 0.42]);
-    }
   };
 
   const addInlandHouse = (point: MapPoint, rotation: number, roofColor: string, scale = 1) => {
@@ -3206,34 +2727,6 @@ function addLandscapeDetails(scene: THREE.Scene) {
   addBox(details, [3.5, 0.04, 1.16], parkPaint, [2.2, 0.105, 15.0], [0, -0.08, 0]);
   addBox(details, [0.08, 0.045, 1.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
   addBox(details, [3.4, 0.04, 0.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
-
-  for (let i = 0; i < 8; i += 1) {
-    addPalm(
-      {
-        x: sydneyPlaces.bondiBeach.x - 1.72 + i * 0.45,
-        z: sydneyPlaces.bondiBeach.z + 2.22 + Math.sin(i * 0.9) * 0.18,
-      },
-      i * 0.35,
-      0.92,
-    );
-  }
-
-  for (let i = 0; i < 7; i += 1) {
-    addBox(
-      details,
-      [0.055, 0.035, 1.65 + i * 0.14],
-      foamMaterial,
-      [sydneyPlaces.bondiBeach.x + 2.28 + i * 0.18, 0.14, sydneyPlaces.bondiBeach.z - 1.24 + i * 0.57],
-      [0, -0.16, 0],
-    );
-    addBox(
-      details,
-      [0.055, 0.028, 1.4 + i * 0.1],
-      wetSandMaterial,
-      [sydneyPlaces.bondiBeach.x + 1.76 + i * 0.1, 0.085, sydneyPlaces.bondiBeach.z - 0.94 + i * 0.58],
-      [0, -0.12, 0],
-    );
-  }
 
   for (let i = 0; i < 12; i += 1) {
     addBox(
@@ -3372,10 +2865,10 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
     for (let i = 1; i < 12; i += 1) {
       const t = i / 12;
       const archPoint = curve.getPoint(t);
-        [1.08 - i * 0.045, 0.03, 0.052],
-        foam,
-        [0.52 + i * 0.22, 0.12 + i * 0.004, -1.0 + i * 0.33],
-        [0, -0.36 + i * 0.06, 0],
+      const deckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, t), 0.86, z);
+      addCylinderBetween(bridge, deckPoint, archPoint, 0.018, darkSteel);
+      if (i % 2 === 1) {
+        const nextDeckPoint = new THREE.Vector3(THREE.MathUtils.lerp(-3.48, 3.48, Math.min(0.98, t + 0.075)), 0.87, -z);
         addCylinderBetween(bridge, deckPoint, nextDeckPoint, 0.012, steel);
       }
     }
@@ -3386,12 +2879,6 @@ function addHarbourBridgeArtwork(parent: THREE.Object3D, anchor: MapPoint) {
     addBox(bridge, [0.055, 0.06, 1.06], darkSteel, [x, 0.94, 0]);
     addCylinder(bridge, 0.025, 0.025, 0.42, darkSteel, [x, 0.94, -0.62], [0, 0, 0], 8);
     addCylinder(bridge, 0.055, 0.055, 0.04, lampMaterial, [x, 1.18, -0.62], [0, 0, 0], 12);
-    // add a couple of beach umbrellas for visual cue
-    const umbrellaColors = ["#ff5b2e", "#ffdd57", "#2f8ec7"];
-    umbrellaColors.forEach((c, i) => {
-      addCylinder(group, 0.02, 0.02, 0.86, "#151713", [-0.9 + i * 0.7, 0.36, 0.2 + i * -0.18], [0, 0, 0], 12);
-      addCone(group, 0.36, 0.12, 20, c, [-0.9 + i * 0.7, 0.86, 0.2 + i * -0.18], [Math.PI, i * 0.4, 0]);
-    });
     if (i > 0) {
       addCylinderBetween(
         bridge,
@@ -3481,7 +2968,6 @@ function addSydneyLandmarks(
     queensPark,
     sportsField,
     doverHeights,
-    bondiBeach,
   } = sydneyPlaces;
   const pitchCenter = nudgePoint(sportsField, 0.45, 0.3);
 
@@ -3571,37 +3057,6 @@ function addSydneyLandmarks(
     addBox(landmarks, [0.5, 0.48 + index * 0.09, 0.42], "#efe1bf", [bondiJunction.x + x, 0.24 + index * 0.045, bondiJunction.z + 1.2 - (index % 2) * 0.5]);
   });
 
-  const foamMaterial = new THREE.MeshBasicMaterial({ color: "#f8fbf0", transparent: true, opacity: 0.82 });
-  for (let i = 0; i < 6; i += 1) {
-    addBox(landmarks, [0.065, 0.035, 1.8 + i * 0.13], foamMaterial, [bondiBeach.x + 2.28 + i * 0.16, 0.12, bondiBeach.z - 1.46 + i * 0.62], [0, -0.14, 0]);
-  }
-
-  const surfColors = ["#fff4bd", "#e6533f", "#2f8ec7", "#22d66f", "#f7d35f"];
-  for (let i = 0; i < 6; i += 1) {
-    addBox(landmarks, [0.34, 0.055, 1.42], surfColors[i % surfColors.length], [bondiBeach.x - 0.9 + i * 0.27, 0.15, bondiBeach.z + 1.0 + i * 0.34], [0, i * 0.22 - 0.48, 0], { roughness: 0.54 });
-  }
-  const bondiPool = new THREE.Group();
-  bondiPool.position.set(bondiBeach.x + 1.65, 0, bondiBeach.z + 1.62);
-  bondiPool.rotation.y = -0.28;
-  addBox(bondiPool, [1.34, 0.055, 0.88], "#fffdf4", [0, 0.14, 0], [0, 0, 0], { roughness: 0.48 });
-  addBox(bondiPool, [1.1, 0.04, 0.68], "#74d7e8", [0, 0.18, 0], [0, 0, 0], { roughness: 0.16, metalness: 0.03 });
-  [-0.24, 0, 0.24].forEach((z) => {
-    addBox(bondiPool, [1.04, 0.018, 0.018], foamMaterial, [0, 0.21, z]);
-  });
-  addBox(bondiPool, [0.18, 0.34, 0.94], "#d8c494", [-0.78, 0.32, 0], [0, 0, 0], { roughness: 0.72 });
-  addBox(bondiPool, [0.62, 0.08, 0.36], "#e8d9b6", [-1.05, 0.18, 0.36], [0, 0.12, 0], { roughness: 0.78 });
-  landmarks.add(bondiPool);
-  [-0.65, -0.24, 0.18, 0.58].forEach((offset, index) => {
-    addBox(
-      landmarks,
-      [0.4, 0.045, 0.78],
-      index % 2 ? "#e6533f" : "#f7d35f",
-      [bondiBeach.x - 0.85 + offset, 0.16, bondiBeach.z - 0.06 + index * 0.2],
-      [0, -0.48 + index * 0.18, 0],
-      { roughness: 0.54 },
-    );
-  });
-
   const cliffMaterial = modelMaterial("#bda474", { roughness: 0.86 });
   for (let i = 0; i < 5; i += 1) {
     addBox(landmarks, [0.86, 0.62 + i * 0.1, 1.18], cliffMaterial, [doverHeights.x - 1.5 + i * 0.35, 0.31 + i * 0.05, doverHeights.z + 0.05 + i * 0.34], [0, -0.18, 0]);
@@ -3651,15 +3106,14 @@ function addSydneyLandmarks(
 
   addLandmarkSign(scene, addTexture, "Harbour Bridge", "north-west span", harbourBridge.x - 1.4, harbourBridge.z + 1.45, "#9fb2bd");
   addLandmarkSign(scene, addTexture, "North Sydney", "other side of the bridge", northSydney.x - 1.35, northSydney.z + 1.28, "#7da3a9");
-  addLandmarkSign(scene, addTexture, "Milsons Point", "bridge landing", milsonsPoint.x + 1.4, milsonsPoint.z + 1.05, "#f0c36a");
+  addLandmarkSign(scene, addTexture, "Milsons Point", "bridge landing", milsonsPoint.x + 0.4, milsonsPoint.z - 1.6, "#f0c36a");
   addLandmarkSign(scene, addTexture, "Sydney Opera House", "Bennelong Point", operaHouse.x + 0.7, operaHouse.z + 1.75, "#fff1bf");
   addLandmarkSign(scene, addTexture, "CBD", "city core", cbd.x + 1.45, cbd.z + 2, "#7da3a9");
-  addLandmarkSign(scene, addTexture, "Surry Hills", "Blackbird block", blackbird.x + 1.65, blackbird.z - 0.45, "#22d66f");
+  addLandmarkSign(scene, addTexture, "Surry Hills", "Blackbird block", blackbird.x + 1.9, blackbird.z - 2.0, "#22d66f");
   addLandmarkSign(scene, addTexture, "Eveleigh", "Quantium data yard", eveleigh.x + 1.35, eveleigh.z + 1.35, "#2f8ec7");
   addLandmarkSign(scene, addTexture, "Bondi Junction", "spreadsheet campus", bondiJunction.x + 0.65, bondiJunction.z - 1.35, "#18b96f");
-  addLandmarkSign(scene, addTexture, "Queens Park", "Moriah College", queensPark.x - 1.15, queensPark.z - 1.35, "#ff5b2e");
+  addLandmarkSign(scene, addTexture, "Queens Park", "Moriah College", queensPark.x - 2.3, queensPark.z + 1.1, "#ff5b2e");
   addLandmarkSign(scene, addTexture, "Dover Heights", "home base", doverHeights.x - 1.25, doverHeights.z + 1.35, "#f0c36a");
-  addLandmarkSign(scene, addTexture, "Bondi Beach", "eastern surf strip", bondiBeach.x - 0.6, bondiBeach.z + 2.55, "#4cbad8");
 }
 
 function addLandmarkSign(
@@ -3686,12 +3140,26 @@ function addLandmarkSign(
     ctx.font = "800 28px Arial";
     ctx.fillText(subtitle.toUpperCase(), 168, 210);
   }));
-  const sign = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.7, 0.9),
-    new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true }),
+  // Standing sign on the same bearing as the project placards, so every piece of
+  // text on the map reads square to the camera.
+  const width = 1.95;
+  const height = width / 3;
+  const postHeight = 0.34;
+  const sign = new THREE.Group();
+  sign.position.set(x, 0, z);
+  sign.rotation.set(PLAQUE_TILT, cameraYaw(CAMERA_VIEWS.wide), 0);
+  addBox(sign, [width + 0.07, height + 0.07, 0.04], "#fffdf4", [0, postHeight + height / 2, 0], [0, 0, 0], {
+    roughness: 0.66,
+  });
+  const board = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, height),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true }),
   );
-  sign.rotation.x = -Math.PI / 2;
-  sign.position.set(x, 0.13, z);
+  board.position.set(0, postHeight + height / 2, 0.028);
+  sign.add(board);
+  [-1, 1].forEach((side) => {
+    addBox(sign, [0.055, postHeight + 0.1, 0.055], "#5d6157", [side * (width / 2 - 0.14), (postHeight + 0.1) / 2, 0]);
+  });
   scene.add(sign);
 }
 
@@ -3735,6 +3203,8 @@ export default function MuseumPortfolio() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
+  // Archive cards open in place instead of throwing the reader back to the map.
+  const [cardProject, setCardProject] = useState<Project | null>(null);
   const activeProject = selectableItems.find((project) => project.id === activeId) ?? cityItems[0];
   const detailsOpen = detailMode !== "closed";
 
@@ -3782,6 +3252,19 @@ export default function MuseumPortfolio() {
     setDetailMode("closed");
     setDismissedZoneId(activeId);
   };
+
+  useEffect(() => {
+    if (!cardProject) return undefined;
+    const closeCardOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCardProject(null);
+    };
+    document.addEventListener("keydown", closeCardOnEscape);
+    document.body.classList.add("has-project-modal");
+    return () => {
+      document.removeEventListener("keydown", closeCardOnEscape);
+      document.body.classList.remove("has-project-modal");
+    };
+  }, [cardProject]);
 
   useEffect(() => {
     if (!detailsOpen) return undefined;
@@ -3975,10 +3458,11 @@ export default function MuseumPortfolio() {
 
             return (
               <button
-                className={`archive-card ${project.id === activeId ? "is-active" : ""}`}
+                className={`archive-card ${project.id === cardProject?.id ? "is-active" : ""}`}
                 key={project.id}
                 type="button"
-                onClick={() => openProjectDetails(project.id, true)}
+                onClick={() => setCardProject(project)}
+                aria-haspopup="dialog"
                 style={{ "--project-color": project.color } as CSSProperties}
               >
                 <span className="archive-thumb" aria-hidden="true">
@@ -4043,6 +3527,25 @@ export default function MuseumPortfolio() {
         <span>Built from the attached DOCX, public GitHub metadata, live captures, and local project folders.</span>
         <span>Private WhatsApp chat contents were not used.</span>
       </footer>
+
+      {cardProject ? (
+        <div
+          className="project-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${cardProject.title} details`}
+        >
+          <button
+            className="project-modal-scrim"
+            type="button"
+            onClick={() => setCardProject(null)}
+            aria-label="Close project details"
+          />
+          <div className="project-modal-card">
+            <ProjectInspector project={cardProject} onClose={() => setCardProject(null)} />
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
