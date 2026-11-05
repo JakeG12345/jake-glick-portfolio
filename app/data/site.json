@@ -1,0 +1,78 @@
+{
+  "hero": {
+    "kicker": "Sydney portfolio city",
+    "name": "Jake Glick",
+    "intro": "Software builder from Sydney making web apps, mobile games, spreadsheet tools, data stories, study software, and a few useful things from real life."
+  },
+  "stats": {
+    "repos": "18",
+    "gradYear": "2026",
+    "gradLabel": "Moriah College grad"
+  },
+  "contactLinks": [
+    {
+      "label": "Email",
+      "href": "mailto:jake@glickpeople.com"
+    },
+    {
+      "label": "GitHub",
+      "href": "https://github.com/JakeG12345"
+    },
+    {
+      "label": "LinkedIn",
+      "href": "https://au.linkedin.com/in/jake-glick-312a02284"
+    }
+  ],
+  "sections": {
+    "archive": {
+      "eyebrow": "complete archive",
+      "heading": "The full trail lives here, and the map now has corners for the rest.",
+      "intro": "Main builds sit as landmarks; older experiments gather in the graveyard and learning repos live around the learning centre without crowding the harbour."
+    },
+    "experience": {
+      "eyebrow": "experience",
+      "heading": "The work around the builds."
+    },
+    "contact": {
+      "eyebrow": "contact",
+      "heading": "For projects, roles, and things worth building.",
+      "intro": "Email is the cleanest direct line. GitHub is the code trail. LinkedIn is the role trail."
+    }
+  },
+  "experiences": [
+    {
+      "role": "Co-Founder",
+      "company": "Jashby",
+      "date": "Nov 2024 - Present",
+      "detail": "Building a gamified spreadsheet learning platform while still balancing school, product decisions, and the pull of real users."
+    },
+    {
+      "role": "Game Developer",
+      "company": "AIgile",
+      "date": "Sep 2022 - Dec 2024",
+      "detail": "Lead developer on What The Puck across gameplay, frontend, and backend pieces for a public mobile launch."
+    },
+    {
+      "role": "Work Experience",
+      "company": "Quantium",
+      "date": "Jul 2024",
+      "detail": "Worked around CommBank iQ data analytics and built a web scraper for client-market data."
+    },
+    {
+      "role": "System Architect",
+      "company": "Breeze Wholesale Marketplace",
+      "date": "Jun 2023 - Jul 2023",
+      "detail": "Scoped a wholesale marketplace for a startup founder, including technical approach, timeline, and rough costs."
+    },
+    {
+      "role": "Game Developer",
+      "company": "3RD SENSE",
+      "date": "Apr 2023 - Jun 2023",
+      "detail": "Worked on a Unity quiz app, integrating API data and turning supplied designs into mobile UI."
+    }
+  ],
+  "footer": [
+    "Built from the attached DOCX, public GitHub metadata, live captures, and local project folders.",
+    "Private WhatsApp chat contents were not used."
+  ]
+}

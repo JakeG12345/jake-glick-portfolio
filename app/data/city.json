@@ -1,0 +1,238 @@
+[
+  {
+    "id": "whatsapp-wrapped",
+    "base": "featured",
+    "plot": "whatsappWrapped",
+    "height": 4.1,
+    "content": {
+      "title": "Blackbird / WhatsAppWrapped",
+      "shortTitle": "Blackbird",
+      "zone": "Surry Hills startup block",
+      "status": "Blackbird camp build",
+      "detail": "WhatsAppWrapped sits in the Surry Hills / Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
+      "proof": [
+        "Blackbird camp build",
+        "Public GitHub repo",
+        "Local README privacy model"
+      ],
+      "color": "#22d66f"
+    }
+  },
+  {
+    "id": "jashby",
+    "base": "featured",
+    "plot": "jashby",
+    "height": 4.2,
+    "content": {
+      "zone": "Bondi Junction spreadsheet campus",
+      "detail": "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops."
+    }
+  },
+  {
+    "id": "quantium-work-experience",
+    "base": "standalone",
+    "plot": "quantium",
+    "height": 4,
+    "content": {
+      "title": "Quantium Work Experience",
+      "shortTitle": "Quantium",
+      "year": "2024",
+      "zone": "Eveleigh data yard",
+      "category": "Experience",
+      "tier": "built",
+      "status": "Work experience",
+      "summary": "An Eveleigh-side data tower for the Quantium work-experience week around CommBank iQ analytics and market-data scraping.",
+      "detail": "This is mapped around Eveleigh rather than as a generic office block. It anchors the analytics side of the portfolio: client data, market signals, and a scraper built in a professional context.",
+      "stack": [
+        "Data analytics",
+        "Web scraping",
+        "CommBank iQ context"
+      ],
+      "proof": [
+        "Attached DOCX role notes",
+        "Experience entry"
+      ],
+      "source": "Attached DOCX",
+      "color": "#2f8ec7",
+      "links": []
+    }
+  },
+  {
+    "id": "dover-heights-home",
+    "base": "standalone",
+    "plot": "doverHome",
+    "height": 1.45,
+    "content": {
+      "title": "My House",
+      "shortTitle": "Home",
+      "year": "Sydney",
+      "zone": "Dover Heights",
+      "category": "Landmark",
+      "tier": "artifact",
+      "status": "Home",
+      "summary": "Home: the Dover Heights house this whole map is drawn from, up on the coast near Bondi.",
+      "detail": "This gives the portfolio city a personal origin instead of floating in generic tech-land. It sits above the beach and looks back toward the project blocks.",
+      "stack": [
+        "Sydney",
+        "Dover Heights",
+        "Coast",
+        "Home base"
+      ],
+      "proof": [
+        "User-provided location context"
+      ],
+      "source": "User request",
+      "color": "#f0c36a",
+      "links": []
+    }
+  },
+  {
+    "id": "moriah-college",
+    "base": "standalone",
+    "plot": "moriahCollege",
+    "height": 1.6,
+    "content": {
+      "title": "Moriah College",
+      "shortTitle": "Moriah",
+      "year": "2026",
+      "zone": "Bondi Junction",
+      "category": "School",
+      "tier": "artifact",
+      "status": "School years, graduating 2026",
+      "summary": "The Bondi Junction school where most of this trail started: HSC study tools, school projects, and the jiu-jitsu comp app.",
+      "detail": "Moriah College is the school in Bondi Junction Jake finishes in 2026. It earns a place on the map because so much of the archive traces back to it: the HSC study software, the Moriah Jiu-Jitsu competition site built for the school's program, and the years of side projects around them.",
+      "stack": [
+        "Bondi Junction",
+        "HSC",
+        "School builds"
+      ],
+      "proof": [
+        "User-provided school context"
+      ],
+      "source": "User request",
+      "color": "#2f68c8",
+      "links": []
+    }
+  },
+  {
+    "id": "bondi-beach",
+    "base": "standalone",
+    "plot": "bondiBeach",
+    "height": 1.2,
+    "heading": -0.785,
+    "content": {
+      "title": "Bondi Beach",
+      "shortTitle": "Bondi",
+      "year": "Sydney",
+      "zone": "Eastern suburbs coast",
+      "category": "Landmark",
+      "tier": "artifact",
+      "status": "Beach landmark",
+      "summary": "A bright coastal strip for the beach part of the world: sand, surf, boards, and the city edge.",
+      "detail": "Bondi is treated as landscape, not decoration. It gives the mini city a real east-Sydney coastline and a natural place for the Dover Heights home marker.",
+      "stack": [
+        "Beach",
+        "Surf",
+        "Eastern suburbs"
+      ],
+      "proof": [
+        "User-requested landmark"
+      ],
+      "source": "User request",
+      "color": "#4cbad8",
+      "links": []
+    }
+  },
+  {
+    "id": "sydney-harbour",
+    "base": "standalone",
+    "plot": "sydneyHarbour",
+    "height": 1.8,
+    "content": {
+      "title": "Sydney Harbour / Opera House",
+      "shortTitle": "Opera House",
+      "year": "Sydney",
+      "zone": "Harbour landmark",
+      "category": "Landmark",
+      "tier": "artifact",
+      "status": "Sydney landmark cluster",
+      "summary": "The harbour corner with Opera House-style sails, a bridge arch, and CBD skyline massing.",
+      "detail": "This anchors the map in Sydney before the project buildings take over. It is deliberately literal: water, sails, bridge, skyline.",
+      "stack": [
+        "Opera House",
+        "Harbour Bridge",
+        "CBD"
+      ],
+      "proof": [
+        "User-requested landmark"
+      ],
+      "source": "User request",
+      "color": "#fff1bf",
+      "links": []
+    }
+  },
+  {
+    "id": "car-lifestory-web",
+    "base": "featured",
+    "plot": "carLifestory",
+    "height": 2.5,
+    "content": {
+      "title": "Dover Garage / Car Lifestory",
+      "shortTitle": "Car Story",
+      "zone": "Dover garage",
+      "detail": "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry."
+    }
+  },
+  {
+    "id": "what-the-puck",
+    "base": "featured",
+    "plot": "whatThePuck",
+    "height": 2.9,
+    "content": {
+      "zone": "Sports field",
+      "detail": "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores."
+    }
+  },
+  {
+    "id": "moriah-jiu-jitsu",
+    "base": "featured",
+    "plot": "moriahJiuJitsu",
+    "height": 2.6,
+    "content": {
+      "zone": "Queens Park school block",
+      "detail": "The Moriah Jiu-Jitsu tool is placed in the Queens Park school block because it is an operational Moriah sport system: divisions, athletes, scoring, leaderboards, and live competition admin."
+    }
+  },
+  {
+    "id": "degree6",
+    "base": "featured",
+    "plot": "degree6",
+    "height": 3.1,
+    "content": {
+      "zone": "Network interchange",
+      "detail": "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data."
+    }
+  },
+  {
+    "id": "idea-aid",
+    "base": "featured",
+    "plot": "ideaAid",
+    "height": 2.2,
+    "content": {
+      "zone": "AI workshop",
+      "detail": "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator."
+    }
+  },
+  {
+    "id": "portfolio",
+    "base": "featured",
+    "plot": "portfolio",
+    "height": 2.3,
+    "content": {
+      "title": "Town Hall / Jake Glick Portfolio",
+      "shortTitle": "Town Hall",
+      "zone": "Sydney CBD",
+      "detail": "The portfolio itself is the town hall, sitting in the city core: a live map of the work, the Sydney context, the contact route, and the archive underneath it."
+    }
+  }
+]

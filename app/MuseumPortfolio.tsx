@@ -31,6 +31,8 @@ import {
   isSvgImage,
   featuredProject,
 } from "./data/projects";
+import cityData from "./data/city.json";
+import siteData from "./data/site.json";
 
 declare global {
   interface Window {
@@ -56,23 +58,16 @@ declare global {
   }
 }
 
-const contactLinks = [
-  {
-    label: "Email",
-    href: "mailto:jake@glickpeople.com",
-    Icon: Mail,
-  },
-  {
-    label: "GitHub",
-    href: "https://github.com/JakeG12345",
-    Icon: Code2,
-  },
-  {
-    label: "LinkedIn",
-    href: "https://au.linkedin.com/in/jake-glick-312a02284",
-    Icon: BriefcaseBusiness,
-  },
-];
+// Copy comes from site.json (editable in /studio); icons stay in code.
+const contactIcons: Record<string, typeof Mail> = {
+  Email: Mail,
+  GitHub: Code2,
+  LinkedIn: BriefcaseBusiness,
+};
+const contactLinks = siteData.contactLinks.map((link) => ({
+  ...link,
+  Icon: contactIcons[link.label] ?? Globe2,
+}));
 
 const landmarkButtons = [
   {
@@ -296,180 +291,28 @@ const archiveDistricts = {
   },
 };
 
-const cityItems: Project[] = [
-  featuredProject("whatsapp-wrapped", {
-    title: "Blackbird / WhatsAppWrapped",
-    shortTitle: "Blackbird",
-    zone: "Surry Hills startup block",
-    status: "Blackbird camp build",
-    detail:
-      "WhatsAppWrapped sits in the Surry Hills / Blackbird block because that camp is where the museum-style idea became a real product surface: local parsing, recap cards, and the first archive walk.",
-    proof: ["Blackbird camp build", "Public GitHub repo", "Local README privacy model"],
-    color: "#22d66f",
-    ...cityProjectPlots.whatsappWrapped,
-    height: 4.1,
-  }),
-  featuredProject("jashby", {
-    zone: "Bondi Junction spreadsheet campus",
-    detail:
-      "Jashby gets the spreadsheet campus: the long-running founder thread around turning Excel and Google Sheets learning into levels, daily challenges, onboarding, analytics, and real user loops.",
-    ...cityProjectPlots.jashby,
-    height: 4.2,
-  }),
-  {
-    id: "quantium-work-experience",
-    title: "Quantium Work Experience",
-    shortTitle: "Quantium",
-    year: "2024",
-    zone: "Eveleigh data yard",
-    category: "Experience",
-    tier: "built",
-    status: "Work experience",
-    summary:
-      "An Eveleigh-side data tower for the Quantium work-experience week around CommBank iQ analytics and market-data scraping.",
-    detail:
-      "This is mapped around Eveleigh rather than as a generic office block. It anchors the analytics side of the portfolio: client data, market signals, and a scraper built in a professional context.",
-    stack: ["Data analytics", "Web scraping", "CommBank iQ context"],
-    proof: ["Attached DOCX role notes", "Experience entry"],
-    source: "Attached DOCX",
-    color: "#2f8ec7",
-    ...cityProjectPlots.quantium,
-    height: 4,
-    links: [],
-  },
-  {
-    id: "dover-heights-home",
-    title: "My House",
-    shortTitle: "Home",
-    year: "Sydney",
-    zone: "Dover Heights",
-    category: "Landmark",
-    tier: "artifact",
-    status: "Home",
-    summary:
-      "Home: the Dover Heights house this whole map is drawn from, up on the coast near Bondi.",
-    detail:
-      "This gives the portfolio city a personal origin instead of floating in generic tech-land. It sits above the beach and looks back toward the project blocks.",
-    stack: ["Sydney", "Dover Heights", "Coast", "Home base"],
-    proof: ["User-provided location context"],
-    source: "User request",
-    color: "#f0c36a",
-    ...cityProjectPlots.doverHome,
-    height: 1.45,
-    links: [],
-  },
-  {
-    id: "moriah-college",
-    title: "Moriah College",
-    shortTitle: "Moriah",
-    year: "2026",
-    zone: "Bondi Junction",
-    category: "School",
-    tier: "artifact",
-    status: "School years, graduating 2026",
-    summary:
-      "The Bondi Junction school where most of this trail started: HSC study tools, school projects, and the jiu-jitsu comp app.",
-    detail:
-      "Moriah College is the school in Bondi Junction Jake finishes in 2026. It earns a place on the map because so much of the archive traces back to it: the HSC study software, the Moriah Jiu-Jitsu competition site built for the school's program, and the years of side projects around them.",
-    stack: ["Bondi Junction", "HSC", "School builds"],
-    proof: ["User-provided school context"],
-    source: "User request",
-    color: "#2f68c8",
-    ...cityProjectPlots.moriahCollege,
-    height: 1.6,
-    links: [],
-  },
-  {
-    id: "bondi-beach",
-    title: "Bondi Beach",
-    shortTitle: "Bondi",
-    year: "Sydney",
-    zone: "Eastern suburbs coast",
-    category: "Landmark",
-    tier: "artifact",
-    status: "Beach landmark",
-    summary:
-      "A bright coastal strip for the beach part of the world: sand, surf, boards, and the city edge.",
-    detail:
-      "Bondi is treated as landscape, not decoration. It gives the mini city a real east-Sydney coastline and a natural place for the Dover Heights home marker.",
-    stack: ["Beach", "Surf", "Eastern suburbs"],
-    proof: ["User-requested landmark"],
-    source: "User request",
-    color: "#4cbad8",
-    ...cityProjectPlots.bondiBeach,
-    // Turned so the surf faces the open water rather than the suburbs.
-    heading: -0.785,
-    height: 1.2,
-    links: [],
-  },
-  {
-    id: "sydney-harbour",
-    title: "Sydney Harbour / Opera House",
-    shortTitle: "Opera House",
-    year: "Sydney",
-    zone: "Harbour landmark",
-    category: "Landmark",
-    tier: "artifact",
-    status: "Sydney landmark cluster",
-    summary:
-      "The harbour corner with Opera House-style sails, a bridge arch, and CBD skyline massing.",
-    detail:
-      "This anchors the map in Sydney before the project buildings take over. It is deliberately literal: water, sails, bridge, skyline.",
-    stack: ["Opera House", "Harbour Bridge", "CBD"],
-    proof: ["User-requested landmark"],
-    source: "User request",
-    color: "#fff1bf",
-    ...cityProjectPlots.sydneyHarbour,
-    height: 1.8,
-    links: [],
-  },
-  featuredProject("car-lifestory-web", {
-    title: "Dover Garage / Car Lifestory",
-    shortTitle: "Car Story",
-    zone: "Dover garage",
-    detail:
-      "Car Lifestory sits by the Dover Heights home marker because the product starts from a real car-history problem: ownership paperwork, service records, costs, exports, and scan-to-form entry.",
-    ...cityProjectPlots.carLifestory,
-    height: 2.5,
-  }),
-  featuredProject("what-the-puck", {
-    zone: "Sports field",
-    detail:
-      "What The Puck sits beside the football pitch as the public-game landmark: Unity, C#, mobile launch work, and the first project here that shipped to app stores.",
-    ...cityProjectPlots.whatThePuck,
-    height: 2.9,
-  }),
-  featuredProject("moriah-jiu-jitsu", {
-    zone: "Queens Park school block",
-    detail:
-      "The Moriah Jiu-Jitsu tool is placed in the Queens Park school block because it is an operational Moriah sport system: divisions, athletes, scoring, leaderboards, and live competition admin.",
-    ...cityProjectPlots.moriahJiuJitsu,
-    height: 2.6,
-  }),
-  featuredProject("degree6", {
-    zone: "Network interchange",
-    detail:
-      "Degree6 becomes the network interchange: a D3 graph tool for searching and exploring degrees of separation through LinkedIn-style relationship data.",
-    ...cityProjectPlots.degree6,
-    height: 3.1,
-  }),
-  featuredProject("idea-aid", {
-    zone: "AI workshop",
-    detail:
-      "Idea Aid stays as the early AI workshop: a CS50 Flask app where prompts, SQL, auth, Bootstrap, and the OpenAI API first became an actual user-facing generator.",
-    ...cityProjectPlots.ideaAid,
-    height: 2.2,
-  }),
-  featuredProject("portfolio", {
-    title: "Town Hall / Jake Glick Portfolio",
-    shortTitle: "Town Hall",
-    zone: "Sydney CBD",
-    detail:
-      "The portfolio itself is the town hall, sitting in the city core: a live map of the work, the Sydney context, the contact route, and the archive underneath it.",
-    ...cityProjectPlots.portfolio,
-    height: 2.3,
-  }),
-];
+// Map stops are assembled from city.json so the /studio editor can rewrite the
+// copy, while the plot coordinates stay here as derived geography.
+type CityEntry = {
+  id: string;
+  base: "featured" | "standalone";
+  plot: keyof typeof cityProjectPlots;
+  height: number;
+  heading?: number;
+  content: Record<string, unknown>;
+};
+
+const cityItems: Project[] = (cityData as CityEntry[]).map((entry) => {
+  const placed = {
+    ...entry.content,
+    ...cityProjectPlots[entry.plot],
+    height: entry.height,
+    ...(entry.heading === undefined ? {} : { heading: entry.heading }),
+  };
+  return entry.base === "featured"
+    ? featuredProject(entry.id, placed as Partial<Project>)
+    : ({ id: entry.id, ...placed } as Project);
+});
 
 const cityItemIds = new Set(cityItems.map((item) => item.id));
 
@@ -538,49 +381,13 @@ const mapShortcutButtons = [
   },
 ];
 
-const experiences = [
-  {
-    role: "Co-Founder",
-    company: "Jashby",
-    date: "Nov 2024 - Present",
-    detail:
-      "Building a gamified spreadsheet learning platform while still balancing school, product decisions, and the pull of real users.",
-  },
-  {
-    role: "Game Developer",
-    company: "AIgile",
-    date: "Sep 2022 - Dec 2024",
-    detail:
-      "Lead developer on What The Puck across gameplay, frontend, and backend pieces for a public mobile launch.",
-  },
-  {
-    role: "Work Experience",
-    company: "Quantium",
-    date: "Jul 2024",
-    detail:
-      "Worked around CommBank iQ data analytics and built a web scraper for client-market data.",
-  },
-  {
-    role: "System Architect",
-    company: "Breeze Wholesale Marketplace",
-    date: "Jun 2023 - Jul 2023",
-    detail:
-      "Scoped a wholesale marketplace for a startup founder, including technical approach, timeline, and rough costs.",
-  },
-  {
-    role: "Game Developer",
-    company: "3RD SENSE",
-    date: "Apr 2023 - Jun 2023",
-    detail:
-      "Worked on a Unity quiz app, integrating API data and turning supplied designs into mobile UI.",
-  },
-];
+const experiences = siteData.experiences;
 
 const cityStats = [
-  ["18", "public GitHub repos"],
+  [siteData.stats.repos, "public GitHub repos"],
   [String(mapItems.length), "map stops"],
   [String(projects.length), "archive items"],
-  ["2026", "Moriah College grad"],
+  [siteData.stats.gradYear, siteData.stats.gradLabel],
 ];
 
 const filters = ["All", "Product", "Game", "Mobile", "Data story", "Learning"] as const;
@@ -3558,13 +3365,10 @@ export default function MuseumPortfolio() {
           <div className="city-intro">
             <p className="kicker">
               <MapPin size={16} aria-hidden="true" />
-              Sydney portfolio city
+              {siteData.hero.kicker}
             </p>
-            <h1 id="hero-title">Jake Glick</h1>
-            <p>
-              Software builder from Sydney making web apps, mobile games, spreadsheet tools,
-              data stories, study software, and a few useful things from real life.
-            </p>
+            <h1 id="hero-title">{siteData.hero.name}</h1>
+            <p>{siteData.hero.intro}</p>
           </div>
 
           <div className="hero-stats" aria-label="Portfolio facts">
@@ -3625,12 +3429,9 @@ export default function MuseumPortfolio() {
 
       <section className="archive-section" id="archive" aria-labelledby="archive-title">
         <div className="section-copy">
-          <p className="eyebrow">complete archive</p>
-          <h2 id="archive-title">The full trail lives here, and the map now has corners for the rest.</h2>
-          <p>
-            Main builds sit as landmarks; older experiments gather in the graveyard and learning
-            repos live around the learning centre without crowding the harbour.
-          </p>
+          <p className="eyebrow">{siteData.sections.archive.eyebrow}</p>
+          <h2 id="archive-title">{siteData.sections.archive.heading}</h2>
+          <p>{siteData.sections.archive.intro}</p>
         </div>
 
         <div className="archive-controls">
@@ -3692,8 +3493,8 @@ export default function MuseumPortfolio() {
 
       <section className="experience-section" id="experience" aria-labelledby="experience-title">
         <div className="section-copy">
-          <p className="eyebrow">experience</p>
-          <h2 id="experience-title">The work around the builds.</h2>
+          <p className="eyebrow">{siteData.sections.experience.eyebrow}</p>
+          <h2 id="experience-title">{siteData.sections.experience.heading}</h2>
         </div>
         <div className="experience-list">
           {experiences.map((item) => (
@@ -3711,11 +3512,9 @@ export default function MuseumPortfolio() {
 
       <section className="contact-section" id="contact" aria-labelledby="contact-title">
         <div className="section-copy">
-          <p className="eyebrow">contact</p>
-          <h2 id="contact-title">For projects, roles, and things worth building.</h2>
-          <p>
-            Email is the cleanest direct line. GitHub is the code trail. LinkedIn is the role trail.
-          </p>
+          <p className="eyebrow">{siteData.sections.contact.eyebrow}</p>
+          <h2 id="contact-title">{siteData.sections.contact.heading}</h2>
+          <p>{siteData.sections.contact.intro}</p>
         </div>
         <div className="contact-card">
           {contactLinks.map(({ label, href, Icon }) => (
@@ -3729,8 +3528,9 @@ export default function MuseumPortfolio() {
       </section>
 
       <footer className="footer">
-        <span>Built from the attached DOCX, public GitHub metadata, live captures, and local project folders.</span>
-        <span>Private WhatsApp chat contents were not used.</span>
+        {siteData.footer.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
       </footer>
 
       {cardProject ? (

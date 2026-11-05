@@ -29,6 +29,31 @@ http://localhost:3017
 - Location-tied stops for Blackbird / WhatsAppWrapped and Quantium work experience
 - Source log: attached DOCX, public GitHub metadata, live site screenshots, and safe local project captures
 
+## Editing content
+
+Run `npm run dev` and open:
+
+```bash
+http://localhost:3000/studio
+```
+
+Studio is a local editor for everything the site says. It writes straight back to
+the JSON files, and the dev server hot-reloads, so a save shows up on the site
+immediately.
+
+| Tab | File | Covers |
+| --- | --- | --- |
+| Projects | `app/data/projects.json` | all 43 archive entries, plus the base copy for the map stops built from them |
+| Map stops | `app/data/city.json` | the 13 stops on the 3D map: landmark copy, per-stop overrides, model height and heading |
+| Site copy | `app/data/site.json` | hero, stats, section headings, contact links, experience, footer |
+
+Plot coordinates stay in `app/MuseumPortfolio.tsx` because they are derived from
+real Sydney latitude/longitude, not hand-set.
+
+Studio only exists while running `next dev`. In a production build both
+`/studio` and `/api/studio` return 404, so a deployed copy of the site has no
+write endpoint.
+
 ## Checks
 
 ```bash
