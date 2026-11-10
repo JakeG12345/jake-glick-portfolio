@@ -70,31 +70,13 @@ const contactLinks = siteData.contactLinks.map((link) => ({
 }));
 
 const landmarkButtons = [
-  {
-    id: "sydney-harbour",
-    label: "Opera House",
-    Icon: Landmark,
-  },
-  {
-    id: "bondi-beach",
-    label: "Bondi",
-    Icon: Waves,
-  },
-  {
-    id: "dover-heights-home",
-    label: "Dover Heights",
-    Icon: MapPin,
-  },
-  {
-    id: "quantium-work-experience",
-    label: "Quantium",
-    Icon: BriefcaseBusiness,
-  },
-  {
-    id: "whatsapp-wrapped",
-    label: "Blackbird",
-    Icon: BriefcaseBusiness,
-  },
+  { id: "portfolio", label: "Town Hall", Icon: Building2 },
+  { id: "sydney-harbour", label: "Opera House", Icon: Landmark },
+  { id: "bondi-beach", label: "Bondi", Icon: Waves },
+  { id: "dover-heights-home", label: "Home", Icon: MapPin },
+  { id: "moriah-college", label: "Moriah", Icon: BriefcaseBusiness },
+  { id: "quantium-work-experience", label: "Quantium", Icon: BriefcaseBusiness },
+  { id: "whatsapp-wrapped", label: "Blackbird", Icon: BriefcaseBusiness },
 ];
 
 // Projects are imported from ./data/projects to keep the scene component small
@@ -350,9 +332,10 @@ const graveyardMapItems = layoutArchiveZoneProjects(
 );
 const learningCentreMapItems = layoutArchiveZoneProjects(
   learningCentreProjects,
-  archiveDistricts.learningCentre.center,
-  6,
-  1.85,
+  // Sits in front of the campus hall rather than underneath it.
+  nudgePoint(archiveDistricts.learningCentre.center, 0, 0.95),
+  8,
+  1.42,
   1.9,
   "learning",
 );
@@ -815,6 +798,30 @@ function addFacadeGrid(
   }
 }
 
+function addPrism(
+  parent: THREE.Object3D,
+  size: [number, number, number],
+  materialOrColor: THREE.Material | string,
+  position: [number, number, number],
+  rotationY = 0,
+) {
+  // Triangular prism with its ridge along local z; position is the centre of the base.
+  const [width, height, depth] = size;
+  const material = typeof materialOrColor === "string" ? modelMaterial(materialOrColor) : materialOrColor;
+  const shape = new THREE.Shape([
+    new THREE.Vector2(-width / 2, 0),
+    new THREE.Vector2(width / 2, 0),
+    new THREE.Vector2(0, height),
+  ]);
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false });
+  geometry.translate(0, 0, -depth / 2);
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(position[0], position[1], position[2]);
+  mesh.rotation.y = rotationY;
+  parent.add(mesh);
+  return mesh;
+}
+
 function createProjectModel(project: Project) {
   if (project.mapKind === "graveyard") return createGraveyardProjectModel(project);
   if (project.mapKind === "learning") return createLearningProjectModel(project);
@@ -895,31 +902,53 @@ function createWhatsAppWrappedModel(project: Project) {
   const dark = modelMaterial("#101611", { roughness: 0.38, metalness: 0.16 });
   const green = modelMaterial(project.color, { roughness: 0.36, metalness: 0.08 });
   const card = modelMaterial("#fffdf4", { roughness: 0.48 });
-  addBox(group, [1.9, project.height, 1.28], dark, [0, project.height / 2, 0]);
-  addBox(group, [0.24, project.height * 0.86, 1.38], green, [0.95, project.height * 0.43, 0]);
-  addBox(group, [2.08, 0.16, 1.48], "#fff8dc", [0, project.height + 0.08, 0]);
-  addFacadeGrid(group, 1.9, project.height, 1.28, 7, 3, "#83f6aa", 0.75);
-  [
-    [-0.36, 1.18, 0.86, 0.34],
-    [0.26, 2.05, 0.76, 0.3],
-    [-0.2, 2.92, 1.02, 0.36],
-  ].forEach(([x, y, width, height], index) => {
-    [-0.69, 0.69].forEach((z) => {
-      addBox(group, [width, height, 0.07], card, [x, y, z]);
-      addBox(group, [0.16, 0.12, 0.075], index % 2 === 0 ? green : "#101611", [x - width / 2 + 0.12, y - height / 2 - 0.08, z], [0, 0, -0.5]);
+  const screen = modelMaterial("#0f2a1c", { roughness: 0.3, metalness: 0.1 });
+
+  addBox(group, [2.7, 0.16, 2.0], "#16201a", [0, 0.08, 0.1]);
+
+  // A giant phone, leaning back so the chat reads from the camera side.
+  const phone = new THREE.Group();
+  phone.position.set(0.25, 0.16, -0.42);
+  phone.rotation.x = -0.16;
+  group.add(phone);
+  const tall = project.height - 0.45;
+  addBox(phone, [1.74, tall, 0.26], dark, [0, tall / 2, 0]);
+  addBox(phone, [1.52, tall - 0.3, 0.04], screen, [0, tall / 2, 0.14]);
+  addBox(phone, [1.52, 0.4, 0.05], green, [0, tall - 0.42, 0.145]);
+  addBox(phone, [0.42, 0.08, 0.06], dark, [0, tall - 0.2, 0.15]);
+  addCylinder(phone, 0.12, 0.12, 0.05, card, [-0.52, tall - 0.42, 0.17], [Math.PI / 2, 0, 0], 16);
+  ([
+    [-0.22, 0.98, false],
+    [0.26, 0.82, true],
+    [-0.3, 0.8, false],
+    [0.18, 1.0, true],
+    [-0.12, 1.16, false],
+  ] as const).forEach(([x, width, mine], index) => {
+    const y = tall - 1.02 - index * 0.5;
+    addBox(phone, [width, 0.32, 0.06], mine ? green : card, [x, y, 0.16]);
+    addBox(phone, [0.12, 0.12, 0.06], mine ? green : card, [x + (mine ? 1 : -1) * (width / 2 - 0.04), y - 0.14, 0.16], [0, 0, 0.78]);
+  });
+  // Kickstand, so it reads as an object rather than a wall.
+  addBox(phone, [0.5, tall * 0.62, 0.08], dark, [0, tall * 0.3, -0.52], [0.36, 0, 0]);
+
+  // The Wrapped recap: fanned cards and a podium chart out the front.
+  ([
+    [-1.05, 0.8, -0.34, "#fffdf4"],
+    [-0.74, 0.94, 0.0, project.color],
+    [-0.4, 1.08, 0.34, "#f7d35f"],
+  ] as const).forEach(([x, height, lean, colour], index) => {
+    addBox(group, [0.56, height, 0.05], colour, [x, 0.16 + height / 2, 0.62 + index * 0.1], [-0.1, 0.42 + lean, 0], {
+      roughness: 0.5,
     });
   });
-  addBox(group, [1.42, 0.08, 0.88], card, [-1.18, 0.28, 1.02], [0, -0.18, 0]);
-  addBox(group, [1.02, 0.06, 0.1], green, [-1.24, 0.36, 0.72], [0, -0.18, 0]);
-  [0.22, 0.42, 0.72, 0.48].forEach((height, index) => {
-    addBox(group, [0.14, height, 0.12], index % 2 ? "#83f6aa" : green, [-1.72 + index * 0.28, 0.34 + height / 2, 1.08], [0, -0.18, 0]);
+  ([0.24, 0.46, 0.76, 0.5] as const).forEach((height, index) => {
+    addBox(group, [0.17, height, 0.17], index === 2 ? "#f7d35f" : index % 2 ? "#83f6aa" : green, [0.52 + index * 0.25, 0.16 + height / 2, 0.84]);
   });
-  const orbitMaterial = new THREE.MeshBasicMaterial({ color: "#83f6aa", transparent: true, opacity: 0.72 });
-  const orbit = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.025, 8, 72), orbitMaterial);
-  orbit.rotation.set(Math.PI / 2, 0, -0.22);
-  orbit.position.set(0.02, project.height + 0.15, 0);
-  group.add(orbit);
-  addCone(group, 0.38, 0.72, 3, green, [0, project.height + 0.52, -0.02], [0, Math.PI / 2, Math.PI / 2]);
+  addBox(group, [1.12, 0.05, 0.32], card, [0.9, 0.185, 0.84]);
+
+  // Notification badge on the top corner.
+  addSphere(group, 0.3, green, [1.08, project.height + 0.02, -0.92], 18);
+  addSphere(group, 0.1, card, [1.08, project.height + 0.04, -0.66], 10);
   return group;
 }
 
@@ -1074,37 +1103,86 @@ function createDegree6Model(project: Project) {
 
 function createGarageModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [2.42, 0.96, 1.64], "#f4e4bd", [0, 0.48, 0.1]);
-  addBox(group, [2.66, 0.22, 1.86], project.color, [0, 1.08, 0.1], [0, 0, 0], { roughness: 0.42, metalness: 0.12 });
-  addBox(group, [1.2, 0.58, 0.06], "#1c2322", [0, 0.42, -0.75]);
-  addBox(group, [0.55, 0.34, 0.07], "#aee5f5", [-0.72, 0.62, -0.76]);
-  addBox(group, [0.55, 0.34, 0.07], "#aee5f5", [0.72, 0.62, -0.76]);
-  addBox(group, [1.7, 0.32, 0.86], "#d22f2f", [0, 0.32, -1.34]);
-  addBox(group, [0.92, 0.32, 0.58], "#93d8ff", [0.05, 0.62, -1.34]);
-  [-0.68, 0.68].forEach((x) => {
-    [-1.66, -1.02].forEach((z) => {
-      addCylinder(group, 0.18, 0.18, 0.16, "#171713", [x, 0.24, z], [0, 0, Math.PI / 2], 24);
-      addCylinder(group, 0.09, 0.09, 0.18, "#c9c9c0", [x, 0.24, z], [0, 0, Math.PI / 2], 20);
+  const wall = modelMaterial("#f4e4bd", { roughness: 0.7 });
+  const roof = modelMaterial(project.color, { roughness: 0.42, metalness: 0.12 });
+  const tyre = modelMaterial("#171713", { roughness: 0.7 });
+
+  addBox(group, [2.9, 0.1, 2.7], "#2b2e2a", [0, 0.05, 0.1]);
+
+  // Workshop with the roller door open toward the camera.
+  addBox(group, [2.4, 1.0, 1.25], wall, [0, 0.6, -0.55]);
+  addBox(group, [2.64, 0.16, 1.5], roof, [0, 1.18, -0.5]);
+  addBox(group, [2.64, 0.26, 0.1], roof, [0, 1.05, 0.22]);
+  addBox(group, [1.36, 0.74, 0.08], "#1c2322", [-0.3, 0.47, 0.08]);
+  addBox(group, [1.36, 0.12, 0.12], "#c9c9c0", [-0.3, 0.86, 0.1]);
+  addBox(group, [0.44, 0.34, 0.06], "#aee5f5", [0.82, 0.62, 0.09]);
+  addBox(group, [0.9, 0.2, 0.05], "#fffdf4", [-0.3, 1.05, 0.28]);
+  addBox(group, [0.56, 0.06, 0.06], "#d22f2f", [-0.3, 1.05, 0.31]);
+
+  // The car, nose out on the driveway.
+  const car = new THREE.Group();
+  car.position.set(-0.3, 0.1, 0.92);
+  group.add(car);
+  addBox(car, [0.8, 0.24, 1.5], "#d22f2f", [0, 0.26, 0], [0, 0, 0], { roughness: 0.36, metalness: 0.2 });
+  addBox(car, [0.68, 0.24, 0.74], "#93d8ff", [0, 0.48, -0.12], [0, 0, 0], { roughness: 0.2, metalness: 0.1 });
+  addBox(car, [0.7, 0.05, 0.7], "#b02222", [0, 0.62, -0.12]);
+  [-0.42, 0.42].forEach((x) => {
+    [-0.46, 0.48].forEach((z) => {
+      addCylinder(car, 0.16, 0.16, 0.12, tyre, [x, 0.16, z], [0, 0, Math.PI / 2], 16);
+      addCylinder(car, 0.07, 0.07, 0.13, "#c9c9c0", [x, 0.16, z], [0, 0, Math.PI / 2], 10);
     });
+    addBox(car, [0.14, 0.07, 0.04], "#fff3b0", [x * 0.62, 0.3, 0.76]);
   });
-  addBox(group, [0.66, 0.045, 0.92], "#fffdf4", [-0.95, 0.12, 0.96], [0, -0.1, 0]);
-  addBox(group, [0.48, 0.05, 0.78], "#e8d8a8", [-0.8, 0.2, 1.02], [0, -0.1, 0]);
+
+  // The life story: a service timeline running along the kerb.
+  addBox(group, [0.05, 0.03, 2.2], "#fffdf4", [1.08, 0.115, 0.3]);
+  (["#f7d35f", "#4cbad8", "#22d66f", "#e6533f"] as const).forEach((colour, index) => {
+    const z = -0.56 + index * 0.6;
+    addCylinder(group, 0.13, 0.13, 0.06, colour, [1.08, 0.14, z], [0, 0, 0], 16);
+    addBox(group, [0.3, 0.2 + index * 0.08, 0.04], "#fffdf4", [1.08, 0.3 + index * 0.04, z], [0, 0.5, 0]);
+  });
   return group;
 }
 
 function createPuckModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [2.75, 0.12, 1.82], "#cfefff", [0, 0.06, 0], [0, 0, 0], { roughness: 0.18, metalness: 0.02 });
-  addBox(group, [2.92, 0.32, 0.12], "#fffdf4", [0, 0.22, -0.96]);
-  addBox(group, [2.92, 0.32, 0.12], "#fffdf4", [0, 0.22, 0.96]);
-  addBox(group, [0.12, 0.32, 1.82], "#fffdf4", [-1.46, 0.22, 0]);
-  addBox(group, [0.12, 0.32, 1.82], "#fffdf4", [1.46, 0.22, 0]);
-  addCylinder(group, 0.26, 0.26, 0.18, "#151713", [0.15, 0.25, 0.02], [0, 0, 0], 32);
-  addCylinder(group, 0.035, 0.035, 0.92, project.color, [-0.82, 0.62, 0.5], [0, 0, 0], 12);
-  addBox(group, [0.52, 0.34, 0.04], "#f7d35f", [-0.56, 0.91, 0.5], [0, 0, 0.1]);
-  addBox(group, [0.08, 0.72, 0.08], "#e95344", [1.18, 0.46, -0.28]);
-  addBox(group, [0.84, 0.08, 0.08], "#e95344", [1.18, 0.86, -0.28]);
-  addBox(group, [0.08, 0.72, 0.08], "#e95344", [0.76, 0.46, -0.28]);
+  const board = modelMaterial("#fffdf4", { roughness: 0.5 });
+  const red = modelMaterial("#e95344", { roughness: 0.5 });
+  const blue = new THREE.MeshBasicMaterial({ color: project.color });
+
+  // Golf crossed with ice hockey: a rink with a putting flag in it.
+  addBox(group, [3.0, 0.1, 2.0], "#3c4a52", [0, 0.05, 0]);
+  addBox(group, [2.76, 0.1, 1.76], "#d8f1ff", [0, 0.12, 0], [0, 0, 0], { roughness: 0.14, metalness: 0.04 });
+  ([[0, -0.93, 2.9, 0.1], [0, 0.93, 2.9, 0.1], [-1.43, 0, 0.1, 1.86], [1.43, 0, 0.1, 1.86]] as const).forEach(
+    ([x, z, width, depth]) => {
+      addBox(group, [width, 0.3, depth], board, [x, 0.27, z]);
+      addBox(group, [width + 0.02, 0.06, depth + 0.02], blue, [x, 0.45, z]);
+    },
+  );
+  addBox(group, [0.05, 0.012, 1.74], red, [0, 0.176, 0]);
+  [-0.72, 0.72].forEach((x) => addBox(group, [0.05, 0.012, 1.74], blue, [x, 0.176, 0]));
+  const circle = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.018, 6, 32), red);
+  circle.rotation.x = Math.PI / 2;
+  circle.position.set(0, 0.178, 0);
+  group.add(circle);
+
+  // The puck, mid-slide, with a streak behind it.
+  addCylinder(group, 0.24, 0.24, 0.14, "#151713", [-0.36, 0.25, 0.22], [0, 0, 0], 24);
+  addCylinder(group, 0.245, 0.245, 0.04, "#f7d35f", [-0.36, 0.25, 0.22], [0, 0, 0], 24);
+  addBox(group, [0.7, 0.012, 0.1], "#fffdf4", [-0.9, 0.178, 0.36], [0, 0.26, 0]);
+
+  // The hole and its flag.
+  addCylinder(group, 0.13, 0.13, 0.02, "#151713", [0.86, 0.18, -0.3], [0, 0, 0], 20);
+  addCylinder(group, 0.025, 0.025, 1.1, "#fffdf4", [0.86, 0.72, -0.3], [0, 0, 0], 8);
+  addPrism(group, [0.46, 0.3, 0.03], "#f7d35f", [1.08, 1.0, -0.3]).rotation.z = -Math.PI / 2;
+
+  // Net at one end, stick against the boards.
+  addBox(group, [0.06, 0.44, 0.06], red, [-1.2, 0.39, -0.3]);
+  addBox(group, [0.06, 0.44, 0.06], red, [-1.2, 0.39, 0.3]);
+  addBox(group, [0.06, 0.06, 0.66], red, [-1.2, 0.6, 0]);
+  addBox(group, [0.02, 0.4, 0.6], new THREE.MeshBasicMaterial({ color: "#fffdf4", transparent: true, opacity: 0.45 }), [-1.3, 0.38, 0]);
+  addCylinderBetween(group, new THREE.Vector3(0.3, 0.2, 0.74), new THREE.Vector3(1.2, 0.86, 0.8), 0.03, "#8a6a45");
+  addBox(group, [0.34, 0.07, 0.05], "#8a6a45", [0.16, 0.2, 0.72], [0, 0.2, 0]);
   return group;
 }
 
@@ -1261,40 +1339,88 @@ function createIdeaAidModel(project: Project) {
 
 function createCityHallModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [2.42, 0.24, 1.72], "#d7c49b", [0, 0.12, 0]);
-  addBox(group, [2.04, 1.28, 1.32], "#fff7df", [0, 0.88, 0]);
-  [-0.72, -0.24, 0.24, 0.72].forEach((x) => {
-    addCylinder(group, 0.075, 0.075, 1.2, "#d9d0bc", [x, 0.82, -0.72], [0, 0, 0], 18);
-    addCylinder(group, 0.075, 0.075, 1.2, "#d9d0bc", [x, 0.82, 0.72], [0, 0, 0], 18);
+  const stone = modelMaterial("#f3e6c8", { roughness: 0.72 });
+  const trim = modelMaterial("#d7c49b", { roughness: 0.78 });
+  const gold = modelMaterial(project.color, { roughness: 0.4, metalness: 0.18 });
+
+  // Steps climbing to the portico, which faces the camera.
+  [0, 1, 2].forEach((step) => {
+    addBox(group, [2.7 - step * 0.2, 0.1, 2.3 - step * 0.26], trim, [0, 0.05 + step * 0.1, 0.06 - step * 0.02]);
   });
-  addBox(group, [2.2, 0.16, 1.48], project.color, [0, 1.58, 0]);
-  addCone(group, 1.04, 0.7, 3, "#f7d35f", [0, 1.98, -0.02], [0, Math.PI / 2, 0]);
-  addBox(group, [0.28, 0.52, 0.08], "#101611", [0, 0.53, -0.69]);
+  addBox(group, [2.16, 1.05, 1.3], stone, [0, 0.82, -0.18]);
+  [-0.86, -0.52, -0.18, 0.18, 0.52, 0.86].forEach((x) => {
+    addCylinder(group, 0.07, 0.08, 1.0, trim, [x, 0.8, 0.66], [0, 0, 0], 10);
+  });
+  addBox(group, [2.2, 0.12, 0.42], trim, [0, 1.36, 0.6]);
+  addPrism(group, [2.2, 0.48, 0.42], stone, [0, 1.42, 0.6]);
+  addBox(group, [2.3, 0.1, 1.44], trim, [0, 1.4, -0.18]);
+  addBox(group, [0.36, 0.6, 0.06], "#3a2a1c", [0, 0.6, 0.48]);
+  [-0.62, 0.62].forEach((x) => addBox(group, [0.24, 0.36, 0.05], "#9fd8ef", [x, 0.82, 0.48]));
+
+  // Clock tower.
+  addBox(group, [0.62, 1.2, 0.62], stone, [0, 2.0, -0.3]);
+  addBox(group, [0.74, 0.08, 0.74], trim, [0, 2.62, -0.3]);
+  addCylinder(group, 0.2, 0.2, 0.05, "#fffdf4", [0, 2.26, 0.03], [Math.PI / 2, 0, 0], 20);
+  addCylinder(group, 0.2, 0.2, 0.05, "#fffdf4", [0.33, 2.26, -0.3], [0, 0, Math.PI / 2], 20);
+  addBox(group, [0.03, 0.15, 0.02], "#151713", [0, 2.31, 0.065]);
+  addBox(group, [0.11, 0.03, 0.02], "#151713", [0.04, 2.26, 0.065]);
+  addBox(group, [0.46, 0.4, 0.46], stone, [0, 2.86, -0.3]);
+  addSphere(group, 0.27, gold, [0, 3.08, -0.3], 16).scale.set(1, 0.85, 1);
+  addCylinder(group, 0.02, 0.03, 0.5, gold, [0, 3.5, -0.3], [0, 0, 0], 8);
+  addBox(group, [0.26, 0.15, 0.02], "#e6533f", [0.14, 3.66, -0.3]);
   return group;
 }
 
 function createHarbourModel(project: Project) {
   const group = new THREE.Group();
-  addBox(group, [3.35, 0.16, 1.98], "#e8d9b6", [0, 0.08, 0.18]);
-  addBox(group, [2.86, 0.12, 1.44], "#d4bd92", [0.1, 0.22, 0.03]);
-  const shellMaterial = modelMaterial("#fff8e6", { roughness: 0.28, metalness: 0.03 });
-  const ribMaterial = new THREE.MeshBasicMaterial({ color: "#d9d0bc" });
-  [
-    [-1.02, 0.74, -0.38, -0.22, 1.08],
-    [-0.52, 0.9, -0.28, -0.08, 1.18],
-    [0.02, 1.04, -0.2, 0.04, 1.28],
-    [0.56, 0.94, -0.08, 0.15, 1.16],
-    [1.05, 0.78, 0.08, 0.28, 1.02],
-  ].forEach(([x, height, z, rotation, radius], index) => {
-    addCone(group, radius * 0.38, height, 4, shellMaterial, [x, 0.44 + height / 2, z], [0.12, Math.PI / 4, rotation]);
-    addBox(group, [0.035, height * 0.55, 0.035], ribMaterial, [x + 0.12, 0.58 + height * 0.24, z + 0.08], [0.14, index * 0.16, 0.32]);
-  });
-  for (let step = 0; step < 4; step += 1) {
-    addBox(group, [2.6 - step * 0.32, 0.035, 0.1], "#c9b287", [0.08, 0.27 + step * 0.04, 1.0 + step * 0.16]);
+  const shellMaterial = modelMaterial("#fffaf0", { roughness: 0.32, metalness: 0.03, side: THREE.DoubleSide });
+  const glassMaterial = modelMaterial("#3d5a6c", { roughness: 0.2, metalness: 0.2, side: THREE.DoubleSide });
+  const podium = modelMaterial("#d9c8a2", { roughness: 0.8 });
+
+  addBox(group, [3.4, 0.14, 2.5], "#e8d9b6", [0, 0.07, 0.1]);
+  addBox(group, [2.9, 0.16, 1.9], podium, [0, 0.22, -0.05]);
+  for (let step = 0; step < 3; step += 1) {
+    addBox(group, [2.2 - step * 0.2, 0.05, 0.14], "#c9b287", [-0.2, 0.165 + step * 0.045, 1.06 - step * 0.13]);
   }
-  addBox(group, [2.72, 0.045, 0.08], project.color, [0, 0.24, -1.02]);
-  addBox(group, [2.2, 0.04, 0.12], "#4cbad8", [0.18, 0.2, 1.18], [0, -0.12, 0]);
-  addBox(group, [0.9, 0.035, 0.1], "#4cbad8", [-1.02, 0.2, 1.02], [0, 0.26, 0]);
+
+  // A sail: quarter of a sphere, squeezed narrow, its glazed mouth facing local -z.
+  const addShell = (parent: THREE.Object3D, radius: number, z: number, flip = false) => {
+    const shell = new THREE.Group();
+    shell.position.set(0, 0, z);
+    shell.rotation.y = flip ? Math.PI : 0;
+    const sail = new THREE.Mesh(new THREE.SphereGeometry(radius, 14, 8, 0, Math.PI, 0, Math.PI / 2), shellMaterial);
+    sail.scale.set(0.5, 1.28, 0.92);
+    shell.add(sail);
+    const glass = new THREE.Mesh(new THREE.CircleGeometry(radius * 0.93, 10, 0, Math.PI), glassMaterial);
+    glass.scale.set(0.5, 1.28, 1);
+    glass.position.z = 0.03;
+    shell.add(glass);
+    parent.add(shell);
+  };
+  const addHall = (x: number, z: number, scale: number, yaw: number) => {
+    const hall = new THREE.Group();
+    hall.position.set(x, 0.3, z);
+    hall.rotation.y = yaw;
+    hall.scale.setScalar(scale);
+    addShell(hall, 1.0, -0.6);
+    addShell(hall, 0.8, -0.02);
+    addShell(hall, 0.6, 0.46);
+    addShell(hall, 0.52, 1.5, true);
+    group.add(hall);
+  };
+  // Mouths open toward the harbour side the camera looks from.
+  addHall(-0.1, -0.55, 1, Math.PI - 0.62);
+  addHall(0.2, 0.42, 0.84, Math.PI - 0.62);
+  // The small restaurant shell out front.
+  const restaurant = new THREE.Group();
+  restaurant.position.set(-1.12, 0.3, 0.3);
+  restaurant.rotation.y = Math.PI - 0.3;
+  restaurant.scale.setScalar(0.46);
+  addShell(restaurant, 1.0, 0);
+  addShell(restaurant, 0.7, 0.9, true);
+  group.add(restaurant);
+
+  addBox(group, [3.1, 0.04, 0.08], project.color, [0, 0.16, -1.1]);
   return group;
 }
 
@@ -1609,21 +1735,99 @@ function createBondiModel(project: Project) {
 
 function createDoverHomeModel(project: Project) {
   const group = new THREE.Group();
-  [-0.7, -0.2, 0.34, 0.88].forEach((x, index) => {
-    addBox(group, [0.82, 0.42 + index * 0.08, 1.18], "#bda474", [x, 0.21 + index * 0.04, -0.08 + index * 0.22], [0, -0.16, 0]);
-  });
-  addBox(group, [1.52, 0.78, 1.06], "#fff2cf", [0.08, 0.86, -0.04]);
-  addBox(group, [1.76, 0.16, 1.24], project.color, [0.08, 1.34, -0.04], [0, 0, 0], { roughness: 0.46 });
-  addBox(group, [1.7, 0.06, 0.16], "#151713", [0.08, 1.46, -0.7]);
-  addBox(group, [0.78, 0.36, 0.06], "#94d8e8", [0.0, 0.9, -0.6]);
-  addBox(group, [0.36, 0.26, 0.06], "#94d8e8", [-0.54, 0.92, -0.6]);
-  addBox(group, [0.36, 0.26, 0.06], "#94d8e8", [0.54, 0.92, -0.6]);
-  addBox(group, [0.74, 0.08, 0.82], "#d9d0bc", [0.94, 0.56, -0.3], [0, 0.28, 0]);
-  addBox(group, [1.34, 0.05, 0.36], "#176b82", [-0.78, 0.2, 0.9], [0, -0.2, 0], { roughness: 0.2, metalness: 0.04 });
-  addCylinder(group, 0.035, 0.035, 0.72, "#151713", [-1.22, 0.56, 0.95], [0, 0, 0], 12);
-  addCylinder(group, 0.18, 0.1, 0.18, "#f7d35f", [-1.22, 0.96, 0.95], [0, 0, 0], 24);
-  addBox(group, [0.84, 0.04, 0.1], "#fffdf4", [-1.22, 0.67, 0.95], [0, 0.35, 0]);
+  const wall = modelMaterial("#fffaf0", { roughness: 0.7 });
+  const roof = modelMaterial("#c4653f", { roughness: 0.7 });
+  const glass = new THREE.MeshBasicMaterial({ color: "#9fd8ef" });
+  const hedge = modelMaterial("#3f7f45", { roughness: 0.9 });
+
+  // Lawn, driveway and path.
+  addBox(group, [3.0, 0.1, 2.3], "#5c9a57", [0, 0.05, 0], [0, 0, 0], { roughness: 0.94 });
+  addBox(group, [0.8, 0.02, 0.9], "#cfc8b0", [-0.92, 0.11, 0.7]);
+  addBox(group, [0.3, 0.02, 0.86], "#e7ddc3", [0.18, 0.11, 0.72]);
+
+  // Two-storey house with a gabled roof, front to the camera.
+  addBox(group, [1.5, 0.62, 1.05], wall, [0.2, 0.41, -0.28]);
+  addBox(group, [1.2, 0.5, 0.95], wall, [0.3, 0.97, -0.3]);
+  addPrism(group, [1.44, 0.46, 1.1], roof, [0.3, 1.22, -0.3], Math.PI / 2);
+  addBox(group, [0.16, 0.36, 0.16], "#b3a68c", [0.66, 1.5, -0.5]);
+  addBox(group, [0.24, 0.42, 0.05], "#7a4a2b", [0.18, 0.31, 0.26]);
+  addBox(group, [0.36, 0.26, 0.05], glass, [0.64, 0.46, 0.26]);
+  addBox(group, [0.36, 0.26, 0.05], glass, [-0.26, 0.46, 0.26]);
+  [-0.02, 0.62].forEach((x) => addBox(group, [0.3, 0.24, 0.05], glass, [x, 1.0, 0.19]));
+  addBox(group, [1.3, 0.05, 0.2], "#d9d0bc", [0.3, 0.74, 0.28]);
+
+  // Garage wing.
+  addBox(group, [0.86, 0.54, 0.9], wall, [-0.94, 0.37, -0.3]);
+  addBox(group, [0.94, 0.08, 0.98], "#d9d0bc", [-0.94, 0.68, -0.3]);
+  addBox(group, [0.62, 0.4, 0.05], "#8f9b9c", [-0.94, 0.3, 0.16]);
+
+  // Pool out the front, hedge along the side, a tree.
+  addBox(group, [0.9, 0.06, 0.56], "#fffdf4", [0.92, 0.13, 0.74]);
+  addBox(group, [0.78, 0.04, 0.44], "#3fb6da", [0.92, 0.16, 0.74], [0, 0, 0], { roughness: 0.12, metalness: 0.08 });
+  addBox(group, [0.14, 0.2, 1.9], hedge, [1.4, 0.2, -0.05]);
+  addCylinder(group, 0.04, 0.06, 0.4, "#6a4c32", [-1.28, 0.3, -0.86], [0, 0, 0], 8);
+  addSphere(group, 0.3, hedge, [-1.28, 0.7, -0.86], 12);
+
+  // The pin that says "home".
+  const pin = new THREE.Group();
+  pin.position.set(0.3, 2.1, -0.3);
+  const gold = modelMaterial(project.color, { roughness: 0.36, metalness: 0.2, emissive: "#6a4a10", emissiveIntensity: 0.25 });
+  addSphere(pin, 0.26, gold, [0, 0.3, 0], 18);
+  addCone(pin, 0.2, 0.42, 16, gold, [0, 0, 0], [Math.PI, 0, 0]);
+  addSphere(pin, 0.1, "#fffdf4", [0, 0.32, 0.2], 10);
+  group.add(pin);
+  group.userData.tick = (time: number) => {
+    pin.position.y = 2.1 + Math.sin(time * 2.2) * 0.08;
+    pin.rotation.y = time * 0.8;
+  };
   return group;
+}
+
+/** Push a polygon's outline outward by `distance` (mitred), whatever its winding. */
+function offsetPolygon(points: MapPoint[], distance: number): MapPoint[] {
+  let area = 0;
+  points.forEach((point, index) => {
+    const next = points[(index + 1) % points.length];
+    area += point.x * next.z - next.x * point.z;
+  });
+  const sign = area > 0 ? 1 : -1;
+  return points.map((point, index) => {
+    const previous = points[(index - 1 + points.length) % points.length];
+    const next = points[(index + 1) % points.length];
+    const normal = (from: MapPoint, to: MapPoint) => {
+      const dx = to.x - from.x;
+      const dz = to.z - from.z;
+      const length = Math.hypot(dx, dz) || 1;
+      return { x: (sign * dz) / length, z: (-sign * dx) / length };
+    };
+    const a = normal(previous, point);
+    const b = normal(point, next);
+    const mx = a.x + b.x;
+    const mz = a.z + b.z;
+    const length = Math.hypot(mx, mz) || 1;
+    const miter = distance / Math.max(0.45, (mx / length) * a.x + (mz / length) * a.z);
+    return { x: point.x + (mx / length) * miter, z: point.z + (mz / length) * miter };
+  });
+}
+
+/** Small deterministic PRNG so scattered scenery is identical on every load. */
+function seededRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function distanceToSegment(point: MapPoint, start: MapPoint, end: MapPoint) {
+  const dx = end.x - start.x;
+  const dz = end.z - start.z;
+  const lengthSq = dx * dx + dz * dz || 1;
+  const t = THREE.MathUtils.clamp(((point.x - start.x) * dx + (point.z - start.z) * dz) / lengthSq, 0, 1);
+  return Math.hypot(point.x - (start.x + dx * t), point.z - (start.z + dz * t));
 }
 
 function CityScene({
@@ -1692,7 +1896,18 @@ function CityScene({
     sun.position.set(-10, 18, 12);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
+    // The shadow frustum is re-centred on the walker every frame, so shadows
+    // exist wherever the camera is rather than only near the map origin.
+    sun.shadow.camera.left = -24;
+    sun.shadow.camera.right = 24;
+    sun.shadow.camera.top = 24;
+    sun.shadow.camera.bottom = -24;
+    sun.shadow.camera.near = 1;
+    sun.shadow.camera.far = 70;
+    sun.shadow.bias = -0.0004;
+    sun.shadow.normalBias = 0.03;
     scene.add(sun);
+    scene.add(sun.target);
 
     const textures: THREE.Texture[] = [];
     const addTexture = (texture?: THREE.Texture) => {
@@ -1923,9 +2138,20 @@ function CityScene({
     // Water plane slightly lower than sand base to avoid z-fighting; we'll animate its material UVs
     const waterY = -0.12;
     addPlane(180, 150, 9, -5, waterMaterial, waterY);
+    // Shoreline: every landmass gets a sand rim and two bands of shallows beneath
+    // it, so the coast reads as a coast instead of a hard edge on flat blue.
+    const landmasses = [mainLandShape, inlandSuburbsShape, northShoreShape, northArchiveHeadlandShape, kirribilliHeadlandShape];
+    const shallowsMaterial = new THREE.MeshBasicMaterial({ color: "#4fc3cf", transparent: true, opacity: 0.34, depthWrite: false });
+    const reefMaterial = new THREE.MeshBasicMaterial({ color: "#7fe0dc", transparent: true, opacity: 0.42, depthWrite: false });
+    const shoreSandMaterial = new THREE.MeshStandardMaterial({ color: "#ead9a4", map: sand, roughness: 0.9 });
+    landmasses.forEach((shape) => {
+      addFlatShape(groundGroup, offsetPolygon(shape, 1.5), shallowsMaterial, -0.085);
+      addFlatShape(groundGroup, offsetPolygon(shape, 0.7), reefMaterial, -0.06);
+      addFlatShape(groundGroup, offsetPolygon(shape, 0.24), shoreSandMaterial, -0.03);
+    });
     addFlatShape(groundGroup, mainLandShape, parkMaterial);
     addFlatShape(groundGroup, inlandSuburbsShape, inlandMaterial, 0.018);
-    addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, 0.015);
+    addFlatShape(groundGroup, harbourWaterShape, harbourMaterial, -0.1);
     addFlatShape(groundGroup, northShoreShape, scrubMaterial, 0.026);
     addFlatShape(groundGroup, northArchiveHeadlandShape, scrubMaterial, 0.027);
     addFlatShape(groundGroup, lavenderBayShape, scrubMaterial, 0.03);
@@ -1981,6 +2207,98 @@ function CityScene({
     addLandscapeDetails(scene);
     addArchiveDistricts(scene, addTexture);
     addCityPaths(scene);
+
+    // Woodland: a few hundred instanced trees scattered over open ground, kept
+    // clear of stops, roads, districts and water. Three draw calls in total.
+    {
+      const random = seededRandom(20261110);
+      const districtCentres = [sydneyPlaces.cbd, sydneyPlaces.blackbird, sydneyPlaces.eveleigh, sydneyPlaces.bondiJunction];
+      const builtShapes = [
+        graveyardShape,
+        learningCentreShape,
+        northSydneyDistrictShape,
+        milsonsPromenadeShape,
+        operaPromenadeShape,
+        bondiSandShape,
+        harbourCrossingShape,
+        offsetPolygon(harbourWaterShape, 0.5),
+      ];
+      const pitchCentre = nudgePoint(sydneyPlaces.sportsField, 0.45, 0.3);
+      const isOpenGround = (point: MapPoint) => {
+        if (!landmasses.some((shape) => pointInPolygon(point, offsetPolygon(shape, -0.55)))) return false;
+        if (builtShapes.some((shape) => pointInPolygon(point, shape))) return false;
+        if (mapItems.some((item) => Math.hypot(point.x - item.x, point.z - item.z) < (item.mapKind ? 1.6 : 3.7))) return false;
+        if (districtCentres.some((centre) => Math.abs(point.x - centre.x) < 4.9 && Math.abs(point.z - centre.z) < 3.9)) return false;
+        if (cityRoutes.some((route) => distanceToSegment(point, route.start, route.end) < 1.05)) return false;
+        if (Math.hypot((point.x - pitchCentre.x) / 1.55, (point.z - pitchCentre.z) / 0.92) < 2.7) return false;
+        if (Math.hypot(point.x - sydneyPlaces.queensPark.x, point.z - sydneyPlaces.queensPark.z) < 3.4) return false;
+        if (Math.hypot(point.x - sydneyPlaces.doverHeights.x, point.z - sydneyPlaces.doverHeights.z) < 3.3) return false;
+        // North Sydney towers and the suburb rows behind them.
+        if (
+          point.x > sydneyPlaces.northSydney.x - 7.4 && point.x < sydneyPlaces.northSydney.x + 5.6 &&
+          point.z > sydneyPlaces.northSydney.z - 5.6 && point.z < sydneyPlaces.northSydney.z + 2.6
+        ) return false;
+        return true;
+      };
+
+      // Groves: pick seed points, then cluster a handful of trees round each.
+      const spots: Array<{ x: number; z: number; scale: number; kind: number }> = [];
+      for (let attempt = 0; attempt < 520 && spots.length < 300; attempt += 1) {
+        const centre = { x: -22 + random() * 54, z: -24 + random() * 48 };
+        if (!isOpenGround(centre)) continue;
+        const kind = random() < 0.45 ? 0 : 1;
+        const count = 2 + Math.floor(random() * 5);
+        for (let i = 0; i < count; i += 1) {
+          const angle = random() * Math.PI * 2;
+          const reach = random() * 1.5;
+          const point = { x: centre.x + Math.cos(angle) * reach, z: centre.z + Math.sin(angle) * reach };
+          if (!isOpenGround(point)) continue;
+          if (spots.some((spot) => Math.hypot(spot.x - point.x, spot.z - point.z) < 0.5)) continue;
+          spots.push({ ...point, scale: 0.7 + random() * 0.6, kind: random() < 0.8 ? kind : 1 - kind });
+        }
+      }
+
+      const trunkGeometry = new THREE.CylinderGeometry(0.045, 0.065, 0.4, 6);
+      const coniferGeometry = new THREE.ConeGeometry(0.3, 0.78, 7);
+      const canopyGeometry = new THREE.IcosahedronGeometry(0.34, 0);
+      const trunks = new THREE.InstancedMesh(trunkGeometry, new THREE.MeshStandardMaterial({ color: "#6b5137", roughness: 0.85 }), spots.length);
+      const conifers = spots.filter((spot) => spot.kind === 0);
+      const broadleaf = spots.filter((spot) => spot.kind === 1);
+      const coniferMesh = new THREE.InstancedMesh(coniferGeometry, new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.9, flatShading: true }), Math.max(1, conifers.length));
+      const canopyMesh = new THREE.InstancedMesh(canopyGeometry, new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.9, flatShading: true }), Math.max(1, broadleaf.length));
+      coniferMesh.count = conifers.length;
+      canopyMesh.count = broadleaf.length;
+      const dummy = new THREE.Object3D();
+      const tint = new THREE.Color();
+      spots.forEach((spot, index) => {
+        dummy.position.set(spot.x, 0.2 * spot.scale, spot.z);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.setScalar(spot.scale);
+        dummy.updateMatrix();
+        trunks.setMatrixAt(index, dummy.matrix);
+      });
+      conifers.forEach((spot, index) => {
+        dummy.position.set(spot.x, 0.72 * spot.scale, spot.z);
+        dummy.rotation.set(0, random() * Math.PI, 0);
+        dummy.scale.setScalar(spot.scale);
+        dummy.updateMatrix();
+        coniferMesh.setMatrixAt(index, dummy.matrix);
+        coniferMesh.setColorAt(index, tint.setHSL(0.38 + random() * 0.04, 0.48, 0.24 + random() * 0.07));
+      });
+      broadleaf.forEach((spot, index) => {
+        dummy.position.set(spot.x, 0.6 * spot.scale, spot.z);
+        dummy.rotation.set(random(), random() * Math.PI, random());
+        dummy.scale.set(spot.scale, spot.scale * (0.85 + random() * 0.3), spot.scale);
+        dummy.updateMatrix();
+        canopyMesh.setMatrixAt(index, dummy.matrix);
+        canopyMesh.setColorAt(index, tint.setHSL(0.27 + random() * 0.07, 0.5, 0.3 + random() * 0.1));
+      });
+      [trunks, coniferMesh, canopyMesh].forEach((mesh) => {
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        scene.add(mesh);
+      });
+    }
 
     const colliders: THREE.Object3D[] = [];
     const placards: THREE.Group[] = [];
@@ -2348,6 +2666,9 @@ function CityScene({
       }
 
       const view = camera.aspect < 0.75 ? CAMERA_VIEWS.narrow : CAMERA_VIEWS.wide;
+      sun.position.set(player.position.x - 10, 18, player.position.z + 12);
+      sun.target.position.set(player.position.x, 0, player.position.z);
+
       // Lift the camera with the deck so crossing the bridge doesn't push the
       // ball up out of frame, but ignore the hop itself.
       const cameraLift = groundY - PLAYER_BALL_RADIUS;
@@ -2612,7 +2933,6 @@ function addArchiveDistricts(
   const brassMaterial = modelMaterial("#d8b85f", { roughness: 0.55, metalness: 0.08 });
   const campusWall = modelMaterial("#dfe9df", { roughness: 0.72 });
   const glass = modelMaterial("#77cdd1", { roughness: 0.28, metalness: 0.05 });
-  const screen = new THREE.MeshBasicMaterial({ color: "#163135" });
   const graveyardFenceWidth = 11.15;
   const graveyardFenceDepth = 8.05;
   const graveyardHalfWidth = graveyardFenceWidth / 2;
@@ -2646,12 +2966,16 @@ function addArchiveDistricts(
   [-1.6, -0.8, 0, 0.8, 1.6].forEach((x) => {
     addBox(group, [0.42, 0.48, 0.07], glass, [learning.x + x, 0.9, learning.z - 3.28], [0, 0.04, 0]);
   });
-  addBox(group, [2.7, 0.08, 0.92], "#243033", [learning.x, 0.28, learning.z + 2.35], [0, -0.08, 0], { roughness: 0.54 });
-  for (let index = 0; index < 4; index += 1) {
-    const x = learning.x - 1.05 + index * 0.7;
-    addBox(group, [0.44, 0.34, 0.04], screen, [x, 0.56, learning.z + 1.92], [0.12, -0.08, 0]);
-    addBox(group, [0.32, 0.04, 0.045], index % 2 ? "#22d66f" : "#4cbad8", [x, 0.58, learning.z + 1.89], [0.12, -0.08, 0]);
-  }
+  // Give the hall a face on the side the camera sees: doors, windows, a clock gable.
+  const hallFront = learning.z - 2.55 + 0.73;
+  addBox(group, [0.62, 0.66, 0.06], "#3a2a1c", [learning.x, 0.6, hallFront], [0, 0.04, 0]);
+  [-1.85, -1.1, 1.1, 1.85].forEach((x) => {
+    addBox(group, [0.44, 0.42, 0.05], glass, [learning.x + x, 0.88, hallFront - x * 0.04], [0, 0.04, 0]);
+  });
+  addPrism(group, [1.5, 0.5, 0.3], "#f7d35f", [learning.x, 1.54, hallFront - 0.12], 0.04);
+  addCylinder(group, 0.15, 0.15, 0.04, "#fffdf4", [learning.x, 1.72, hallFront + 0.05], [Math.PI / 2, 0, 0], 16);
+  addCylinder(group, 0.02, 0.02, 0.9, "#e8e2d2", [learning.x + 2.2, 2.0, learning.z - 2.55], [0, 0, 0], 6);
+  addBox(group, [0.36, 0.2, 0.02], "#4cbad8", [learning.x + 2.39, 2.32, learning.z - 2.55]);
 
   addLandmarkSign(scene, addTexture, "Project Graveyard", "north shore old builds", graveyard.x - 1.25, graveyard.z - 4.85, "#7d8178");
   addLandmarkSign(scene, addTexture, "Learning Centre", "tutorials and practice", learning.x - 1.25, learning.z - 5.15, "#77cdd1");
@@ -2672,19 +2996,28 @@ function addLandscapeDetails(scene: THREE.Scene) {
   const wakeMaterial = new THREE.MeshBasicMaterial({ color: "#e9fbff", transparent: true, opacity: 0.54 });
   const rockMaterial = modelMaterial("#a58f66", { roughness: 0.92 });
   const courtMaterial = modelMaterial("#1f6f51", { roughness: 0.84 });
-  const poolMaterial = modelMaterial("#2fa8c9", { roughness: 0.18, metalness: 0.04 });
   const treeTrunk = modelMaterial("#72563a", { roughness: 0.78 });
   const treeGreen = modelMaterial("#246b3e", { roughness: 0.88 });
   const suburbWall = modelMaterial("#efe1bf", { roughness: 0.76 });
   const darkRoad = modelMaterial("#2b2f2b", { roughness: 0.78 });
   const parkPaint = modelMaterial("#315f40", { roughness: 0.88 });
 
+  // Hand-placed scenery predates some stops, so it yields to them.
+  const isClearOfStops = (point: MapPoint) =>
+    !cityItems.some((item) => Math.hypot(point.x - item.x, point.z - item.z) < 2.9) &&
+    !(
+      Math.abs(point.x - archiveDistricts.learningCentre.center.x) < 6.3 &&
+      Math.abs(point.z - archiveDistricts.learningCentre.center.z) < 4.9
+    );
+
   const addTree = (point: MapPoint, scale = 1) => {
+    if (!isClearOfStops(point)) return;
     addCylinder(details, 0.045 * scale, 0.06 * scale, 0.42 * scale, treeTrunk, [point.x, 0.27 * scale, point.z], [0, 0, 0], 10);
     addCone(details, 0.28 * scale, 0.62 * scale, 7, treeGreen, [point.x, 0.78 * scale, point.z]);
   };
 
   const addInlandHouse = (point: MapPoint, rotation: number, roofColor: string, scale = 1) => {
+    if (!isClearOfStops(point)) return;
     const house = new THREE.Group();
     house.position.set(point.x, 0, point.z);
     house.rotation.y = rotation;
@@ -2753,24 +3086,6 @@ function addLandscapeDetails(scene: THREE.Scene) {
   addBox(details, [3.5, 0.04, 1.16], parkPaint, [2.2, 0.105, 15.0], [0, -0.08, 0]);
   addBox(details, [0.08, 0.045, 1.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
   addBox(details, [3.4, 0.04, 0.08], "#fffdf4", [2.2, 0.13, 15.0], [0, -0.08, 0]);
-
-  for (let i = 0; i < 12; i += 1) {
-    addBox(
-      details,
-      [0.55 + (i % 3) * 0.16, 0.32 + (i % 4) * 0.11, 0.72],
-      rockMaterial,
-      [sydneyPlaces.doverHeights.x - 2.52 + i * 0.42, 0.2 + (i % 4) * 0.045, sydneyPlaces.doverHeights.z + 0.18 + i * 0.34],
-      [0, -0.25 + i * 0.04, 0.04],
-    );
-  }
-
-  [
-    { x: sydneyPlaces.doverHeights.x - 1.28, z: sydneyPlaces.doverHeights.z + 1.25 },
-    { x: sydneyPlaces.doverHeights.x + 0.36, z: sydneyPlaces.doverHeights.z + 0.82 },
-  ].forEach((point, index) => {
-    addBox(details, [1.08, 0.045, 0.52], poolMaterial, [point.x, 0.18, point.z], [0, 0.22 - index * 0.28, 0]);
-    addBox(details, [1.22, 0.035, 0.66], "#fffdf4", [point.x, 0.14, point.z], [0, 0.22 - index * 0.28, 0]);
-  });
 
   addBox(details, [2.48, 0.035, 1.42], courtMaterial, [sydneyPlaces.queensPark.x - 0.25, 0.12, sydneyPlaces.queensPark.z + 1.45], [0, 0.08, 0]);
   addBox(details, [2.48, 0.04, 0.045], "#fffdf4", [sydneyPlaces.queensPark.x - 0.25, 0.16, sydneyPlaces.queensPark.z + 1.45], [0, 0.08, 0]);
@@ -3406,23 +3721,25 @@ export default function MuseumPortfolio() {
               {detailsOpen ? (
                 <ProjectInspector project={activeProject} onClose={closeProjectDetails} />
               ) : null}
+              <div className="stage-dock">
+                <div className="interest-strip" aria-label="Jump to a place on the map">
+                  {mapShortcutButtons.map(({ id, label, Icon }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className={activeId === id ? "is-active" : ""}
+                      onClick={() => openProjectDetails(id)}
+                    >
+                      <Icon size={15} aria-hidden="true" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <p className="stage-hint" aria-hidden="true">
+                  <kbd>WASD</kbd> roll <kbd>Space</kbd> jump <kbd>Click</kbd> travel
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="city-controls">
-          <div className="interest-strip" aria-label="Personal landmarks">
-            {mapShortcutButtons.map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                className={activeId === id ? "is-active" : ""}
-                onClick={() => openProjectDetails(id, true)}
-              >
-                <Icon size={15} aria-hidden="true" />
-                {label}
-              </button>
-            ))}
           </div>
         </div>
       </section>

@@ -468,6 +468,14 @@ export default function Studio() {
       .catch(() => setNote({ tone: "error", text: "Could not load content" }));
   }, []);
 
+  const anyDirty = dirty.projects || dirty.city || dirty.site;
+  useEffect(() => {
+    if (!anyDirty) return undefined;
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [anyDirty]);
+
   const rows = useMemo(() => {
     if (!data || tab === "site") return [];
     const items = tab === "projects" ? data.projects : data.city;
@@ -522,11 +530,18 @@ export default function Studio() {
     }
   };
 
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      if (dirty[tab]) void save();
+    }
+  };
+
   const current =
     tab === "site" ? data.site : (tab === "projects" ? data.projects : data.city)[selected];
 
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} onKeyDown={onKeyDown}>
       <div className={styles.topbar}>
         <span className={styles.brand}>Studio</span>
         <span className={styles.brandNote}>app/data/{tab}.json</span>
@@ -552,7 +567,10 @@ export default function Studio() {
         <span className={styles.status} data-tone={note.tone}>
           {note.text}
         </span>
-        <button className={styles.save} type="button" disabled={!dirty[tab]} onClick={save}>
+        <a className={styles.viewLink} href="/" target="_blank" rel="noreferrer">
+          View site ↗
+        </a>
+        <button className={styles.save} type="button" disabled={!dirty[tab]} onClick={save} title="Save (⌘S)">
           Save
         </button>
       </div>

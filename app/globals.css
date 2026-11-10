@@ -553,9 +553,77 @@ canvas {
   background: rgba(247, 211, 95, 0.18);
 }
 
-.city-controls {
-  position: relative;
-  z-index: 2;
+/* Shortcuts and the controls hint live inside the map, so they are still there
+   in full screen and never float over it from the page behind. */
+.stage-dock {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.stage-dock .interest-strip {
+  pointer-events: auto;
+  max-width: min(100%, 760px);
+}
+
+.stage-dock .interest-strip button {
+  background: rgba(16, 22, 17, 0.84);
+  backdrop-filter: blur(4px);
+}
+
+.stage-hint {
+  flex: none;
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 247, 223, 0.28);
+  background: rgba(16, 22, 17, 0.78);
+  color: rgba(255, 247, 223, 0.82);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stage-hint kbd {
+  margin: 0 5px 0 9px;
+  padding: 2px 6px;
+  border: 1px solid rgba(255, 247, 223, 0.45);
+  border-bottom-width: 2px;
+  color: var(--cream);
+  font: inherit;
+}
+
+.stage-hint kbd:first-child {
+  margin-left: 0;
+}
+
+/* With a card open, keep the dock out from under it. */
+.city-stage:has(.project-inspector) .stage-dock {
+  right: min(418px, calc(100% - 14px));
+}
+
+.city-stage:has(.project-inspector) .stage-hint,
+.city-map-shell:not(:hover) .stage-hint {
+  opacity: 0.55;
+}
+
+@media (hover: none), (max-width: 760px) {
+  .stage-hint {
+    display: none;
+  }
+
+  .city-stage:has(.project-inspector) .stage-dock {
+    display: none;
+  }
 }
 
 .archive-section,
